@@ -5,7 +5,12 @@
 // import { join, dirname } from "path";
 // import fs from "fs-extra";
 // import { fileURLToPath } from "url";
-import { generateBuildOutput, loadConfig, populateOutputBundleOptions, validateOutputDirectory } from "../utils.js";
+import {
+  generateBuildOutput,
+  loadConfig,
+  populateOutputBundleOptions,
+  validateOutputDirectory,
+} from "../utils.js";
 import { getBuildOptions, runBuild } from "@apphosting/common";
 
 // const __filename = fileURLToPath(import.meta.url);
@@ -122,10 +127,11 @@ const root = process.cwd();
 const nextConfig = await loadConfig(root, opts.projectDirectory);
 
 const nextBuildDirectory = join(opts.projectDirectory, nextConfig.distDir);
-const outputBundleOptions = populateOutputBundleOptions(root,  opts.projectDirectory, nextBuildDirectory,);
-await generateBuildOutput(    root,
-    opts.projectDirectory,
-    outputBundleOptions,
-    nextBuildDirectory,);
+const outputBundleOptions = populateOutputBundleOptions(
+  root,
+  opts.projectDirectory,
+  nextBuildDirectory,
+);
+await generateBuildOutput(root, opts.projectDirectory, outputBundleOptions, nextBuildDirectory);
 
 await validateOutputDirectory(outputBundleOptions, nextBuildDirectory);
