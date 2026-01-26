@@ -66,8 +66,7 @@ async function getExternalRewrites(): Promise<RoutesManifestRewrite[]> {
     // Filter to only external URL rewrites
     externalRewritesCache = allRewrites.filter(
       (rewrite) =>
-        rewrite.destination.startsWith("http://") ||
-        rewrite.destination.startsWith("https://")
+        rewrite.destination.startsWith("http://") || rewrite.destination.startsWith("https://"),
     );
 
     return externalRewritesCache;
@@ -85,10 +84,7 @@ async function getExternalRewrites(): Promise<RoutesManifestRewrite[]> {
  *
  * Returns true if the request was handled, false otherwise.
  */
-async function handleExternalRewrite(
-  req: Request,
-  res: Response
-): Promise<boolean> {
+async function handleExternalRewrite(req: Request, res: Response): Promise<boolean> {
   const externalRewrites = await getExternalRewrites();
   if (externalRewrites.length === 0) {
     return false;
@@ -131,13 +127,9 @@ async function handleExternalRewrite(
         };
 
         // Add body for non-GET/HEAD requests
-        if (
-          req.method &&
-          !["GET", "HEAD"].includes(req.method) &&
-          req.rawBody
-        ) {
-          // Convert Buffer to Uint8Array for fetch compatibility
-          fetchOptions.body = new Uint8Array(req.rawBody);
+        if (req.method && !["GET", "HEAD"].includes(req.method) && req.rawBody) {
+          // Node.js fetch accepts Buffer directly at runtime
+          fetchOptions.body = req.rawBody as unknown as BodyInit;
         }
 
         const proxyRes = await fetch(destination, fetchOptions);
@@ -146,13 +138,9 @@ async function handleExternalRewrite(
         // - transfer-encoding: handled by the framework
         // - content-encoding: fetch auto-decompresses
         // - content-length: may change after decompression
-        const skipHeaders = [
-          "transfer-encoding",
-          "content-encoding",
-          "content-length",
-        ];
+        const skipHeaders = new Set(["transfer-encoding", "content-encoding", "content-length"]);
         for (const [key, value] of proxyRes.headers.entries()) {
-          if (!skipHeaders.includes(key.toLowerCase())) {
+          if (!skipHeaders.has(key.toLowerCase())) {
             res.setHeader(key, value);
           }
         }
