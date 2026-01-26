@@ -71,7 +71,8 @@ async function getExternalRewrites(): Promise<RoutesManifestRewrite[]> {
     );
 
     return externalRewritesCache;
-  } catch {
+  } catch (err) {
+    console.error("Failed to load or parse routes-manifest.json:", err);
     externalRewritesCache = [];
     return externalRewritesCache;
   }
