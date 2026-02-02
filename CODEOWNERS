@@ -1,11 +1,11 @@
 # Global reviewers
 # TODO add group for global reviewers
-* @jamesdaniels @leoortizz @Yuangwang @annajowang
+* @jamesdaniels @leoortizz @Yuangwang @annajowang @abhis3 @falahat
 
 # App Hosting Platform Adapters code
 # TODO add group for App Hosting
-/packages/@apphosting/adapter-*/ @Yuangwang @sjjj986 @jamesdaniels @annajowang @blidd-google @taeold
-/packages/@apphosting/common/ @Yuangwang @sjjj986 @jamesdaniels @annajowang @blidd-google @taeold
+/packages/@apphosting/adapter-*/ @Yuangwang @sjjj986 @jamesdaniels @annajowang @abhis3 @taeold
+/packages/@apphosting/common/ @Yuangwang @sjjj986 @jamesdaniels @annajowang @abhis3 @taeold
 
 # Web Frameworks code
 /packages/@apphosting/build/ @FirebaseExtended/firebase-full-time-employees @FirebaseExtended/monogram

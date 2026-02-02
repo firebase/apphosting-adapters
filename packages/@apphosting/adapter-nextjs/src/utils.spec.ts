@@ -6,6 +6,60 @@ import path from "path";
 import os from "os";
 import { RoutesManifest, MiddlewareManifest } from "../src/interfaces.js";
 
+describe("block vulnerable nextjs versions", () => {
+  it("check for vulnerable versions", async () => {
+    const { checkNextJSVersion } = await importUtils;
+
+    assert.throws(() => {
+      checkNextJSVersion("15.0.0");
+    });
+
+    assert.doesNotThrow(() => {
+      checkNextJSVersion(undefined);
+    });
+
+    assert.doesNotThrow(() => {
+      checkNextJSVersion("15.0.5");
+    });
+
+    assert.throws(() => {
+      checkNextJSVersion("15.4.7");
+    });
+
+    assert.doesNotThrow(() => {
+      checkNextJSVersion("15.4.8");
+    });
+
+    assert.doesNotThrow(() => {
+      checkNextJSVersion("14.0.12");
+    });
+
+    assert.throws(() => {
+      checkNextJSVersion("14.3.0-canary.77");
+    });
+
+    assert.throws(() => {
+      checkNextJSVersion("14.3.0-canary.78");
+    });
+
+    assert.doesNotThrow(() => {
+      checkNextJSVersion("14.3.0-canary.76");
+    });
+
+    assert.throws(() => {
+      checkNextJSVersion("15.0.0-canary.2");
+    });
+
+    assert.throws(() => {
+      checkNextJSVersion("16.0.6");
+    });
+
+    assert.doesNotThrow(() => {
+      checkNextJSVersion("16.0.7");
+    });
+  });
+});
+
 describe("manifest utils", () => {
   let tmpDir: string;
   let distDir: string;

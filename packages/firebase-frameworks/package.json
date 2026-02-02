@@ -1,6 +1,6 @@
 {
   "name": "firebase-frameworks",
-  "version": "0.11.8",
+  "version": "0.11.9",
   "description": "Experimental addon to the Firebase CLI to add web framework support",
   "main": "dist/index.js",
   "repository": {
@@ -43,7 +43,7 @@
     "dist"
   ],
   "engines": {
-    "node": "^16.0.0 || ^18.0.0 || ^20.0.0 || ^22.0.0"
+    "node": "^20.0.0 || ^22.0.0 || ^24.0.0"
   },
   "license": "Apache-2.0",
   "dependencies": {

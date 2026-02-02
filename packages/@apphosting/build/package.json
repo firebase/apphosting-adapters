@@ -1,8 +1,8 @@
 {
     "name": "@apphosting/build",
-    "version": "0.1.7",
+    "version": "0.1.8",
     "main": "dist/index.js",
-    "description": "Experimental addon to the Firebase CLI to add web framework support",
+    "description": "Experimental addon to the Firebase CLI to run local builds",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/FirebaseExtended/firebase-framework-tools.git"
