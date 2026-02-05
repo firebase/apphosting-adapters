@@ -12,7 +12,7 @@ process.env['__NEXT_PRIVATE_PREBUNDLED_REACT'] = 'experimental';
 
 async function start() {
   // --- 2. CONFIGURATION ---
-  const serverDir = process.argv[2] || process.cwd();
+  const serverDir = process.argv[2] ? path.resolve(process.argv[2]) : process.cwd();
   const PORT = parseInt(process.env.PORT || "8080");
   
   console.log(`> Starting server from: ${serverDir}`);
@@ -126,24 +126,36 @@ async function start() {
       if (handled) return;
 
       // [B] STATIC FILE HANDLING
-      if (pathname && (pathname.startsWith("/_next/static/") || pathname.startsWith("/public/") || pathname === "/favicon.ico")) {
-        let relativePath;
+      // We check if the request matches a file on disk.
+      // Since we aren't changing directories, we must construct the full path manually.
+      if (pathname) {
+        let filePath = null;
+
+        // 1. _next/static assets -> map to .next/static
         if (pathname.startsWith("/_next/static/")) {
-           relativePath = pathname.replace(/^\/_next\/static\//, ".next/static/");
-        } else if (pathname === "/favicon.ico") {
-           relativePath = "public/favicon.ico";
-        } else {
-           relativePath = pathname.substring(1); 
+           filePath = path.join(serverDir, ".next/static", pathname.replace(/^\/_next\/static\//, ""));
+        } 
+        
+        // 2. Explicit /public/ request -> map to public folder
+        else if (pathname.startsWith("/public/")) {
+           filePath = path.join(serverDir, pathname);
+        }
+        
+        // 3. Root assets (favicon.ico, sparky3d.gif) -> Check inside 'public' folder
+        // This was the missing piece! Root URLs often map to the public folder.
+        else if (!pathname.startsWith("/_next/")) {
+           const publicFilePath = path.join(serverDir, "public", pathname);
+           if (fs.existsSync(publicFilePath) && fs.statSync(publicFilePath).isFile()) {
+             filePath = publicFilePath;
+           }
         }
 
-        const filePath = path.join(serverDir, relativePath);
-
-        if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
-           // console.log(`[STATIC] 📄 Serving file: ${pathname}`); // Uncomment for verbose logs
+        // If we calculated a path AND it exists, serve it
+        if (filePath && fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
            const ext = path.extname(filePath).toLowerCase();
            const mimeTypes: Record<string, string> = {
              '.js': 'application/javascript', '.css': 'text/css', '.png': 'image/png',
-             '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.ico': 'image/x-icon'
+             '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.ico': 'image/x-icon', '.gif': 'image/gif'
            };
            res.setHeader("Content-Type", mimeTypes[ext] || 'application/octet-stream');
            res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
