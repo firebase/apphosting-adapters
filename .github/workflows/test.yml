@@ -129,6 +129,7 @@ jobs:
       - run: true
 
   publish:
+    environment: release
     runs-on: ubuntu-latest
     name: Publish (NPM)
     needs: ["build", "test"]
