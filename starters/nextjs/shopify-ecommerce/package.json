@@ -17,7 +17,7 @@
     "cookies-next": "^5.0.2",
     "embla-carousel-react": "^8.3.1",
     "firebase": "^11.0.2",
-    "next": "15.0.3",
+    "next": "15.0.5",
     "react": "^18",
     "react-dom": "^18",
     "react-markdown": "^9.0.1",
