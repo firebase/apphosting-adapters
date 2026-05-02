@@ -16,7 +16,7 @@
     "packages/firebase-frameworks"
   ],
   "devDependencies": {
-    "@angular-devkit/build-angular": "^17.1.2",
+    "@angular-devkit/build-angular": "^19.2.9",
     "@types/mocha": "*",
     "@typescript-eslint/eslint-plugin": "^6.10.0",
     "eslint": "^8.53.0",
