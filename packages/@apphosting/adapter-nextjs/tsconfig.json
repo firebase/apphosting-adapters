@@ -3,11 +3,14 @@
   "compilerOptions": {
     "noEmit": false,
     "outDir": "dist",
-    "rootDir": "src"
+    "rootDir": "src",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true
   },
   "include": [
     "src/index.ts",
-    "src/bin/*.ts",
+    "src/bin/*.ts"
   ],
   "exclude": [
     "src/*.spec.ts"

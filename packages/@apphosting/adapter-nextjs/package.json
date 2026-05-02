@@ -1,6 +1,6 @@
 {
-  "name": "@apphosting/adapter-nextjs",
-  "version": "14.0.21",
+  "name": "wei-nextjs-adapter-test",
+  "version": "15.0.18",
   "main": "dist/index.js",
   "description": "Experimental addon to the Firebase CLI to add web framework support",
   "repository": {
@@ -9,6 +9,7 @@
   },
   "bin": {
     "apphosting-adapter-nextjs-build": "dist/bin/build.js",
+    "apphosting-adapter-nextjs-serve": "dist/bin/serve.js",
     "apphosting-adapter-nextjs-create": "dist/bin/create.js"
   },
   "author": {
@@ -21,7 +22,8 @@
   "type": "module",
   "sideEffects": false,
   "scripts": {
-    "build": "rm -rf dist && tsc && chmod +x ./dist/bin/*",
+    "build": "rm -rf dist && tsc && npm run bundle",
+    "bundle": "esbuild src/bin/build.ts --bundle --platform=node --format=esm --banner:js='#!/usr/bin/env node' --outfile=dist/bin/build.js --external:esbuild --external:fs-extra && esbuild src/bin/serve.ts --bundle --platform=node --format=esm --banner:js='#!/usr/bin/env node' --outfile=dist/bin/serve.js --external:next --external:react --external:react-dom && esbuild src/index.ts --bundle --platform=node --format=cjs --outfile=dist/index.js",
     "test": "npm run test:unit && npm run test:functional",
     "test:unit": "ts-mocha -p tsconfig.json 'src/**/*.spec.ts' 'src/*.spec.ts'",
     "test:functional": "node --loader ts-node/esm ./e2e/run-local.ts",
@@ -44,9 +46,10 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@apphosting/common": "*",
+    "esbuild": "^0.25.0",
+    "fastify": "^5.6.1",
     "fs-extra": "^11.1.1",
-    "yaml": "^2.3.4",
-    "semver": "^7.7.3"
+    "yaml": "^2.3.4"
   },
   "peerDependencies": {
     "next": "*"
@@ -61,11 +64,13 @@
     "@types/mocha": "*",
     "@types/tmp": "*",
     "mocha": "*",
-    "next": "~14.0.0",
+    "next": "15.6.0-canary.54",
+    "protoc": "^32.1.0",
     "semver": "*",
     "tmp": "*",
     "ts-mocha": "*",
     "ts-node": "*",
+    "ts-proto": "^2.7.7",
     "typescript": "*",
     "verdaccio": "^5.30.3"
   }
