@@ -1,0 +1,5 @@
+git add .
+git commit -m "Tu mensaje aquí"
+git pull
+git push
+Orden importante: pull ANTES de push. 👍

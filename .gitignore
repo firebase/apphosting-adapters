@@ -1,18 +1,41 @@
-/packages/**/*/dist/
-/examples/
-/dist
-/packages/@apphosting/publish-dev/.local
-/packages/@apphosting/publish-dev/htpasswd
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# NPM
-node_modules
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+/patches
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
 
 # misc
-.vscode
-*.log
 .DS_Store
-/apphosting-*.tgz
-/firebase-frameworks-*.tgz
+*.pem
 
-# firebase
-.firebase
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lint-staged.config.js
+
+# local env files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts

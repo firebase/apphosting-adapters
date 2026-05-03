@@ -1,0 +1,13 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // This single block grants a user full access to their own document
+    // and everything inside it (all subcollections and their documents).
+    // The {path=**} is a recursive wildcard that matches any document or
+    // subcollection under /users/{userId}, including the user document itself.
+    match /users/{userId}/{path=**} {
+      allow read, write: if request.auth.uid == userId;
+    }
+  }
+}
