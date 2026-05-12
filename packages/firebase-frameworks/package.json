@@ -73,7 +73,7 @@
     "firebase": "^10.0.0",
     "firebase-admin": "^11.0.1",
     "firebase-functions": "^4.3.1",
-    "next": "~15.0.0",
+    "next": "^15.5.18",
     "sharp": "*",
     "ts-node": "*"
   }
