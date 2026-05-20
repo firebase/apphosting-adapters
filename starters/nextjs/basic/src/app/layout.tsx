@@ -4,7 +4,7 @@ import "./globals.css";
 import { Header } from "./components";
 
 export const metadata: Metadata = {
-  title: "Next.js on Firebase App Hosting",
+  title: "ViewLab immersive Dronevideos",
   description: "",
 };
 
