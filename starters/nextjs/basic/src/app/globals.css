@@ -37,7 +37,7 @@ html {
 
 body {
   color: var(--primary-contrast);
-  background: var(--background-gradient);
+  background: url('(https://www.fpv24.com/de/blog/126/dji-avata-2-aktion)') no-repeat center center/cover;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
