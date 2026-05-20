@@ -3,7 +3,6 @@
   --secondary-contrast: #0b151e99;
   --background-gradient: linear-gradient(90deg, #ffca28, #f57c00);
   --background: #ffca28;
-  --muted: rgba(194, 137, 3, 0.3);
   --surface: #e99e1d;
   --border: transparent;
   --top-gradient: #ffffff33;
@@ -17,7 +16,6 @@
   --secondary-contrast: #ffffff99;
   --background-gradient: linear-gradient(90deg, #0b151e, #0b151e);
   --background: #0b151e;
-  --muted: rgba(21, 39, 60, 0.6);
   --surface: #112031;
   --border: #ffffff20;
   --top-gradient: #1b72e833;
