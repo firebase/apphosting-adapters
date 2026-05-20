@@ -4,7 +4,7 @@ export default function Home() {
   const message = process.env["MESSAGE"] || "Hello!";
   return (
     <main className="content">
-      <h1 className="heading">Next.js on Firebase App Hosting</h1>
+      <h1 className="heading">ViewLab immersive Dronevideos</h1>
       <p>{message}</p>
 
       <section className="features">
