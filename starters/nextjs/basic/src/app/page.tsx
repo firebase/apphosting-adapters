@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <main className="content">
       <h1 className="heading">ViewLab immersive Dronevideos</h1>
-      <p>{message}</p>
+      
 
       <section className="features">
         <article className="card">
