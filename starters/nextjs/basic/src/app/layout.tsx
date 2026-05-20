@@ -4,7 +4,7 @@ import "./globals.css";
 import { Header } from "./components";
 
 export const metadata: Metadata = {
-  title: "ViewLab immersive Dronevideos",
+  title: "ViewLab immersive, beeindruckende Drohnevideos",
   description: "",
 };
 
