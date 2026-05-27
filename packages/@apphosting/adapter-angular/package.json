@@ -72,7 +72,7 @@
     "@types/tmp": "*",
     "mocha": "*",
     "semver": "*",
-    "tmp": "*",
+    "tmp": "^0.2.6",
     "ts-mocha": "*",
     "ts-node": "*",
     "typescript": "*",
