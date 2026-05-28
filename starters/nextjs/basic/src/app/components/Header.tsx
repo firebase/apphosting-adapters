@@ -18,7 +18,9 @@ export function Header() {
       )}
 
       <header className="header">
-        <image src="/logo_white.png"  border="none" height="100%"/>
+        <div style="position: absolute;top: -6vh;left: -45vw;height: 30vh;">
+          <img src="/logo_white.png" border="none" height="100%">
+        </div>
       </header>
     </>
   );
