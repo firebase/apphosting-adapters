@@ -18,7 +18,7 @@ export function Header() {
       )}
 
       <header className="header">
-        <Firebase />
+        <image src="/logo_white.png"  border="none" height="100%"/>
       </header>
     </>
   );
