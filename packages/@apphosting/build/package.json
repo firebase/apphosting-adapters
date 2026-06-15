@@ -38,11 +38,12 @@
     "license": "Apache-2.0",
     "dependencies": {
         "@apphosting/common": "*",
-      "@npmcli/promise-spawn": "^3.0.0",
+        "@npmcli/promise-spawn": "^3.0.0",
         "colorette": "^2.0.20",
         "commander": "^11.1.0",
         "npm-pick-manifest": "^9.0.0",
-        "ts-node": "^10.9.1"
+        "ts-node": "^10.9.1",
+        "yaml": "^2.3.4"
     },
     "devDependencies": {
         "@types/commander": "*",

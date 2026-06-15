@@ -120,11 +120,29 @@ jobs:
       - name: Test
         run: npm run lint:quiet
 
+  verify_packages:
+    runs-on: ubuntu-latest
+    needs: build
+    name: Verify Packages Installation
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          check-latest: false
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+      - name: Rsync Artifacts
+        run: rsync -a artifact/ packages
+      - name: Run verification script
+        run: node scripts/verify-packages.js
+
   # Break the branch protection test into a separate step, so we can manage the matrix more easily
   test_and_contribute:
     runs-on: ubuntu-latest
     name: Branch protection
-    needs: ["test", "lint"]
+    needs: ["test", "lint", "verify_packages"]
     steps:
       - run: true
 
