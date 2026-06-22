@@ -44,7 +44,7 @@ function toSvelteKitRequest(request: Request) {
   return new Request(href, {
     method: request.method,
     headers: toSvelteKitHeaders(request.headers),
-    body: request.rawBody ? new Uint8Array(request.rawBody) : null,
+    body: request.rawBody ? request.rawBody : null,
   });
 }
 

@@ -319,7 +319,7 @@ function generateTmpDir(): string {
   return fs.mkdtempSync(path.join(os.tmpdir(), "test-files"));
 }
 
-function generateTestFiles(baseDir: string, filesToGenerate: Object): void {
+function generateTestFiles(baseDir: string, filesToGenerate: object): void {
   Object.entries(filesToGenerate).forEach((file) => {
     const fileName = file[0];
     const contents = file[1];
@@ -329,7 +329,7 @@ function generateTestFiles(baseDir: string, filesToGenerate: Object): void {
   });
 }
 
-function validateTestFiles(baseDir: string, expectedFiles: Object): void {
+function validateTestFiles(baseDir: string, expectedFiles: object): void {
   Object.entries(expectedFiles).forEach((file) => {
     const fileName = file[0];
     const expectedContents = file[1];

@@ -38,13 +38,16 @@ module.exports = {
         "jsdoc/require-returns": "off",
 
         "@typescript-eslint/no-invalid-this": "error",
-        "@typescript-eslint/no-unused-vars": "error", // Unused vars should not exist.
+        "@typescript-eslint/no-unused-vars": ["error", { caughtErrors: "none" }], // Unused vars should not exist.
         "no-invalid-this": "off", // Turned off in favor of @typescript-eslint/no-invalid-this.
         "no-unused-vars": "off", // Off in favor of @typescript-eslint/no-unused-vars.
         eqeqeq: ["error", "always", { null: "ignore" }],
         camelcase: ["error", { properties: "never" }], // snake_case allowed in properties iif to satisfy an external contract / style
+        "@typescript-eslint/prefer-promise-reject-errors": "off",
+        "@typescript-eslint/unbound-method": "off",
+        "@typescript-eslint/no-empty-object-type": "off",
 
-        "@typescript-eslint/ban-types": "warn", // TODO(bkendall): remove, allow to error.
+        "@typescript-eslint/no-restricted-types": "warn", // TODO(bkendall): remove, allow to error.
         "@typescript-eslint/explicit-function-return-type": ["warn", { allowExpressions: true }], // TODO(bkendall): SET to error.
         "@typescript-eslint/no-extra-non-null-assertion": "warn", // TODO(bkendall): remove, allow to error.
         "@typescript-eslint/no-floating-promises": "warn", // TODO(bkendall): remove, allow to error.
@@ -57,7 +60,7 @@ module.exports = {
         "@typescript-eslint/no-unsafe-member-access": "warn", // TODO(bkendall): remove, allow to error.
         "@typescript-eslint/no-unsafe-return": "warn", // TODO(bkendall): remove, allow to error.
         "@typescript-eslint/no-use-before-define": ["warn", { functions: false, typedefs: false }], // TODO(bkendall): change to error.
-        "@typescript-eslint/no-var-requires": "warn", // TODO(bkendall): remove, allow to error.
+        "@typescript-eslint/no-require-imports": "warn", // TODO(bkendall): remove, allow to error.
         "@typescript-eslint/prefer-includes": "warn", // TODO(bkendall): remove, allow to error.
         "@typescript-eslint/prefer-regexp-exec": "warn", // TODO(bkendall): remove, allow to error.
         "@typescript-eslint/prefer-string-starts-ends-with": "warn", // TODO(bkendall): remove, allow to error.
@@ -82,7 +85,7 @@ module.exports = {
         "@typescript-eslint/no-unsafe-member-access": "off",
         "@typescript-eslint/no-unsafe-return": "off",
         "@typescript-eslint/no-use-before-define": "off",
-        "@typescript-eslint/no-var-requires": "off",
+        "@typescript-eslint/no-require-imports": "off",
         "@typescript-eslint/prefer-includes": "off",
         "@typescript-eslint/prefer-regexp-exec": "off",
         "@typescript-eslint/restrict-plus-operands": "off",
@@ -104,7 +107,7 @@ module.exports = {
   globals: {},
   parserOptions: {
     ecmaVersion: "2017",
-    project: ["tsconfig.json", "tsconfig.dev.json"],
+    projectService: { allowDefaultProject: ["*.js", "scripts/*.js"] },
     sourceType: "module",
     warnOnUnsupportedTypeScriptVersion: false,
   },
@@ -117,5 +120,5 @@ module.exports = {
     },
   },
   parser: "@typescript-eslint/parser",
-  ignorePatterns: ["starters/**"],
+  ignorePatterns: ["starters/**", "**/e2e/runs/**", "**/runs/**"],
 };

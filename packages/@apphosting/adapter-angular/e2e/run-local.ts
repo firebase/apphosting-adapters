@@ -41,13 +41,6 @@ const tests = await Promise.all(
       stdio: "inherit",
       shell: true,
     });
-    console.log(`[${runId}] updating angular to next tag`);
-    console.log(`[${runId}] > npx ng update @angular/cli@next @angular/core@next`);
-    await promiseSpawn("npx", ["ng", "update", "@angular/cli@next", "@angular/core@next"], {
-      cwd,
-      stdio: "inherit",
-      shell: true,
-    });
 
     const angularJSON = JSON.parse((await readFile(join(cwd, "angular.json"))).toString());
 

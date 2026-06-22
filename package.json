@@ -6,9 +6,9 @@
     "build:watch": "lerna watch -- lerna run build",
     "test": "./scripts/test.js",
     "publish": "./scripts/publish.js",
-    "lint": "eslint packages/* scripts/*",
-    "lint:quiet": "eslint packages/* scripts/* --quiet",
-    "lint:fix": "eslint packages/* scripts/* --fix"
+    "lint": "ESLINT_USE_FLAT_CONFIG=false eslint packages/* scripts/*",
+    "lint:quiet": "ESLINT_USE_FLAT_CONFIG=false eslint packages/* scripts/* --quiet",
+    "lint:fix": "ESLINT_USE_FLAT_CONFIG=false eslint packages/* scripts/* --fix"
   },
   "workspaces": [
     "packages/@apphosting/*",
@@ -23,11 +23,12 @@
     "@types/mocha": "*",
     "@types/semver": "^7.5.0",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
     "chokidar": "^5.0.0",
     "eslint": "^9.21.0",
     "eslint-config-google": "^0.14.0",
     "eslint-config-prettier": "^9.0.0",
-    "eslint-plugin-jsdoc": "^5.0.0",
+    "eslint-plugin-jsdoc": "^63.0.7",
     "eslint-plugin-prettier": "^5.0.1",
     "lerna": "^8.2.2",
     "mocha": "^10.2.0",
