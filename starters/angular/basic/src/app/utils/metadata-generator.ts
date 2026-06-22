@@ -1,5 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
-
 export function getDateString() {
   return new Date().toLocaleString("en-US", {
     dateStyle: "medium",
@@ -9,5 +7,5 @@ export function getDateString() {
 }
 
 export function getRandomUUID() {
-  return uuidv4();
+  return crypto.randomUUID();
 }
