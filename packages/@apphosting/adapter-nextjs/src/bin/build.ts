@@ -6,7 +6,6 @@ import {
   validateOutputDirectory,
   getAdapterMetadata,
   exists,
-  checkNextJSVersion,
 } from "../utils.js";
 import { join } from "path";
 import { getBuildOptions, runBuild } from "@apphosting/common";
@@ -25,7 +24,6 @@ process.env.NEXT_PRIVATE_STANDALONE = "true";
 // Opt-out sending telemetry to Vercel
 process.env.NEXT_TELEMETRY_DISABLED = "1";
 
-checkNextJSVersion(process.env.FRAMEWORK_VERSION);
 const nextConfig = await loadConfig(root, opts.projectDirectory);
 
 /**
