@@ -27,7 +27,12 @@ export function checkNextJSVersion(version: string | undefined) {
   if (!version) {
     return;
   }
-  if (!satisfies(version, SAFE_NEXTJS_VERSIONS)) {
+  // includePrerelease lets preview/canary builds (e.g. the `next@preview` tag,
+  // which resolves to versions like "16.3.0-preview") be matched against the
+  // range. Without it, semver excludes any prerelease whose [major, minor, patch]
+  // tuple isn't already present as a prerelease comparator in the range, so a safe
+  // preview build would be wrongly flagged as vulnerable and blocked.
+  if (!satisfies(version, SAFE_NEXTJS_VERSIONS, { includePrerelease: true })) {
     throw new Error(
       `CVE-2025-55182: Vulnerable Next version ${version} detected. Deployment blocked. Update your app's dependencies to a patched Next.js version and redeploy: https://nextjs.org/blog/CVE-2025-66478#fixed-versions`,
     );
