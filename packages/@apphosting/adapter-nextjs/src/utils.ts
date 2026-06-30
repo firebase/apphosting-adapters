@@ -23,16 +23,25 @@ export const { satisfies } = semVer;
 const SAFE_NEXTJS_VERSIONS =
   ">=16.1.0 || ~16.0.7 || ~v15.5.7 || ~v15.4.8 || ~v15.3.6 || ~v15.2.6 || ~v15.1.9 || ~v15.0.5 || <14.3.0-canary.77";
 
+// The latest line is patched from 16.1.0 onward, so any prerelease of a version
+// >= 16.1.0 (e.g. the `next@preview` tag, which resolves to "16.3.0-preview") is
+// safe. We only enable includePrerelease for this open-ended range. Applying it
+// to the whole SAFE_NEXTJS_VERSIONS range would loosen the bounded `~`/`<`
+// comparators of older lines, potentially letting a prerelease of an unpatched
+// minor slip through.
+const SAFE_NEXTJS_PRERELEASE_RANGE = ">=16.1.0";
+
 export function checkNextJSVersion(version: string | undefined) {
   if (!version) {
     return;
   }
-  // includePrerelease lets preview/canary builds (e.g. the `next@preview` tag,
-  // which resolves to versions like "16.3.0-preview") be matched against the
-  // range. Without it, semver excludes any prerelease whose [major, minor, patch]
-  // tuple isn't already present as a prerelease comparator in the range, so a safe
-  // preview build would be wrongly flagged as vulnerable and blocked.
-  if (!satisfies(version, SAFE_NEXTJS_VERSIONS, { includePrerelease: true })) {
+  // Default (strict) matching covers stable versions and the canary boundary,
+  // then scoped includePrerelease admits only prereleases of the patched >=16.1.0
+  // line. A version is vulnerable only if it satisfies neither.
+  if (
+    !satisfies(version, SAFE_NEXTJS_VERSIONS) &&
+    !satisfies(version, SAFE_NEXTJS_PRERELEASE_RANGE, { includePrerelease: true })
+  ) {
     throw new Error(
       `CVE-2025-55182: Vulnerable Next version ${version} detected. Deployment blocked. Update your app's dependencies to a patched Next.js version and redeploy: https://nextjs.org/blog/CVE-2025-66478#fixed-versions`,
     );

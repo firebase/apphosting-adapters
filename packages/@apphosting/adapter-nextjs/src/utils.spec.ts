@@ -61,6 +61,17 @@ describe("block vulnerable nextjs versions", () => {
     assert.doesNotThrow(() => {
       checkNextJSVersion("16.3.0-preview");
     });
+
+    // A prerelease of an unpatched minor must NOT slip past the bounded ranges:
+    // 16.1.0-canary.2 sorts below 16.1.0 (the first patched release) and
+    // 15.1.0-canary.2 below the patched 15.1.9, so both stay blocked.
+    assert.throws(() => {
+      checkNextJSVersion("16.1.0-canary.2");
+    });
+
+    assert.throws(() => {
+      checkNextJSVersion("15.1.0-canary.2");
+    });
   });
 });
 
