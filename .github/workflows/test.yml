@@ -13,37 +13,34 @@ on:
     types:
       - published
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
     name: Build
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           ref: ${{ github.base_ref }}
+          persist-credentials: false
         if: ${{ github.base_ref }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 2
+          persist-credentials: false
       - name: Setup node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3.9.1
         with:
           node-version: 20
           check-latest: false
-      - name: node_modules cache
-        uses: actions/cache@v3
-        id: node_modules_cache
-        with:
-          path: ./node_modules
-          key: ${{ runner.os }}-20-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-20-
       - name: Install deps
         run: npm ci
       - name: Build
         run: npm run build
       - name: "Upload Artifact"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           path: |
             packages/*/dist/
@@ -60,36 +57,24 @@ jobs:
       fail-fast: false
     name: Test Node ${{ matrix.node }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           ref: ${{ github.base_ref }}
+          persist-credentials: false
         if: ${{ github.base_ref }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 2
+          persist-credentials: false
       - name: Setup node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3.9.1
         with:
           node-version: ${{ matrix.node }}
           check-latest: true
-      - name: node_modules cache
-        id: node_modules_cache
-        uses: actions/cache@v3
-        with:
-          path: ./node_modules
-          key: ${{ runner.os }}-${{ matrix.node }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ matrix.node }}-
       - name: Install deps
-        if: steps.node_modules_cache.outputs.cache-hit != 'true'
         run: npm ci
-      - name: Firebase emulator cache
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/firebase/emulators
-          key: firebase_emulators
       - name: Download Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
       - name: Rsync Artifacts
         run: rsync -a artifact/ packages
       - name: Test
@@ -100,22 +85,15 @@ jobs:
     runs-on: ubuntu-latest
     name: Lint
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
       - name: Setup node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3.9.1
         with:
           node-version: ${{ matrix.node }}
           check-latest: true
-      - name: node_modules cache
-        id: node_modules_cache
-        uses: actions/cache@v3
-        with:
-          path: ./node_modules
-          key: ${{ runner.os }}-20-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-20-
       - name: Install deps
-        if: steps.node_modules_cache.outputs.cache-hit != 'true'
         run: npm ci
       - name: Test
         run: npm run lint:quiet
@@ -135,19 +113,21 @@ jobs:
     needs: ["build", "test"]
     if: ${{ github.ref == 'refs/heads/main' || github.event_name == 'release' }}
     permissions:
+      contents: read
       id-token: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 2
+          persist-credentials: false
       - name: Setup node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3.9.1
         with:
           node-version: 20
           check-latest: false
           registry-url: "https://registry.npmjs.org"
       - name: "Download Artifacts"
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
       - name: Rsync Artifacts
         run: rsync -a artifact/ packages
       - name: Publish
