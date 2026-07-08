@@ -27,7 +27,7 @@ export function checkNextJSVersion(version: string | undefined) {
   if (!version) {
     return;
   }
-  if (!satisfies(version, SAFE_NEXTJS_VERSIONS)) {
+  if (!satisfies(version, SAFE_NEXTJS_VERSIONS, { includePrerelease: true })) {
     throw new Error(
       `CVE-2025-55182: Vulnerable Next version ${version} detected. Deployment blocked. Update your app's dependencies to a patched Next.js version and redeploy: https://nextjs.org/blog/CVE-2025-66478#fixed-versions`,
     );
