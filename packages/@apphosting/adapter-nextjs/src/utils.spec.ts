@@ -61,6 +61,14 @@ describe("block vulnerable nextjs versions", () => {
     assert.doesNotThrow(() => {
       checkNextJSVersion("16.3.0-preview");
     });
+
+    assert.throws(() => {
+      checkNextJSVersion("15.6.0-canary.1");
+    });
+
+    assert.throws(() => {
+      checkNextJSVersion("16.1.0-canary.1");
+    });
   });
 });
 
