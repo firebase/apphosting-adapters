@@ -158,3 +158,5 @@ jobs:
           ADAPTER_COMMON_NPM_TOKEN: ${{ secrets.ADAPTER_COMMON_NPM_TOKEN }}
           # FIREBASE_FRAMEWORKS_NPM_TOKEN: ${{ secrets.FIREBASE_FRAMEWORKS_NPM_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.PERSONAL_NPM_TOKEN }}
+
+      
