@@ -94,7 +94,6 @@ jobs:
         run: rsync -a artifact/ packages
       - name: Test
         run: npm run test
-        continue-on-error: ${{ matrix.node == 22 }}
 
   lint:
     runs-on: ubuntu-latest
