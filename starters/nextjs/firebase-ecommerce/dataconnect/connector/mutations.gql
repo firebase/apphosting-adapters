@@ -1,0 +1,128 @@
+mutation UpsertCustomer(
+  $firstName: String!
+  $lastName: String!
+  $email: String!
+  $phone: String!
+  $acceptsMarketing: Boolean!
+) @auth(level: USER) {
+  customer_upsert(
+    data: {
+      id_expr: "auth.uid"
+      firstName: $firstName
+      lastName: $lastName
+      email: $email
+      phone: $phone
+      acceptsMarketing: $acceptsMarketing
+    }
+  )
+}
+
+# Create a new review
+mutation CreateProductReview(
+  $productId: UUID!
+  $rating: Int!
+  $content: String!
+) @auth(level: USER) {
+  productReview_insert(
+    data: {
+      productId: $productId
+      customerId_expr: "auth.uid"
+      rating: $rating
+      content: $content
+      contentEmbedding_embed: { model: "textembedding-gecko@003", text: $content }
+    }
+  )
+}
+
+mutation CreateOrder(
+  $customerId: String!
+  $chargeId: String
+  $paymentIntentId: String
+  $receiptUrl: String
+  $subtotalPrice: Float!
+  $totalTax: Float!
+  $totalShippingPrice: Float!
+  $totalPrice: Float!
+  $financialStatus: String!
+  $fulfillmentStatus: String!
+) @auth(level: USER) {
+  order_insert(
+    data: {
+      customerId_expr: "auth.uid"
+      chargeId: $chargeId
+      paymentIntentId: $paymentIntentId
+      receiptUrl: $receiptUrl
+      subtotalPrice: $subtotalPrice
+      totalTax: $totalTax
+      totalShippingPrice: $totalShippingPrice
+      totalPrice: $totalPrice
+      financialStatus: $financialStatus
+      fulfillmentStatus: $fulfillmentStatus
+    }
+  )
+}
+
+mutation UpdateOrderByPaymentIntentId(
+  $paymentIntentId: String!
+  $financialStatus: String
+  $fulfillmentStatus: String
+  $receiptUrl: String
+  $processedAt: Date
+  $chargeId: String
+) @auth(level: USER) {
+  query @redact {
+    order(first: { where: { paymentIntentId: { eq: $paymentIntentId } } }) {
+      customerId @check(expr: "this == auth.uid", message: "You can only update the payment method of your own order.")
+    }
+  }
+  order_update(
+    first: { where: { paymentIntentId: { eq: $paymentIntentId } } }
+    data: {
+      financialStatus: $financialStatus
+      fulfillmentStatus: $fulfillmentStatus
+      receiptUrl: $receiptUrl
+      processedAt: $processedAt
+      chargeId: $chargeId
+    }
+  )
+}
+
+mutation UpdateOrderByChargeId(
+  $financialStatus: String
+  $fulfillmentStatus: String
+  $receiptUrl: String
+  $processedAt: Date
+  $chargeId: String
+) @auth(level: PUBLIC) {
+  query @redact {
+    order(first: { where: { chargeId: { eq: $chargeId } } }) {
+      customerId @check(expr: "this == auth.uid", message: "You can only update the charge of your own order.")
+    }
+  }
+  order_update(
+    first: { where: { chargeId: { eq: $chargeId } } }
+    data: {
+      financialStatus: $financialStatus
+      fulfillmentStatus: $fulfillmentStatus
+      receiptUrl: $receiptUrl
+      processedAt: $processedAt
+    }
+  )
+}
+
+mutation CreateOrderItem($orderId: UUID!, $productId: UUID!, $quantity: Int!, $price: Float!)
+@auth(level: USER) {
+  query @redact {
+    order(id: $orderId) {
+      customerId @check(expr: "this == auth.uid", message: "You can only add to your own order.")
+    }
+  }
+  orderItem_insert(
+    data: {
+      order: { id: $orderId }
+      product: { id: $productId }
+      quantity: $quantity
+      price: $price
+    }
+  )
+}

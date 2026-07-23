@@ -1,0 +1,78 @@
+@use 'typography';
+
+:host {
+  display: flex;
+  width: 100%;
+
+  a {
+    border: 1px solid var(--color-senary);
+    color: var(--color-tertiary);
+    border-radius: 0.25rem;
+    display: block;
+    transition: border-color 300ms ease;
+    width: 100%;
+
+    &:hover,
+    &:focus {
+      outline: none;
+      border-color: var(--color-french-violet);
+    }
+
+    .img-cont {
+      background-color: var(--color-septenary);
+      border-top-left-radius: 0.2rem;
+      border-top-right-radius: 0.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem;
+      aspect-ratio: 1 / 1;
+
+      ec-product-image {
+        width: 80%;
+        height: 80%;
+      }
+    }
+
+    .data {
+      padding: 0.5rem;
+
+      .product-name {
+        @extend %body-short-02;
+        font-weight: 600;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-height: 2rem;
+      }
+
+      .categories {
+        margin-bottom: 0.5rem;
+
+        .ec-chip {
+          --chip-color: var(--color-quaternary);
+        }
+      }
+
+      .price-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        ec-price-tag {
+          flex: 1;
+        }
+
+        .last-items {
+          --chip-accent: var(--color-reddish-orange);
+        }
+      }
+
+      .unavailable {
+        --chip-accent: var(--color-tertiary);
+      }
+    }
+  }
+}

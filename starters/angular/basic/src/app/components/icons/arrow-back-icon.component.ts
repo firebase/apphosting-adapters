@@ -1,10 +1,9 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-arrow-back-icon',
-  standalone: true,
-  imports: [],
-  template: `
+    selector: 'app-arrow-back-icon',
+    imports: [],
+    template: `
   <svg
     width="16"
     height="16"
@@ -25,7 +24,7 @@ import { Component } from '@angular/core';
     </defs>
   </svg>
   `,
-  styles: `
+    styles: `
     :host {
       display: flex;
     }

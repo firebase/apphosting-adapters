@@ -1,0 +1,70 @@
+@use 'typography';
+@use 'screen-breakpoints' as sb;
+
+:host {
+  @extend %body-short-03;
+  display: flex;
+  margin-bottom: 0.25rem;
+  justify-content: space-between;
+  white-space: nowrap;
+  border-radius: 0.25rem;
+  background-color: transparent;
+  transition: background-color 200ms ease;
+  font-weight: normal;
+
+  @include sb.bp-600w {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  &:hover {
+    background-color: var(--color-senary);
+    color: var(--color-primary) !important;
+  }
+
+  &.selected {
+    background-color: color-mix(
+      in srgb,
+      var(--color-french-violet) 40%,
+      var(--color-bg) 60%
+    );
+
+    .name {
+      color: var(--color-primary);
+    }
+  }
+
+  .name {
+    flex-shrink: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1 1 auto;
+    padding: 0.5rem;
+
+    ngx-icon {
+      display: inline-block;
+      vertical-align: bottom;
+      margin-right: 0.2rem;
+    }
+  }
+
+  .delete-btn {
+    margin-left: 0.2rem;
+    padding: 0.5rem;
+    padding-left: 0;
+    margin: 0;
+    border: none;
+    background-color: transparent;
+    display: none;
+    color: var(--color-quaternary);
+    transition: color 300ms ease;
+
+    &:hover {
+      color: var(--color-primary);
+    }
+  }
+
+  &:hover > .delete-btn {
+    display: block;
+  }
+}

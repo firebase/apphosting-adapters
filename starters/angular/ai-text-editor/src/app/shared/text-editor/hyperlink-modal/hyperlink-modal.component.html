@@ -1,0 +1,25 @@
+<ngx-modal-content [controller]="ctrl">
+  <ng-container title>Add a hyperlink</ng-container>
+  <ng-container content>
+    <form [formGroup]="form" (ngSubmit)="addLink()">
+      <input
+        #input
+        formControlName="url"
+        placeholder="e.g. https://angular.dev"
+      />
+      <div>
+        <button
+          ngx-button
+          btnType="primary"
+          type="submit"
+          [disabled]="form.invalid"
+        >
+          Add
+        </button>
+        <button ngx-button btnType="secondary" (click)="ctrl.close()">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </ng-container>
+</ngx-modal-content>

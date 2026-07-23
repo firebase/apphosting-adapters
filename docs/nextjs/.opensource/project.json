@@ -1,0 +1,8 @@
+{
+    "name": "Next.js adapter",
+    "platforms": [
+      "app_hosting"
+    ],
+    "description": "Official Next.js adapter for Firebase App Hosting",
+    "content": "README.md"
+}

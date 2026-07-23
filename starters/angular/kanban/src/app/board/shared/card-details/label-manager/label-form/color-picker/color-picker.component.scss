@@ -1,0 +1,18 @@
+:host {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+
+  button {
+    display: block;
+    border: 2px solid transparent;
+    width: 32px;
+    height: 32px;
+    border-radius: 0.25rem;
+    justify-self: center;
+
+    &.selected {
+      border-color: var(--color-primary);
+    }
+  }
+}

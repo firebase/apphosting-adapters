@@ -1,0 +1,95 @@
+<svg
+  #svgElement
+  xmlns="http://www.w3.org/2000/svg"
+  [style.width]="contentWidth() + 'px'"
+>
+  <g
+    dbWidgetScale
+    [width]="contentWidth() - CHART_LEFT_PADDING - CHART_RIGHT_PADDING"
+    [height]="chartHeight()"
+    [x]="CHART_LEFT_PADDING"
+    [y]="CHART_TOP_PADDING"
+    [max]="nearestMax()"
+  />
+  <g [attr.transform]="[CHART_LEFT_PADDING, CHART_TOP_PADDING] | translate">
+    @for (item of normalizedData(); track $index; let i = $index) {
+      <path
+        [attr.d]="
+          item
+            | linePathDefinition
+              : {
+                  dataPointSpacing: dataPointSpacing(),
+                  chartHeight: chartHeight()
+                }
+        "
+        [attr.stroke]="colorsArray()[i]"
+      />
+    }
+  </g>
+  <g [attr.transform]="[CHART_LEFT_PADDING, CHART_TOP_PADDING] | translate">
+    @for (item of data().colLabels; track $index; let i = $index) {
+      <rect
+        [dbWidgetTooltip]="groupedData().get(i)!"
+        [tooltipColors]="colorsArray()"
+        class="data-point-hover-area"
+        [attr.width]="
+          0 < i && i < data().colLabels.size - 1
+            ? dataPointSpacing()
+            : dataPointSpacing() / 2
+        "
+        [attr.height]="chartHeight()"
+        [attr.x]="dataPointSpacing() * i - (i > 0 ? dataPointSpacing() / 2 : 0)"
+        y="0"
+      />
+      <g class="data-point-info">
+        <line
+          [attr.x1]="dataPointSpacing() * i"
+          [attr.x2]="dataPointSpacing() * i"
+          [attr.y2]="chartHeight()"
+          y1="0"
+        />
+        @for (pt of normalizedData(); track $index; let j = $index) {
+          @if (pt.values.get(i) !== undefined) {
+            <circle
+              [attr.cx]="dataPointSpacing() * i"
+              [attr.cy]="chartHeight() - pt.values.get(i)!"
+              [attr.fill]="colorsArray()[j]"
+              r="4"
+            />
+          }
+        }
+      </g>
+    }
+  </g>
+  <g
+    [attr.transform]="
+      [CHART_LEFT_PADDING, CHART_TOP_PADDING + chartHeight()] | translate
+    "
+  >
+    @for (label of horizontalScaleLabels(); track $index; let i = $index) {
+      <line
+        class="hor-scale-line"
+        [attr.x1]="horScaleSpacing() * i"
+        [attr.x2]="horScaleSpacing() * i"
+        y1="0"
+        y2="8"
+      />
+      <text [attr.x]="horScaleSpacing() * i" y="22" class="hor-scale-label">
+        {{ label | chartLabel }}
+      </text>
+    }
+  </g>
+</svg>
+<div class="legend">
+  @for (row of data().rows; track $index; let i = $index) {
+    @if (row.label) {
+      <div class="legend-label">
+        <div
+          class="legend-line"
+          [style.background-color]="colorsArray()[i]"
+        ></div>
+        <span>{{ row.label }}</span>
+      </div>
+    }
+  }
+</div>

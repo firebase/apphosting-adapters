@@ -1,0 +1,18 @@
+<form [formGroup]="form" (ngSubmit)="sendMessage()">
+  <textarea
+    #textarea
+    rows="1"
+    placeholder="Send a message"
+    formControlName="message"
+    (input)="setHeight()"
+  ></textarea>
+  @if (!processing()) {
+    <button title="Send" [disabled]="form.invalid">
+      <ngx-icon name="Send" size="xlg" />
+    </button>
+  } @else {
+    <button title="Abort" type="button" (click)="abortProcessing()">
+      <ngx-icon name="Stop" size="xlg" />
+    </button>
+  }
+</form>

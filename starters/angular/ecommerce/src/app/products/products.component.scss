@@ -1,0 +1,127 @@
+@use 'typography';
+@use 'screen-breakpoints' as sb;
+
+:host {
+  padding-top: 2rem;
+  display: grid;
+  grid-column-gap: 1rem;
+  grid-template-columns: min-content 1fr;
+  grid-template-rows: [row-start] auto [row-mid] auto [row-end];
+
+  @include sb.bp-600w {
+    grid-template-columns: 1fr;
+  }
+
+  .header {
+    width: 100%;
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+
+      @include sb.bp-600w {
+        margin: 0;
+      }
+
+      .category-name {
+        @extend %heading-200;
+        margin-top: 0;
+
+        @include sb.bp-600w {
+          margin: 0;
+        }
+      }
+
+      .search-title {
+        @extend %heading-600;
+        margin-bottom: 0;
+        color: var(--color-quaternary);
+      }
+    }
+
+    ec-sort-selector {
+      margin-left: 0.5rem;
+
+      @include sb.bp-600w {
+        display: none;
+      }
+    }
+  }
+
+  .sidebar {
+    width: 30ch;
+    grid-row: row-start / row-end;
+    height: 0;
+
+    @include sb.bp-1000w {
+      width: 25ch;
+    }
+
+    @include sb.bp-800w {
+      width: 20ch;
+    }
+
+    @include sb.bp-600w {
+      grid-row: initial;
+      height: auto;
+      width: 100%;
+    }
+
+    ec-product-search,
+    ec-categories-picker,
+    ec-price-filter {
+      margin-bottom: 2rem;
+    }
+
+    ec-sort-selector {
+      display: none;
+
+      @include sb.bp-600w {
+        display: flex;
+      }
+    }
+
+    .expandable-cont-header {
+      @extend %heading-400;
+      color: var(--color-primary);
+      margin: 0;
+    }
+
+    .expandable-cont-hr {
+      display: none;
+
+      @include sb.bp-600w {
+        display: block;
+      }
+    }
+  }
+
+  .main {
+    .list {
+      display: grid;
+      justify-items: center;
+      grid-template-columns: repeat(4, 1fr);
+      grid-column-gap: 0.75rem;
+      grid-row-gap: 0.75rem;
+
+      @include sb.bp-1100w {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      @include sb.bp-800w {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      @include sb.bp-600w {
+        grid-template-columns: repeat(1, 1fr);
+      }
+    }
+
+    .no-results {
+      @extend %heading-400;
+      color: var(--color-quaternary);
+    }
+  }
+}

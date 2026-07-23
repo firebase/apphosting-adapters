@@ -1,0 +1,63 @@
+<div
+  class="img-wrapper"
+  [style.animation-duration]="ANIM_DURATION + 'ms'"
+  [class.slide-left]="animation() === 'slide-left'"
+  [class.slide-right]="animation() === 'slide-right'"
+>
+  @if (showImage() && src()) {
+    <img
+      [ngSrc]="src()"
+      [width]="size().width"
+      [height]="size().height"
+      [alt]="(image().metadata || {})['name'] || 'Image'"
+    />
+  }
+  @if (image().metadata; as metadata) {
+    <div class="metadata">
+      @for (item of metadata | keyvalue; track item.key) {
+        <div class="item">
+          <span class="prop">{{ item.key }}</span>
+          <span class="value">{{ item.value }}</span>
+        </div>
+      }
+    </div>
+  }
+</div>
+<div class="nav">
+  <button
+    type="button"
+    class="btn prev"
+    (click)="previewPrev()"
+    [disabled]="idx() === 0"
+    title="Previous image"
+  >
+    <ngx-icon name="ChevronRight" size="xxlg" />
+  </button>
+  <button
+    type="button"
+    class="btn next"
+    (click)="previewNext()"
+    [disabled]="idx() === imagesTotal() - 1"
+    title="Next image"
+  >
+    <ngx-icon name="ChevronRight" size="xxlg" />
+  </button>
+</div>
+<div class="controls">
+  <button
+    class="btn download"
+    type="button"
+    title="Download image"
+    (click)="download()"
+  >
+    <ngx-icon name="Download" />
+  </button>
+  <button
+    class="btn close"
+    type="button"
+    title="Close image preview"
+    (click)="ctrl.close()"
+  >
+    <ngx-icon name="Close" />
+  </button>
+</div>

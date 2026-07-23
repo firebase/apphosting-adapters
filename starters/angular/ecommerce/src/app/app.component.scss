@@ -1,0 +1,21 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+
+  .main-wrapper {
+    max-width: calc(var(--app-max-width) + 2rem);
+    width: 100%;
+    flex: 1 0 auto;
+
+    main {
+      padding: 0 1rem;
+    }
+  }
+
+  ec-footer {
+    flex-shrink: 0;
+    width: 100%;
+  }
+}

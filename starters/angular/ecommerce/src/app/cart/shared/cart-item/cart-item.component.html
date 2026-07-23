@@ -1,0 +1,60 @@
+<div class="main-content">
+  <a [routerLink]="productUrl()" class="product-link">
+    <div class="img-cont">
+      <ec-product-image
+        [src]="product().images.first() || ''"
+        size="xs 400w, sm"
+        alt="Product image"
+      />
+    </div>
+    <span class="name">{{ product().name }}</span>
+  </a>
+  <div class="controls">
+    <button
+      ngx-button
+      class="quantity-btn"
+      btnType="secondary"
+      (click)="updateQuantity(-1)"
+      [disabled]="quantity() === 1"
+      title="Decrease quantity by 1"
+    >
+      -
+    </button>
+    <input
+      type="number"
+      [value]="quantity()"
+      [min]="1"
+      [max]="maxProductQuantity(product())"
+      (input)="onInputBlur($event)"
+      placeholder="Quantity"
+    />
+    <button
+      ngx-button
+      class="quantity-btn"
+      btnType="secondary"
+      (click)="updateQuantity(1)"
+      [disabled]="maxProductQuantity(product()) === quantity()"
+      title="Increase quantity by 1"
+    >
+      +
+    </button>
+    <button
+      ngx-button
+      btnType="secondary"
+      class="remove-btn"
+      (click)="remove.emit()"
+      [attr.title]="'Remove ' + product().name + ' from the cart'"
+    >
+      <ngx-icon name="Delete" size="md" />
+    </button>
+  </div>
+</div>
+<div class="price">
+  <p>
+    <ec-price-tag [product]="product()" type="current-price" />x
+    {{ quantity() }}
+  </p>
+  <p>
+    &nbsp;= <span class="total">{{ total() | currency }}</span>
+  </p>
+</div>

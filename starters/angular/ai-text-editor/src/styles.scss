@@ -1,0 +1,12 @@
+/* You can add global styles to this file, and also import other style files */
+
+@use 'global';
+@use './app/shared/text-editor/textarea/textarea-styles' as ts;
+
+@include ts.editor-textarea-styles();
+
+// Variables
+
+:root {
+  --app-max-width: 1000px;
+}

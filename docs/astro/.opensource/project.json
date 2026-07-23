@@ -1,0 +1,8 @@
+{
+    "name": "Astro adapter",
+    "platforms": [
+      "app_hosting"
+    ],
+    "description": "Experimental Astro adapter for Firebase App Hosting",
+    "content": "README.md"
+}

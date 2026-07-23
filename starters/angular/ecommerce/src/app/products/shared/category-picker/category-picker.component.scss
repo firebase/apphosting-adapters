@@ -1,0 +1,40 @@
+@use 'typography';
+@use 'screen-breakpoints' as sb;
+
+:host {
+  display: block;
+
+  .title {
+    @extend %heading-600;
+
+    @include sb.bp-600w {
+      display: none;
+    }
+  }
+
+  ul {
+    list-style-type: none;
+    border-left: 1px solid var(--color-senary);
+    padding: 0;
+
+    a {
+      @extend %body-short-01;
+      display: block;
+      padding: 0.5rem 1rem;
+      border-left: 2px solid transparent;
+      transition: border-color 300ms ease;
+
+      &:hover {
+        border-left-color: var(--color-primary);
+      }
+
+      &.selected {
+        background: var(--color-electric-lavander);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        border-left-color: var(--color-electric-lavander);
+      }
+    }
+  }
+}

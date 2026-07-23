@@ -1,10 +1,9 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-youtube-icon',
-  standalone: true,
-  imports: [],
-  template: `
+    selector: 'app-youtube-icon',
+    imports: [],
+    template: `
     <svg
       width="22"
       height="16"

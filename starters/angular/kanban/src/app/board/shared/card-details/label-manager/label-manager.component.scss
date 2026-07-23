@@ -1,0 +1,90 @@
+@use 'typography';
+
+:host {
+  display: block;
+  padding: 1rem;
+  width: 200px;
+
+  .title {
+    @extend %heading-500;
+    margin-top: 0;
+  }
+
+  .subtitle {
+    @extend %caption-text;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+
+  .text {
+    word-wrap: break-word;
+  }
+
+  .search-input {
+    display: block;
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  .filtered-labels {
+    max-height: 35vh;
+    overflow-y: auto;
+  }
+
+  .label {
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .pill {
+      @extend %body-short-02;
+      padding: 0.375rem 1rem;
+      border-radius: 30px;
+      border: none;
+      display: block;
+      font-weight: bold;
+      flex: 1;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      text-align: center;
+
+      &:not(.read-only):hover {
+        filter: brightness(1.15);
+      }
+    }
+
+    .edit {
+      margin-left: 0.5rem;
+      border: none;
+      padding: 0;
+      background-color: transparent;
+      cursor: pointer;
+
+      ngx-icon {
+        --icon-color: var(--color-quinary);
+        transition: fill 300ms ease;
+      }
+
+      &:hover > ngx-icon {
+        --icon-color: var(--color-tertiary);
+      }
+    }
+  }
+
+  .no-labels {
+    @extend %body-short-02;
+    color: var(--color-quinary);
+  }
+
+  [ngx-button] {
+    width: 100%;
+    display: block;
+    margin-top: 0.5rem;
+
+    &.main-btn {
+      margin-top: 1.25rem;
+    }
+  }
+}

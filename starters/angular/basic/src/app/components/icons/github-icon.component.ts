@@ -1,10 +1,9 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-github-icon',
-  standalone: true,
-  imports: [],
-  template: `
+    selector: 'app-github-icon',
+    imports: [],
+    template: `
     <svg
       width="20"
       height="20"

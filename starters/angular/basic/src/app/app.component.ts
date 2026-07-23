@@ -7,11 +7,10 @@ import { FirebaseIconComponent } from './components/icons/firebase-icon.componen
 import { ArrowBackIconComponent } from './components/icons/arrow-back-icon.component';
 
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [RouterOutlet, AngularIconComponent, FirebaseIconComponent, ArrowBackIconComponent, RouterLink],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+    selector: 'app-root',
+    imports: [RouterOutlet, AngularIconComponent, FirebaseIconComponent, ArrowBackIconComponent, RouterLink],
+    templateUrl: './app.component.html',
+    styleUrl: './app.component.scss'
 })
 export class AppComponent {
   private readonly router = inject(Router);

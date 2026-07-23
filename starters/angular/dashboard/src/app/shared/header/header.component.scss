@@ -1,0 +1,25 @@
+@use 'theme-mixins' as tm;
+
+:host {
+  width: 100%;
+  border-block-end: 1px solid var(--color-septenary);
+  display: block;
+  background-color: var(--color-bg);
+  min-width: var(--app-min-width);
+
+  header {
+    position: relative;
+    max-width: var(--app-max-width);
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+  }
+}
+
+@include tm.if-light-theme {
+  :host {
+    border-block-end-color: var(--color-senary);
+  }
+}

@@ -1,0 +1,17 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  main {
+    max-width: calc(var(--app-max-width) + 2rem);
+    min-width: var(--app-min-width);
+    width: 100%;
+    flex: 1 0 auto;
+    margin: 0 auto;
+
+    db-widgets-grid {
+      padding: 1rem 1rem 0 1rem;
+    }
+  }
+}

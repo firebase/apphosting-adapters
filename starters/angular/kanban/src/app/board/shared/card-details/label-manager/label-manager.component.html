@@ -1,0 +1,97 @@
+@switch (mode()) {
+  @case ('card-labels') {
+    <p class="title">Add a label</p>
+    <input
+      class="search-input"
+      type="text"
+      (input)="onFilterInput($event)"
+      placeholder="Search a label"
+    />
+    <div class="filtered-labels">
+      @for (label of filteredLabels(); track label.id) {
+        <div class="label">
+          <button
+            class="pill"
+            [kbLabelColoring]="label"
+            (click)="addLabel(label)"
+            [title]="'Add ' + label.name"
+          >
+            <span>{{ label.name }}</span>
+          </button>
+          <button class="edit" (click)="editLabel(label)">
+            <ngx-icon name="Edit" size="md" />
+          </button>
+        </div>
+      } @empty {
+        <p class="no-labels">No label(s)</p>
+      }
+      @if (addedLabels().size) {
+        <hr class="plain" />
+        <p class="subtitle">Added</p>
+        @for (label of addedLabels(); track label.id) {
+          <div class="label">
+            <div class="pill read-only" [kbLabelColoring]="label">
+              {{ label.name }}
+            </div>
+            <button class="edit" (click)="editLabel(label)">
+              <ngx-icon name="Edit" size="md" />
+            </button>
+          </div>
+        }
+      }
+    </div>
+    <button
+      ngx-button
+      btnType="primary"
+      class="main-btn"
+      (click)="mode.set('creator')"
+    >
+      Create a label
+    </button>
+  }
+  @case ('creator') {
+    <p class="title">Create a label</p>
+    <kb-label-form
+      submitButtonName="Create"
+      (formSubmit)="createLabel($event)"
+    />
+    <button ngx-button btnType="secondary" (click)="returnToHome()">
+      Cancel
+    </button>
+  }
+  @case ('editor') {
+    <p class="title">Edit a label</p>
+    <kb-label-form
+      submitButtonName="Update"
+      [label]="editedLabel()!"
+      (formSubmit)="updateLabel($event)"
+    />
+    <button ngx-button btnType="secondary" (click)="returnToHome()">
+      Cancel
+    </button>
+    <hr class="plain" />
+    <button
+      ngx-button
+      btnType="secondary"
+      (click)="mode.set('delete-label-confirmation')"
+    >
+      Delete
+    </button>
+  }
+  @case ('delete-label-confirmation') {
+    <p class="title">Delete a label</p>
+    <p class="text">
+      Are you sure you want to delete <strong>{{ editedLabel()?.name }}</strong
+      >?
+    </p>
+    <button
+      ngx-button
+      btnType="danger"
+      class="main-btn"
+      (click)="deleteLabel()"
+    >
+      Yes, delete it
+    </button>
+    <button ngx-button btnType="secondary" (click)="returnToHome()">No</button>
+  }
+}

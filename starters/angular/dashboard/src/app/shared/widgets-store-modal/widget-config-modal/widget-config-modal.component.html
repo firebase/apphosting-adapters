@@ -1,0 +1,55 @@
+<ngx-modal-content [controller]="ctrl">
+  <ng-container title>Configure the widget</ng-container>
+  <ng-container content>
+    @if (data.supportedSizes.length > 1) {
+      <p class="label">Select a size.</p>
+      <ngx-selector-group name="sizeSelector" [(value)]="size" type="columns">
+        @for (size of data.supportedSizes; track size) {
+          <ngx-selector-item [value]="size.toString()">
+            <div class="box-cont">
+              @for (_ of iterate(size); track $index) {
+                <div class="size-box"></div>
+              }
+            </div>
+          </ngx-selector-item>
+        }
+      </ngx-selector-group>
+      <hr />
+    }
+    <p class="label">Select a data source from the list.</p>
+    <ngx-selector-group name="dsSelector" [(value)]="dataSourceId">
+      @for (src of sources; track src.id) {
+        <ngx-selector-item [value]="src.id">
+          <span>{{ src.name }}</span>
+          <span class="src-type">{{
+            SRC_TYPE_NAME[src.type]
+          }}</span></ngx-selector-item
+        >
+      } @empty {
+        <p class="no-data-source">No available data sources</p>
+      }
+    </ngx-selector-group>
+    <hr />
+    <label class="label" for="widget-title">Pick a title for the widget</label>
+    <input
+      id="widget-title"
+      #titleInput
+      [placeholder]="
+        selectedSourceName()
+          ? 'Default: ' + selectedSourceName()
+          : 'Will use the data source name by default'
+      "
+    />
+    <button
+      ngx-button
+      btnType="primary"
+      (click)="addWidget()"
+      [disabled]="
+        !dataSourceId().length ||
+        (data.supportedSizes.length > 1 && !size().length)
+      "
+    >
+      Add widget
+    </button>
+  </ng-container>
+</ngx-modal-content>

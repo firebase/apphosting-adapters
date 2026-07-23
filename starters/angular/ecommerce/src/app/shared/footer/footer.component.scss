@@ -1,0 +1,86 @@
+@use 'typography';
+@use 'screen-breakpoints' as sb;
+
+:host {
+  display: block;
+  margin-top: 128px;
+  background-color: var(--color-septenary);
+
+  footer {
+    @extend %body-short-03;
+    position: relative;
+    max-width: var(--app-max-width);
+    margin: 0 auto;
+    padding: 32px 24px 64px 24px;
+    color: var(--color-quaternary);
+
+    .content {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+
+      .nav {
+        display: flex;
+        align-items: flex-start;
+
+        .nav-section {
+          margin-right: 4rem;
+
+          .title {
+            @extend %heading-600;
+            color: var(--color-primary);
+          }
+
+          ul {
+            @extend %nav-menu-text;
+
+            margin: 0;
+            padding: 0;
+            list-style-type: none;
+
+            li {
+              margin: 1rem 0;
+            }
+          }
+        }
+      }
+
+      @include sb.bp-600w {
+        flex-direction: column;
+        align-items: center;
+
+        .nav {
+          width: 100%;
+
+          .nav-section {
+            margin: 0;
+            flex: 1;
+          }
+        }
+
+        ec-theme-switch {
+          margin-top: 3rem;
+        }
+      }
+    }
+
+    .copyright-and-info {
+      margin-top: 2rem;
+      display: flex;
+      justify-content: space-between;
+
+      ngx-icon {
+        display: inline-block;
+        vertical-align: bottom;
+      }
+
+      @include sb.bp-600w {
+        flex-direction: column-reverse;
+
+        span {
+          margin-top: 2em;
+        }
+      }
+    }
+  }
+}

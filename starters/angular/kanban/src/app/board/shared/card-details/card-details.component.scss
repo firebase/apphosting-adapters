@@ -1,0 +1,147 @@
+@use 'typography' as tg;
+
+:host {
+  width: 500px;
+  max-width: 85vw;
+  display: block;
+
+  .header {
+    border-bottom: 1px solid var(--color-senary);
+    padding-bottom: 0.5rem;
+
+    .title-cont {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+
+      kb-interactive-title {
+        --font-size: 1.125rem;
+        --font-weight: bold;
+        --width: calc(100% - 25px);
+        --vertical-padding: 0.25rem;
+        --horizontal-padding: 0.25rem;
+
+        flex: 1;
+        margin-bottom: 0.5rem;
+      }
+
+      button {
+        padding: 0;
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+
+        ngx-icon {
+          --icon-color: var(--color-quinary);
+          transition: fill 300ms ease;
+        }
+
+        &:hover > ngx-icon {
+          --icon-color: var(--color-tertiary);
+        }
+      }
+    }
+
+    .labels {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+
+      button {
+        @extend %body-short-02;
+        position: relative;
+        border: none;
+        border-radius: 20px;
+        padding: 0.25rem 1rem 0.25rem 0.875rem;
+        cursor: pointer;
+        box-sizing: border-box;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:last-child {
+          margin-right: 0;
+        }
+
+        ngx-icon {
+          display: none;
+          margin-right: 0.25rem;
+        }
+
+        &:hover > ngx-icon {
+          display: block;
+        }
+
+        &.add-label {
+          border: 1px solid var(--color-senary);
+          color: var(--color-tertiary);
+          background-color: transparent;
+          transition: color 200ms ease;
+          padding: 0.25rem 1rem 0.25rem 0.875rem;
+
+          &:hover {
+            color: var(--color-primary);
+          }
+
+          ngx-icon {
+            display: block;
+          }
+        }
+      }
+    }
+  }
+
+  .content {
+    margin-top: 0.5rem;
+
+    form {
+      position: relative;
+      margin-bottom: 0.33rem;
+
+      textarea {
+        @extend %body-short-01;
+        font-family: tg.$font-family;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0.5rem 0.75rem;
+        border: none;
+        background-color: transparent;
+        border: 2px solid transparent;
+        border-radius: 0.25rem;
+        resize: vertical;
+        max-height: 50vh;
+        transition:
+          background-color 200ms ease,
+          border-color 200ms ease;
+
+        &:hover,
+        &:focus {
+          background-color: var(--color-septenary);
+        }
+
+        &:hover {
+          border-color: var(--color-septenary);
+        }
+
+        &:focus {
+          outline: none;
+          border-color: var(--color-french-violet);
+        }
+      }
+
+      .form-ctrls {
+        position: absolute;
+        right: 0;
+        bottom: -2.5rem;
+
+        button {
+          margin-left: 0.5rem;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,42 @@
+<div class="selected">
+  @if (product().images.size > 1) {
+    <button
+      class="nav-btn prev"
+      [disabled]="selectedImgIdx() === 0"
+      (click)="moveImage(-1)"
+      title="Previous image"
+    >
+      <ngx-icon name="ChevronRight" size="xlg" />
+    </button>
+  }
+  <ec-product-image
+    [src]="selectedImg()"
+    [alt]="product().name"
+    [priority]="true"
+    size="xlg"
+    aria-label="Selected image"
+  />
+  @if (product().images.size > 1) {
+    <button
+      class="nav-btn next"
+      [disabled]="selectedImgIdx() === product().images.size - 1"
+      (click)="moveImage(1)"
+      title="Next image"
+    >
+      <ngx-icon name="ChevronRight" size="xlg" />
+    </button>
+  }
+</div>
+@if (product().images.size > 1) {
+  <div class="images">
+    @for (img of product().images; track img; let idx = $index) {
+      <button
+        (click)="switchImage(idx)"
+        [class.highlighted]="isSelected(idx)"
+        [attr.title]="'Select image ' + (idx + 1)"
+      >
+        <ec-product-image [src]="img" size="sm" [alt]="'Image ' + (idx + 1)" />
+      </button>
+    }
+  </div>
+}

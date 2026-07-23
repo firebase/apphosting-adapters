@@ -1,0 +1,26 @@
+@use 'screen-breakpoints' as sb;
+
+:host {
+  display: block;
+
+  form {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    ec-search-input {
+      flex: 1;
+      margin-right: 0.5rem;
+    }
+
+    [ngx-button] {
+      height: 2.125rem;
+      padding-top: 0.25rem;
+      padding-bottom: 0.25rem;
+    }
+
+    @include sb.bp-600w {
+      margin-bottom: 1rem;
+    }
+  }
+}

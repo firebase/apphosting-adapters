@@ -1,0 +1,50 @@
+@if (data || previewData()) {
+  <div class="widget-wrapper">
+    <p class="title">{{ displayedTitle() }}</p>
+    @switch (type()) {
+      @case ('bar-chart') {
+        <db-bar-chart
+          [config]="config()"
+          [data]="$any(data ? data() : previewData())"
+          class="widget"
+        />
+      }
+      @case ('line-chart') {
+        <db-line-chart
+          [config]="config()"
+          [data]="$any(data ? data() : previewData())"
+          class="widget"
+        />
+      }
+      @case ('pie-chart') {
+        <db-pie-chart
+          [config]="config()"
+          [data]="$any(data ? data() : previewData())"
+          class="widget"
+        />
+      }
+      @case ('table') {
+        <db-table
+          [config]="config()"
+          [data]="$any(data ? data() : previewData())"
+          class="widget"
+        />
+      }
+      @case ('scalar-data') {
+        <db-scalar-data
+          [config]="config()"
+          [data]="$any(data ? data() : previewData())"
+          class="widget"
+        />
+      }
+      <!-- Any new widgets should be manually added to the switch statement. -->
+    }
+  </div>
+} @else {
+  <div class="no-data">Unable to load data</div>
+}
+@if (editMode()) {
+  <button (click)="remove.emit()">
+    <ngx-icon name="Close" size="sm" />
+  </button>
+}

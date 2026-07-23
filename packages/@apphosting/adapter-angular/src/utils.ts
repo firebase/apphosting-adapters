@@ -7,6 +7,7 @@ import { resolve, normalize, relative, dirname, join } from "path";
 import { stringify as yamlStringify } from "yaml";
 import { OutputBundleOptions, OutputPaths, buildManifestSchema } from "./interface.js";
 import { createRequire } from "node:module";
+import { parse as parseYaml } from "yaml";
 import stripAnsi from "strip-ansi";
 import {
   BuildOptions,
@@ -14,10 +15,12 @@ import {
   EnvVarConfig,
   Metadata,
   Availability,
+  updateOrCreateGitignore,
 } from "@apphosting/common";
 
 // fs-extra is CJS, readJson can't be imported using shorthand
-export const { writeFile, move, readJson, mkdir, copyFile, readFileSync, existsSync } = fsExtra;
+export const { writeFile, move, readJson, mkdir, copyFile, readFileSync, existsSync, ensureDir } =
+  fsExtra;
 
 const require = createRequire(import.meta.url);
 const __filename = fileURLToPath(import.meta.url);
@@ -50,40 +53,75 @@ export async function checkBuildConditions(opts: BuildOptions): Promise<void> {
     return;
   }
 
+  let angularBuilder = "";
   // dynamically load Angular so this can be used in an NPX context
   const angularCorePath = require.resolve("@angular/core", { paths: [process.cwd()] });
-  const { NodeJsAsyncHost }: typeof import("@angular-devkit/core/node") = await import(
-    require.resolve("@angular-devkit/core/node", {
-      paths: [process.cwd(), angularCorePath],
-    })
-  );
-  const { workspaces }: typeof import("@angular-devkit/core") = await import(
-    require.resolve("@angular-devkit/core", {
-      paths: [process.cwd(), angularCorePath],
-    })
-  );
-  const host = workspaces.createWorkspaceHost(new NodeJsAsyncHost());
-  const { workspace } = await workspaces.readWorkspace(opts.projectDirectory, host);
-
-  const apps: string[] = [];
-  workspace.projects.forEach((value, key) => {
-    if (value.extensions.projectType === "application") apps.push(key);
-  });
-  const project = apps[0];
-  if (apps.length > 1 || !project) throw new Error("Unable to determine the application to deploy");
-
-  const workspaceProject = workspace.projects.get(project);
-  if (!workspaceProject) throw new Error(`No project ${project} found.`);
-
-  const target = "build";
-  if (!workspaceProject.targets.has(target)) throw new Error("Could not find build target.");
-
-  const { builder } = workspaceProject.targets.get(target)!;
-  if (!ALLOWED_BUILDERS.includes(builder)) {
-    throw new Error(
-      `Currently, only the following builders are supported: ${ALLOWED_BUILDERS.join(",")}.`,
+  try {
+    // Note: we assume that the user's app has @angular-devkit/core in their node_modules/
+    // because we expect them to have @angular-devkit/build-angular as a dependency which
+    // pulls in @angular-devkit/core as a dependency. However this assumption may not hold
+    // due to tree shaking.
+    const { NodeJsAsyncHost }: typeof import("@angular-devkit/core/node") = await import(
+      require.resolve("@angular-devkit/core/node", {
+        paths: [process.cwd(), angularCorePath],
+      })
     );
+    const { workspaces }: typeof import("@angular-devkit/core") = await import(
+      require.resolve("@angular-devkit/core", {
+        paths: [process.cwd(), angularCorePath],
+      })
+    );
+    const host = workspaces.createWorkspaceHost(new NodeJsAsyncHost());
+    const { workspace } = await workspaces.readWorkspace(opts.projectDirectory, host);
+
+    const apps: string[] = [];
+    workspace.projects.forEach((value, key) => {
+      if (value.extensions.projectType === "application") apps.push(key);
+    });
+    const project = apps[0];
+    if (apps.length > 1 || !project) {
+      throw new Error("Unable to determine the application to deploy");
+    }
+
+    const workspaceProject = workspace.projects.get(project);
+    if (!workspaceProject) {
+      throw new Error(`No project ${project} found.`);
+    }
+
+    const target = "build";
+    if (!workspaceProject.targets.has(target)) throw new Error("Could not find build target.");
+
+    const { builder } = workspaceProject.targets.get(target)!;
+    angularBuilder = builder;
+  } catch (error) {
+    logger.debug("failed to determine angular builder from the workspace api: ", error);
+    try {
+      const root = process.cwd();
+      const angularJSON = JSON.parse(readFileSync(join(root, "angular.json")).toString());
+      const apps: string[] = [];
+      Object.keys(angularJSON.projects).forEach((projectName) => {
+        const project = angularJSON.projects[projectName];
+        if (project["projectType"] === "application") apps.push(projectName);
+      });
+      const project = apps[0];
+      if (apps.length > 1 || !project)
+        throw new Error("Unable to determine the application to deploy");
+      angularBuilder = angularJSON.projects[project].architect.build.builder;
+    } catch (error) {
+      logger.debug("failed to determine angular builder from parsing angular.json: ", error);
+    }
   }
+
+  if (angularBuilder !== "") {
+    if (!ALLOWED_BUILDERS.includes(angularBuilder)) {
+      throw new Error(
+        `Currently, only the following builders are supported: ${ALLOWED_BUILDERS.join(",")}.`,
+      );
+    }
+  }
+  // This is just a validation step and our methods for validation are flakey. If we failed to extract
+  // the angular builder for validation, the build will continue. It may fail further down the line
+  // but the failure reason should be non-ambigious.
 }
 
 // Populate file or directory paths we need for generating output directory
@@ -100,6 +138,7 @@ export function populateOutputBundleOptions(outputPaths: OutputPaths): OutputBun
   }
   return {
     bundleYamlPath: resolve(outputBundleDir, "bundle.yaml"),
+    outputDirectoryBasePath: outputBundleDir,
     serverFilePath: resolve(baseDirectory, serverRelativePath, "server.mjs"),
     browserDirectory: resolve(baseDirectory, browserRelativePath),
     needsServerGenerated,
@@ -108,7 +147,13 @@ export function populateOutputBundleOptions(outputPaths: OutputPaths): OutputBun
 
 export function parseOutputBundleOptions(buildOutput: string): OutputBundleOptions {
   const strippedManifest = extractManifestOutput(buildOutput);
-  const parsedManifest = JSON.parse(strippedManifest) as string;
+  // TODO: add functional tests that test this flow
+  let parsedManifest;
+  try {
+    parsedManifest = JSON.parse(strippedManifest.replace(/[\r\n]+/g, "")) as string;
+  } catch (error) {
+    throw new Error(`Failed to parse build output manifest: ${error}`);
+  }
   const manifest = buildManifestSchema.parse(parsedManifest);
   if (manifest["errors"].length > 0) {
     // errors when extracting manifest
@@ -139,7 +184,10 @@ function extractManifestOutput(output: string): string {
   if (start === -1 || end === -1 || start > end) {
     throw new Error(`Failed to find valid JSON object from build output: ${output}`);
   }
-  return stripAnsi(output.substring(start, end + 1));
+  // Clean the raw json string by removing the "web:build:" prefixes for a Turbo build
+  const prefixRegex = /\n?web:build:/g;
+  const cleanedOutput = output.substring(start, end + 1).replace(prefixRegex, "");
+  return stripAnsi(cleanedOutput);
 }
 
 /**
@@ -171,6 +219,10 @@ export async function generateBuildOutput(
     await generateServer(outputBundleOptions);
   }
   await generateBundleYaml(outputBundleOptions, cwd, angularVersion);
+  // generateBundleYaml creates the output directory (if it does not already exist).
+  // We need to make sure it is gitignored.
+  const normalizedBundleDir = normalize(relative(cwd, outputBundleOptions.outputDirectoryBasePath));
+  updateOrCreateGitignore(cwd, [`/${normalizedBundleDir}/`]);
 }
 
 // add environment variable to bundle.yaml if needed for specific versions
@@ -194,7 +246,7 @@ async function generateBundleYaml(
   cwd: string,
   angularVersion: string,
 ): Promise<void> {
-  await mkdir(dirname(opts.bundleYamlPath));
+  await ensureDir(dirname(opts.bundleYamlPath));
   const outputBundle: OutputBundleConfig = {
     version: "v1",
     runConfig: {
@@ -231,10 +283,18 @@ export const isMain = (meta: ImportMeta) => {
   return process.argv[1] === fileURLToPath(meta.url);
 };
 
-export const outputBundleExists = () => {
+export const metaFrameworkOutputBundleExists = () => {
   const outputBundleDir = resolve(".apphosting");
-  if (existsSync(outputBundleDir)) {
-    return true;
+  const bundleYamlPath = join(outputBundleDir, "bundle.yaml");
+  if (existsSync(bundleYamlPath)) {
+    try {
+      const bundle = parseYaml(readFileSync(bundleYamlPath, "utf8"));
+      if (bundle?.metadata?.framework && bundle.metadata.framework !== "angular") {
+        return true;
+      }
+    } catch (e) {
+      logger.debug("Failed to parse bundle.yaml, assuming it can be overwritten", e);
+    }
   }
   return false;
 };

@@ -1,0 +1,15 @@
+<form [formGroup]="searchForm" (ngSubmit)="onProductSearch($event)">
+  <ec-search-input
+    formControlName="searchString"
+    placeholder="Search for a product"
+    [debounce]="0"
+  />
+  <button
+    ngx-button
+    btnType="primary"
+    title="Search"
+    [disabled]="searchForm.invalid"
+  >
+    <ngx-icon name="Search" size="lg" />
+  </button>
+</form>

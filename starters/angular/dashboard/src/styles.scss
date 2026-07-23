@@ -1,0 +1,30 @@
+/* You can add global styles to this file, and also import other style files */
+
+@use 'global';
+
+// Include widget tooltip directive styles
+@use './app/shared/widgets/widget-tooltip/widget-tooltip-styles';
+
+@use 'theme-mixins' as tm;
+@use 'screen-breakpoints' as sb;
+
+// Variables
+
+:root {
+  --app-max-width: 1620px;
+  --app-min-width: 1250px;
+
+  @include sb.bp-800w {
+    --app-min-width: unset;
+  }
+}
+
+body {
+  overflow-y: scroll;
+}
+
+@include tm.if-light-theme {
+  body {
+    background-color: var(--color-octonary);
+  }
+}

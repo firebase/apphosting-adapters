@@ -1,0 +1,18 @@
+<ngx-modal-content [controller]="ctrl">
+  <ng-container title>Widget Store</ng-container>
+  <ng-container content>
+    <p>Select a widget that you want to add to the dashboard.</p>
+    <div class="widgets">
+      @for (w of widgets; track w.type) {
+        <db-widget-item [type]="w.type" (widgetClick)="onWidgetClick($event)">
+          <db-widget
+            [type]="w.type"
+            [config]="w.demoConfig"
+            [previewData]="w.previewData"
+            class="widget"
+          />
+        </db-widget-item>
+      }
+    </div>
+  </ng-container>
+</ngx-modal-content>

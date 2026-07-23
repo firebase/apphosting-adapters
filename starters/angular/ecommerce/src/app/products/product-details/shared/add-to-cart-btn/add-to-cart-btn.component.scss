@@ -1,0 +1,29 @@
+:host {
+  display: block;
+
+  form {
+    display: flex;
+
+    button {
+      display: flex;
+      align-items: center;
+
+      ngx-icon {
+        margin-right: 0.5rem;
+      }
+    }
+
+    fieldset {
+      padding: 0;
+      border: none;
+      width: 10ch;
+      margin-left: 0.75rem;
+
+      input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+      }
+    }
+  }
+}

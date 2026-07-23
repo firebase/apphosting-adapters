@@ -1,0 +1,22 @@
+%control-button {
+  font-size: 1rem;
+  color: var(--color-tertiary);
+  min-width: 32px;
+  height: 32px;
+  border: none;
+  background-color: transparent;
+  transition: background-color 300ms ease;
+  border-radius: 0.2rem;
+  padding: 0.25rem 0.5rem;
+  margin-bottom: 0.75rem;
+
+  &:disabled {
+    color: var(--color-quinary);
+    cursor: initial;
+  }
+
+  &:not(:disabled):hover {
+    color: var(--color-primary);
+    background-color: var(--color-senary);
+  }
+}

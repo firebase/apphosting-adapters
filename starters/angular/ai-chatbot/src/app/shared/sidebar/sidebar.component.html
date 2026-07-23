@@ -1,0 +1,27 @@
+<div class="head">
+  <button class="sidebar-toggle" (click)="toggle()" title="Toggle sidebar">
+    <ngx-icon name="Menu" size="xlg" />
+  </button>
+  <div class="content">
+    <a routerLink="/" class="new-chat-btn" title="Create a new chat">
+      <ngx-icon name="Add" />
+    </a>
+    @if (expanded()) {
+      <div class="chats fade-in">
+        @for (c of chatbot.sortedChats(); track c.id) {
+          <acb-chat-link
+            [chat]="c"
+            [isSelected]="selectedChat() === c.id"
+            class="fade-in"
+          />
+        }
+      </div>
+    }
+  </div>
+</div>
+<div class="bottom">
+  <ngx-theme-switch [iconOnly]="true" />
+  @if (expanded()) {
+    <acb-footer class="fade-in" />
+  }
+</div>

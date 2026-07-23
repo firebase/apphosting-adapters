@@ -1,0 +1,54 @@
+@use 'typography';
+
+:host {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 1.25rem;
+
+  .current {
+    @extend %body-short-02;
+    font-weight: 600;
+    background: var(--price-tag-color, var(--gradient-magenta-to-light-purple));
+    -webkit-background-clip: text;
+    background-size: 140%;
+    background-clip: text;
+    color: transparent;
+    margin-right: 0.25rem;
+  }
+
+  s {
+    @extend %body-short-02;
+    color: var(--color-quaternary);
+    margin-right: 0.25rem;
+  }
+
+  s::before,
+  s::after {
+    clip-path: inset(100%);
+    clip: rect(1px, 1px, 1px, 1px);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+  }
+
+  s::before {
+    content: ' [start of stricken text] ';
+  }
+
+  s::after {
+    content: ' [end of stricken text] ';
+  }
+
+  &.large-tag {
+    .current,
+    s {
+      @extend %heading-300;
+      margin-top: 0.25rem;
+      margin-bottom: 0.25rem;
+      margin-right: 0.5rem;
+    }
+  }
+}

@@ -1,0 +1,21 @@
+<form [formGroup]="form" (ngSubmit)="addToCart()">
+  <button
+    [disabled]="form.invalid || isUnavailable()"
+    ngx-button
+    btnType="primary"
+    size="large"
+    data-name="add-to-cart"
+  >
+    <ngx-icon name="Cart" />
+    <span>Add to Cart</span>
+  </button>
+  <fieldset [disabled]="isUnavailable()">
+    <input
+      type="number"
+      formControlName="quantity"
+      placeholder="Quantity"
+      [min]="1"
+      [max]="maxQuantity()"
+    />
+  </fieldset>
+</form>

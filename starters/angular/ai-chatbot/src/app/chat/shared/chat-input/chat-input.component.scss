@@ -1,0 +1,42 @@
+@use 'typography';
+
+:host {
+  position: relative;
+  display: block;
+
+  textarea {
+    @extend %body-short-01;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    font-weight: 500;
+    padding: 1rem 3rem 1rem 1rem;
+    max-height: 300px;
+    resize: none;
+    outline: 2px solid transparent;
+    transition: outline 200ms ease;
+
+    &:focus {
+      border-color: var(--color-senary);
+      outline-color: var(--color-french-violet);
+      outline-offset: 1px;
+    }
+  }
+
+  button {
+    position: absolute;
+    border: none;
+    padding: 0;
+    background-color: transparent;
+    bottom: 0.75rem;
+    right: 0.75rem;
+    border-radius: 0.25rem;
+    padding: 0.25rem;
+    transition: background-color 200ms ease;
+
+    &:not(:disabled):hover {
+      background-color: var(--color-septenary);
+      cursor: pointer;
+    }
+  }
+}

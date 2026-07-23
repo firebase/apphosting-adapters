@@ -6,8 +6,83 @@ import spawn from "@npmcli/promise-spawn";
 import ora from "ora";
 import { rm } from "fs/promises";
 import { join } from "path";
+import chalk from "chalk";
 
 const contextIsNpmCreate = process.env.npm_command === "init";
+
+type Starter = { name: string; value: string; description: string; products: string[] };
+
+const STARTERS: Record<string, Array<Starter>> = {
+  angular: [
+    {
+      name: "Basic",
+      value: "basic",
+      description: "A basic Angular starter template.",
+      products: [],
+    },
+    {
+      name: "AI chatbot",
+      value: "ai-chatbot",
+      description: "Simple chatbot app that supports multiple chats.",
+      products: ["Gemini"],
+    },
+    {
+      name: "AI text editor",
+      value: "ai-text-editor",
+      description:
+        "AI-powered editor that provides text enhancement tools and supports basic formatting.",
+      products: ["Gemini"],
+    },
+    {
+      name: "Dashboard",
+      value: "dashboard",
+      description:
+        "Dashboard app with a set of configurable visualization widgets and data sources.",
+      products: [],
+    },
+    {
+      name: "Ecommerce",
+      value: "ecommerce",
+      description:
+        "Basic Ecommerce app composed of a landing page, products list and details pages, and a cart.",
+      products: [],
+    },
+    {
+      name: "Image Gallery",
+      value: "image-gallery",
+      description: "Optimized image gallery that supports image previews.",
+      products: [],
+    },
+    {
+      name: "Kanban Board",
+      value: "kanban",
+      description: "Provides the well-known board UI accompanied by draggable cards.",
+      products: [],
+    },
+  ],
+  nextjs: [
+    {
+      name: "Basic",
+      value: "basic",
+      description: "A basic Next.js starter template.",
+      products: [],
+    },
+    {
+      name: "Shopify example",
+      value: "shopify-ecommerce",
+      description:
+        "A headless Shopify ecommerce template built with Next.js, the Shopify Storefront API, and Firebase Data Connect.",
+      products: ["Data Connect", "Auth", "Gemini", "Shopify"],
+    },
+    {
+      name: "Firebase ecommerce",
+      value: "firebase-ecommerce",
+      description:
+        "A Firebase-based e-commerce application designed for developers to bootstrap their e-commerce projects.",
+      products: ["Data Connect", "Auth", "Gemini", "Stripe"],
+    },
+  ],
+};
 
 // npm/10.1.0 node/v20.9.0 darwin x64 workspaces/false
 // pnpm/9.1.0 npm/? node/v20.9.0 darwin x64
@@ -44,6 +119,20 @@ program
           ],
         });
       }
+      const example = await select({
+        message: "Select a starter template",
+        choices: STARTERS[framework].map((starter) => ({
+          name: chalk.bold(starter.name),
+          short: starter.name,
+          description: `\n${starter.description}${
+            starter.products.length
+              ? `\nProducts: ${chalk.italic(starter.products.join(", "))}`
+              : ""
+          }`,
+          value: starter.value,
+          default: "basic",
+        })),
+      });
       // TODO DRY up validation and error message, move to commander parse
       let packageManagerVersion = "*";
       if (packageManager) {
@@ -74,9 +163,8 @@ program
         });
       }
       const cloneSpinner = ora("Cloning template...").start();
-      // TODO allow different templates
       await downloadTemplate(
-        `gh:FirebaseExtended/firebase-framework-tools/starters/${framework}/basic`,
+        `gh:FirebaseExtended/firebase-framework-tools/starters/${framework}/${example}`,
         { dir: directory, force: true },
       );
       cloneSpinner.succeed();

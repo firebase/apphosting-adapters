@@ -1,0 +1,61 @@
+@use '../widget-vars' as wv;
+
+$table-border-radius: 0.2rem;
+$cell-border: 1px solid var(--color-senary);
+
+:host {
+  overflow-y: auto !important;
+  border-bottom-left-radius: wv.$widget-border-radius;
+  border-bottom-right-radius: wv.$widget-border-radius;
+  font-size: 0.75rem;
+  padding: 0.5rem;
+  padding-top: 0;
+
+  table {
+    width: 100%;
+    border-spacing: 0;
+    border-radius: 0.5rem;
+
+    th {
+      padding: 0.75rem 1rem;
+      background-color: var(--color-septenary);
+      border-bottom: 1px solid var(--color-quinary);
+      border-top: $cell-border;
+      border-right: $cell-border;
+
+      &:first-child {
+        border-left: $cell-border;
+        border-top-left-radius: $table-border-radius;
+      }
+
+      &:last-child {
+        border-top-right-radius: $table-border-radius;
+      }
+    }
+
+    tbody {
+      tr {
+        td {
+          border-bottom: $cell-border;
+          border-right: $cell-border;
+          padding: 0.5rem 0.75rem;
+
+          &:first-child {
+            color: var(--color-tertiary);
+            border-left: $cell-border;
+          }
+        }
+
+        &:last-child {
+          td:first-child {
+            border-bottom-left-radius: $table-border-radius;
+          }
+
+          td:last-child {
+            border-bottom-right-radius: $table-border-radius;
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,11 @@
+<ec-header />
+<div class="main-wrapper">
+  <main>
+    <router-outlet />
+  </main>
+</div>
+<ec-footer />
+<ngx-toast-outlet />
+@if (loader.loader()) {
+  <ec-loader />
+}

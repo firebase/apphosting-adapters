@@ -1,0 +1,80 @@
+@use 'typography';
+@use 'screen-breakpoints' as sb;
+
+.search,
+.spacer {
+  height: 288px;
+}
+
+.search {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  left: 0;
+  right: 0;
+
+  .bg {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: var(--color-french-violet);
+    opacity: 0.8;
+    overflow: hidden;
+
+    .bg-img {
+      position: absolute;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      animation: bg-movement 10s infinite ease;
+      min-width: 1000px;
+    }
+  }
+
+  .content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: var(--app-max-width);
+    text-align: center;
+    padding: 0 1rem;
+
+    h2 {
+      @extend %heading-100;
+      color: var(--white);
+    }
+
+    h3 {
+      @extend %heading-400;
+      margin-bottom: 2rem;
+      color: var(--white);
+    }
+
+    ec-autocomplete-product-search {
+      --search-input-padding: 0.75rem 1rem;
+      --search-input-font-size: 1rem;
+      width: 60%;
+    }
+
+    @include sb.bp-800w {
+      padding: 0 2rem;
+
+      ec-autocomplete-product-search {
+        width: 100%;
+      }
+    }
+  }
+}
+
+@keyframes bg-movement {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-40%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}

@@ -1,0 +1,35 @@
+@use 'screen-breakpoints' as sb;
+
+:host {
+  width: 100%;
+  border-block-end: 1px solid var(--color-septenary);
+  display: block;
+  background-color: var(--color-bg);
+
+  header {
+    position: relative;
+    max-width: var(--app-max-width);
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+
+    .cart {
+      display: inline-flex;
+      align-items: flex-end;
+
+      ngx-icon {
+        margin-right: 0.25rem;
+      }
+
+      @include sb.bp-600w {
+        align-items: center;
+
+        .label {
+          display: none;
+        }
+      }
+    }
+  }
+}

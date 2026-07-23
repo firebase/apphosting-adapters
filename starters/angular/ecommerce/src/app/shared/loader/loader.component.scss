@@ -1,0 +1,55 @@
+:host {
+  display: block;
+  // background: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  inset: 0;
+  animation: fade-in 300ms ease;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+  overflow: hidden;
+
+  .loader-line {
+    position: absolute;
+    background: var(--gradient-orange-to-violet);
+    height: 0.125rem;
+    left: 0;
+    width: 0;
+    animation: slide-right 1500ms linear infinite;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-right {
+  0% {
+    left: 0;
+    width: 0;
+  }
+
+  25% {
+    left: 0;
+    width: 66%;
+  }
+
+  50% {
+    left: 33%;
+    width: 49%;
+  }
+
+  75% {
+    left: 100%;
+    width: 16%;
+  }
+
+  100% {
+    left: 100%;
+    width: 0;
+  }
+}

@@ -1,0 +1,25 @@
+# Products
+type Product @table {
+  id: UUID! @default(expr: "uuidV4()")
+  productID: String!
+  productSlug: String!
+  name: String!
+  nameEmbedding: Vector! @col(size: 768)
+  description: String!
+  descriptionEmbedding: Vector! @col(size: 768)
+  price: Float!
+}
+
+# Reviews
+type Review @table {
+  id: UUID! @default(expr: "uuidV4()")
+  productID: String!
+  productSlug: String!
+  productName: String!
+  userID: String!
+  userName: String!
+  rating: Float!
+  content: String!
+  contentEmbedding: Vector! @col(size: 768)
+  createdAt: Date! @default(expr: "request.time")
+}

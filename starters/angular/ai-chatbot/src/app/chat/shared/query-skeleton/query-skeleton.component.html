@@ -1,0 +1,8 @@
+@if (!linesOnly()) {
+  <div class="vis"></div>
+}
+<div class="msg">
+  @for (_ of linesArr(); track $index) {
+    <div class="msg-line"></div>
+  }
+</div>

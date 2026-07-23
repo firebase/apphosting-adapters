@@ -1,0 +1,19 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  main {
+    max-width: calc(var(--app-max-width) + 2rem);
+    width: 100%;
+    margin: 0 auto;
+
+    .main-wrapper {
+      padding: 1rem 1rem 0 1rem;
+    }
+  }
+
+  ngx-modal-outlet {
+    z-index: 9999999;
+  }
+}

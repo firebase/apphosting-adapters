@@ -3,11 +3,10 @@ import { UpdateContentIfNotGeneratedByServerDirective } from '../../directives/u
 import { getDateString, getRandomUUID } from '../../utils/metadata-generator';
 
 @Component({
-  selector: 'app-card',
-  standalone: true,
-  imports: [UpdateContentIfNotGeneratedByServerDirective],
-  templateUrl: './card.component.html',
-  styleUrl: './card.component.scss'
+    selector: 'app-card',
+    imports: [UpdateContentIfNotGeneratedByServerDirective],
+    templateUrl: './card.component.html',
+    styleUrl: './card.component.scss'
 })
 export class CardComponent {
   dateString = signal(getDateString());

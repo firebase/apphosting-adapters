@@ -1,0 +1,92 @@
+@use 'typography';
+@use 'scrollbars';
+@use 'theme-mixins' as tm;
+@use 'screen-breakpoints' as sb;
+
+@use './widget-vars' as wv;
+
+:host {
+  position: relative;
+  display: block;
+
+  .widget-wrapper {
+    border: 1px solid var(--color-senary);
+    border-radius: wv.$widget-border-radius;
+    background-color: var(--color-octonary);
+    width: 100%;
+    height: wv.$widget-height;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+
+    @include sb.bp-800w {
+      max-width: calc(100vw - 32px); // 32px => 16px widget grid cell gap
+    }
+
+    .title {
+      @extend %heading-400;
+      color: var(--color-primary);
+      margin: 0.5rem 0px 0.75rem 0.75rem;
+    }
+
+    .widget {
+      flex: 1;
+      display: block;
+      overflow: hidden;
+      overflow-x: auto;
+    }
+  }
+
+  button {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: none;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--grey-200);
+    transition: background-color 300ms ease;
+
+    ngx-icon {
+      transition: fill 300ms ease;
+      --icon-color: var(--grey-800);
+    }
+
+    &:hover {
+      background-color: #d75959;
+
+      ngx-icon {
+        --icon-color: var(--white);
+      }
+    }
+  }
+
+  .no-data {
+    @extend %heading-600;
+    border-radius: wv.$widget-border-radius;
+    border: 1px dashed var(--color-senary);
+    color: var(--color-quaternary);
+    background-color: var(--color-bg);
+    user-select: none;
+    box-sizing: border-box;
+    width: 100%;
+    height: wv.$widget-height;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+  }
+}
+
+@include tm.if-light-theme {
+  :host {
+    .widget-wrapper {
+      background-color: var(--white);
+    }
+  }
+}

@@ -1,0 +1,11 @@
+<button (click)="moveList('left')" [disabled]="position() === 0">
+  Move to the left
+</button>
+<button
+  (click)="moveList('right')"
+  [disabled]="position() === lists.value().size - 1"
+>
+  Move to the right
+</button>
+<hr />
+<button (click)="deleteList()">Delete</button>

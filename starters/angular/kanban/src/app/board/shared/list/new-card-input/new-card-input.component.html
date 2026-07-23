@@ -1,0 +1,10 @@
+<textarea
+  #textarea
+  placeholder="Card title"
+  class="card-container"
+  rows="1"
+  [maxLength]="env.cardTitleMaxLength"
+  (blur)="cardBlur.emit()"
+  (input)="onTextareaInput()"
+  (keydown)="onTextareaKeydown($event)"
+></textarea>

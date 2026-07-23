@@ -1,14 +1,14 @@
 {
     "name": "@apphosting/build",
-    "version": "0.1.0",
+    "version": "0.1.8",
     "main": "dist/index.js",
-    "description": "Experimental addon to the Firebase CLI to add web framework support",
+    "description": "Experimental addon to the Firebase CLI to run local builds",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/FirebaseExtended/firebase-framework-tools.git"
     },
     "bin": {
-        "build": "dist/bin/build.js"
+        "apphosting-local-build": "dist/bin/localbuild.js"
     },
     "author": {
         "name": "Firebase",
@@ -17,14 +17,18 @@
     "bugs": {
         "url": "https://github.com/FirebaseExtended/firebase-framework-tools/issues"
     },
-    "type": "module",
     "sideEffects": false,
     "scripts": {
-        "build": "rm -rf dist && tsc && chmod +x ./dist/bin/*"
+        "build": "rm -rf dist && tsc && chmod +x ./dist/bin/*",
+        "test:functional": "node --loader ts-node/esm ./e2e/run-local-build.ts"
     },
     "exports": {
         ".": {
             "node": "./dist/index.js",
+            "default": null
+        },
+        "./dist/*": {
+            "node": "./dist/*",
             "default": null
         }
     },
@@ -33,13 +37,17 @@
     ],
     "license": "Apache-2.0",
     "dependencies": {
-        "@apphosting/discover": "*",
+        "@apphosting/common": "*",
+      "@npmcli/promise-spawn": "^3.0.0",
         "colorette": "^2.0.20",
         "commander": "^11.1.0",
         "npm-pick-manifest": "^9.0.0",
         "ts-node": "^10.9.1"
     },
     "devDependencies": {
-        "@types/commander": "*"
+        "@types/commander": "*",
+        "ts-mocha": "*",
+        "ts-node": "*",
+        "typescript": "*"
     }
 }

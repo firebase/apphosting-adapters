@@ -15,6 +15,7 @@ describe("build commands", () => {
     outputBundleOptions = {
       browserDirectory: resolve(tmpDir, "dist", "test", "browser"),
       bundleYamlPath: resolve(tmpDir, ".apphosting", "bundle.yaml"),
+      outputDirectoryBasePath: resolve(tmpDir, ".apphosting"),
       serverFilePath: resolve(tmpDir, "dist", "test", "server", "server.mjs"),
       needsServerGenerated: false,
     };
@@ -82,6 +83,7 @@ metadata:
     const expectedOutputBundleOptions = {
       browserDirectory: "/browser",
       bundleYamlPath: resolve(".apphosting", "bundle.yaml"),
+      outputDirectoryBasePath: resolve(".apphosting"),
       needsServerGenerated: false,
       serverFilePath: path.join("/server", "server.mjs"),
     };
@@ -100,7 +102,7 @@ function generateTmpDir(): string {
   return fs.mkdtempSync(path.join(os.tmpdir(), "test-files"));
 }
 
-function generateTestFiles(baseDir: string, filesToGenerate: Object): void {
+function generateTestFiles(baseDir: string, filesToGenerate: object): void {
   Object.entries(filesToGenerate).forEach((file) => {
     const fileName = file[0];
     const contents = file[1];
@@ -114,7 +116,7 @@ function ignoreBlankLines(text: string) {
   return text.replace(/^\s*[\r\n]/gm, "");
 }
 
-function validateTestFiles(baseDir: string, expectedFiles: Object): void {
+function validateTestFiles(baseDir: string, expectedFiles: object): void {
   Object.entries(expectedFiles).forEach((file) => {
     const fileName = file[0];
     const expectedContents = file[1];

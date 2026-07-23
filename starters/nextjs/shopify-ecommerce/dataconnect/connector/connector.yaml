@@ -1,0 +1,6 @@
+connectorId: ecommerce-template
+generate:
+  javascriptSdk:
+    outputDir: ../../dataconnect-generated/js/ecommerce-template
+    package: '@dataconnect/ecommerce-template'
+    packageJsonDir: ../..

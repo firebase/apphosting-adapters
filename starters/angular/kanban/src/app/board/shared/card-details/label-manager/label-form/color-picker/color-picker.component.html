@@ -1,0 +1,9 @@
+@for (color of COLORS; track color[0]) {
+  <button
+    type="button"
+    [class.selected]="color[0] === value()"
+    [style.background-color]="color[1].hex"
+    (click)="pickColor(color[0])"
+    [title]="NAMES[color[0]]"
+  ></button>
+}

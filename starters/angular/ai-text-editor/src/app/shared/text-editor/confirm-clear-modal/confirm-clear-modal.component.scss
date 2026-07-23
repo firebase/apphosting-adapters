@@ -1,0 +1,14 @@
+:host {
+  p {
+    margin-bottom: 1.5rem;
+  }
+
+  button:first-of-type {
+    margin-right: 0.5rem;
+  }
+
+  .options {
+    display: flex;
+    justify-content: flex-end;
+  }
+}

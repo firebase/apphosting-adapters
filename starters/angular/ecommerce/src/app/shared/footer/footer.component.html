@@ -1,0 +1,50 @@
+<footer>
+  <div class="content">
+    <div class="nav">
+      <nav class="nav-section">
+        <p class="title">Product Categories</p>
+        <ul>
+          @for (category of categories.categoriesList(); track category.id) {
+            <li>
+              <a
+                routerLink="/products"
+                [queryParams]="{ category: category.id }"
+                >{{ category.name }}</a
+              >
+            </li>
+          }
+        </ul>
+      </nav>
+      <nav class="nav-section">
+        <p class="title">Company</p>
+        <ul>
+          <li>
+            <a>Contact</a>
+          </li>
+          <li>
+            <a>About</a>
+          </li>
+          <li>
+            <a>Terms of Use</a>
+          </li>
+          <li>
+            <a>Privacy Policy</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+    <ngx-theme-switch />
+  </div>
+  <p class="copyright-and-info">
+    <span>© 2024 Angular Store. All rights reserved.</span>
+    <span>
+      Powered by <ngx-icon name="Angular" size="sm" /> Angular. Code licensed
+      under
+      <a
+        href="https://github.com/hawkgs/angular-templates/blob/main/LICENSE"
+        target="_blank"
+        >MIT License</a
+      >.
+    </span>
+  </p>
+</footer>

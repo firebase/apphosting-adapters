@@ -1,0 +1,7 @@
+<ig-image-masonry
+  [images]="renderedList()"
+  (imageClick)="onImageClick($event)"
+/>
+@if (!images.isComplete() || renderedList().size < images.totalSize()) {
+  <ngx-infinite-scroll (loadNext)="onLoadNext($event)" />
+}

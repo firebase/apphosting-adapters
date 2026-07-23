@@ -1,10 +1,9 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-twitter-icon',
-  standalone: true,
-  imports: [],
-  template: `
+    selector: 'app-twitter-icon',
+    imports: [],
+    template: `
     <svg
       width="20"
       height="18"

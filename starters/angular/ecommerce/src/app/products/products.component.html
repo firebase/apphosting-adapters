@@ -1,0 +1,55 @@
+<section class="header">
+  <div class="top-bar">
+    <div class="title">
+      <h2 class="category-name">{{ categoryName() }}</h2>
+      @if (searchTerm().length) {
+        <p class="search-title">Search results for "{{ searchTerm() }}"</p>
+      }
+    </div>
+    <ec-sort-selector [value]="sortType()" (valueChange)="onSort($event)" />
+  </div>
+  <hr />
+</section>
+<section class="sidebar">
+  <ec-product-search (search)="onProductSearch($event)" />
+  <ec-expandable-cont activateAt="600w">
+    <div class="expandable-cont-header" header>Categories & Filter</div>
+    <ng-container content>
+      <ec-category-picker
+        [categoryId]="categoryId()"
+        [defaultCategoryName]="DEFAULT_CAT_NAME"
+      />
+      <hr />
+      <ec-price-filter
+        [default]="DEFAULT_PRICE_RANGE"
+        [range]="priceRange()"
+        (rangeChange)="onPriceRangeChange($event)"
+      />
+      <ec-sort-selector
+        type="vertical"
+        [value]="sortType()"
+        (valueChange)="onSort($event)"
+      />
+    </ng-container>
+  </ec-expandable-cont>
+  <hr class="expandable-cont-hr" />
+</section>
+<section class="main">
+  <div class="list">
+    @for (p of productsList.value(); track p.id; let i = $index) {
+      <ec-product-item [product]="p" [isLcp]="i < STANDARD_ROW_SIZE" />
+    }
+    @if (productsList.isLoading() === 'update') {
+      <ec-skeleton-product-item />
+      <ec-skeleton-product-item />
+      <ec-skeleton-product-item />
+      <ec-skeleton-product-item />
+    }
+  </div>
+  @if (!productsList.value().size && productsList.isLoaded()) {
+    <p class="no-results">No results</p>
+  }
+  @if (!productsList.isComplete()) {
+    <ngx-infinite-scroll (loadNext)="onNextPage($event)" />
+  }
+</section>

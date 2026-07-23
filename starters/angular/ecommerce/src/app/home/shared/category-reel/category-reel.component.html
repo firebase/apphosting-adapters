@@ -1,0 +1,14 @@
+<div class="header">
+  <h4>{{ category().name }}</h4>
+  <a
+    routerLink="products"
+    [queryParams]="{ category: category().id }"
+    [attr.aria-label]="'View more from ' + category().name + ' category'"
+    >View more -></a
+  >
+</div>
+<div class="products">
+  @for (product of products(); track product.id; let i = $index) {
+    <ec-product-item [product]="product" [isLcp]="isLcp() && i === 0" />
+  }
+</div>

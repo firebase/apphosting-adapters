@@ -1,0 +1,60 @@
+@use 'skeleton';
+
+:host {
+  @extend %skeleton;
+  position: relative;
+  display: flex;
+  border-radius: 0.25rem;
+  width: 100%;
+
+  .block-wrapper {
+    width: 100%;
+    margin: 1px;
+    border-radius: 0.2rem;
+    background-color: var(--color-bg);
+
+    .img-cont {
+      aspect-ratio: 1 / 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .img {
+        @extend %skeleton;
+        width: 40%;
+        height: 40%;
+        border-radius: 1.5rem;
+      }
+    }
+
+    .text-cont {
+      border-radius: 0.2rem;
+      margin: 1px;
+      padding: 0.5rem;
+
+      .title,
+      .category,
+      .price {
+        @extend %skeleton;
+        border-radius: 0.2rem;
+      }
+
+      .title {
+        height: 0.875rem;
+        margin-bottom: 1.125rem;
+        width: 80%;
+      }
+
+      .category {
+        height: 0.625rem;
+        margin-bottom: 1.125rem;
+        width: 50%;
+      }
+
+      .price {
+        height: 0.875rem;
+        width: 4rem;
+      }
+    }
+  }
+}

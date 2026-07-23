@@ -1,0 +1,56 @@
+@use '../styles/control-button';
+@use '../textarea/textarea-styles' as ts;
+
+:host {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  user-select: none;
+
+  button,
+  ngx-select {
+    margin-right: 10px;
+  }
+
+  fieldset {
+    padding: 0;
+    border: none;
+    display: flex;
+    flex-wrap: wrap;
+
+    button {
+      @extend %control-button;
+
+      &.bold {
+        font-weight: bold;
+      }
+
+      &.italic {
+        font-style: italic;
+      }
+
+      &.underlined {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  ngx-select {
+    min-width: 150px;
+    margin-bottom: 0.75rem;
+
+    span {
+      font-size: ts.$ate-textarea-font-size;
+      pointer-events: none;
+
+      &.heading {
+        @extend %heading-text-style;
+      }
+
+      &.mono {
+        @extend %monospaced-text-style;
+        background-color: transparent;
+      }
+    }
+  }
+}

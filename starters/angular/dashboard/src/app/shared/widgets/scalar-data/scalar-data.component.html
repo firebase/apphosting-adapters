@@ -1,0 +1,20 @@
+<div class="wrapper">
+  <p class="label">
+    <span>{{ data().label }}</span>
+    @if (prevData()) {
+      @if (change() !== 0) {
+        <ngx-icon name="ArrowDown" [class.positive]="change() > 0" size="md" />
+      } @else {
+        <div class="no-change">–</div>
+      }
+    }
+  </p>
+  <p
+    class="value"
+    [dbWidgetTooltip]="data()"
+    [style.font-size]="data().value < 10000 ? '6rem' : '4rem'"
+  >
+    {{ data().value | formatThousands
+    }}<span class="unit">&nbsp;{{ data().unit }}</span>
+  </p>
+</div>

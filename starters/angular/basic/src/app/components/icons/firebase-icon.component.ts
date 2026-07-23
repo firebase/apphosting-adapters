@@ -1,10 +1,9 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-firebase-icon',
-  standalone: true,
-  imports: [],
-  template: `
+    selector: 'app-firebase-icon',
+    imports: [],
+    template: `
     <svg
       width="115"
       height="32"
@@ -51,6 +50,6 @@ import { Component } from '@angular/core';
         fill="currentColor"
       />
     </svg>
-  `,
+  `
 })
 export class FirebaseIconComponent {}

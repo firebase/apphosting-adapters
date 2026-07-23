@@ -1,0 +1,6 @@
+<button (click)="widgetClick.emit(type())">
+  <div class="widget-wrapper">
+    <ng-content />
+  </div>
+  <p class="name">{{ widgetName() }}</p>
+</button>

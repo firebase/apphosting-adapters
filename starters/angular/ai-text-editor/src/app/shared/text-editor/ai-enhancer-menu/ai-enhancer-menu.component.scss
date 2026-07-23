@@ -1,0 +1,141 @@
+@use 'typography';
+@use 'sass:color';
+
+$enhancer-purple: #966fc3;
+$enhancer-blue: #45b2e8;
+
+:host {
+  position: absolute;
+  display: block;
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-french-violet);
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  user-select: none;
+  animation:
+    fade-in 300ms ease 1 forwards,
+    enhancer-glow 5s ease infinite;
+  box-shadow: 0 0 10px rgba($enhancer-purple, 0.5);
+  box-sizing: border-box;
+  min-width: 120px;
+  z-index: 1;
+
+  .logo {
+    background: url('../../../../../public/ai-enhancer.svg') no-repeat;
+    width: 100px;
+    height: 17px;
+    margin-bottom: 0.5rem;
+  }
+
+  .options {
+    button {
+      display: block;
+      margin-top: 0.5rem;
+      width: 100%;
+    }
+  }
+
+  .output {
+    @extend %body-short-02;
+    line-height: 1.25rem;
+    max-width: 250px;
+    max-height: 300px;
+    overflow-y: auto;
+    background-color: var(--color-septenary);
+    border-radius: 0.25rem;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0.5rem;
+
+    .skeleton-line {
+      border-radius: 0.2rem;
+      height: 1rem;
+      margin-bottom: 0.3rem;
+      width: 120px;
+
+      background: linear-gradient(
+        -45deg,
+        var(--color-senary) 5%,
+        color.adjust($enhancer-blue, $lightness: -25%) 50%,
+        var(--color-senary) 95%
+      );
+      background-size: 200%;
+      background-position-x: 0;
+      animation: bg-slide-in 800ms ease-out infinite;
+
+      &:last-of-type {
+        width: 60%;
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  .controls {
+    display: flex;
+    justify-content: flex-end;
+
+    button:first-of-type {
+      margin-right: 0.5rem;
+    }
+  }
+
+  form {
+    width: 300px;
+    display: flex;
+
+    input {
+      margin-right: 0.5rem;
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 500px) {
+    position: fixed;
+    bottom: 0;
+    top: unset !important;
+    left: 1rem !important;
+    bottom: 1rem;
+    right: 1rem;
+
+    .output {
+      max-width: unset;
+
+      .skeleton-line {
+        width: 100%;
+      }
+    }
+
+    form {
+      width: auto;
+    }
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes enhancer-glow {
+  0% {
+    box-shadow: 0 0 10px rgba($enhancer-purple, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 10px rgba($enhancer-blue, 0.7);
+  }
+  100% {
+    box-shadow: 0 0 10px rgba($enhancer-purple, 0.5);
+  }
+}
+
+@keyframes bg-slide-in {
+  from {
+    background-position-x: 0;
+  }
+  to {
+    background-position: 200%;
+  }
+}

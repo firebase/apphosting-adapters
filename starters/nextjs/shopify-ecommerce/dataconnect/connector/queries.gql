@@ -1,0 +1,68 @@
+# Search for products by name, publicly accessible
+query SearchProducts($nameInput: String) @auth(level: PUBLIC) {
+  products(where: { name: { contains: $nameInput } }) {
+    id
+    productID
+    productSlug
+    productName: name
+    name
+    price
+    description
+    descriptionEmbedding
+  }
+}
+
+# Get reviews for a product, publicly accessible
+query GetProductReviews($productId: String!) @auth(level: PUBLIC) {
+  reviews(where: { productID: { eq: $productId } }, orderBy: [{ createdAt: DESC }]) {
+    id
+    productID
+    productSlug
+    productName
+    rating
+    content
+    contentEmbedding
+    createdAt
+    userID
+    userName
+  }
+}
+
+query SearchProductDescriptionUsingL2Similarity($query: String!) @auth(level: PUBLIC) {
+  products_descriptionEmbedding_similarity(
+    compare_embed: { model: "textembedding-gecko@003", text: $query }
+    method: COSINE
+    within: 0.75
+    limit: 20
+  ) {
+    productID
+    productSlug
+    productName: name
+  }
+}
+
+query SearchProductNameUsingL2Similarity($query: String!) @auth(level: PUBLIC) {
+  products_nameEmbedding_similarity(
+    compare_embed: { model: "textembedding-gecko@003", text: $query }
+    method: COSINE
+    within: 0.75
+    limit: 20
+  ) {
+    productID
+    productSlug
+    productName: name
+  }
+}
+
+query SearchReviewContentUsingL2Similarity($query: String!) @auth(level: PUBLIC) {
+  reviews_contentEmbedding_similarity(
+    compare_embed: { model: "textembedding-gecko@003", text: $query }
+    method: COSINE
+    within: 0.75
+    limit: 20
+  ) {
+    productID
+    productSlug
+    productName
+  }
+}

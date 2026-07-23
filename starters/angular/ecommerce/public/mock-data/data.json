@@ -1,0 +1,347 @@
+{
+  "categories": [
+    {
+      "id": "merch",
+      "name": "Merchandise",
+      "order": 1
+    },
+    {
+      "id": "tech",
+      "name": "Technology",
+      "order": 2
+    },
+    {
+      "id": "giftcard",
+      "name": "Gift Cards",
+      "order": 3
+    }
+  ],
+  "products": [
+    {
+      "id": "6631",
+      "name": "Angular T-shirt",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis lacus tortor, scelerisque nec lectus et, elementum hendrerit justo. Vestibulum varius placerat accumsan. Mauris sed sagittis tortor, non accumsan leo. Vestibulum sollicitudin in odio quis ultricies. Curabitur accumsan lacus quis enim lobortis, non tempor sem mollis. Phasellus dignissim nec lacus sed varius. Ut ornare justo sed tortor mattis blandit. Vivamus ac faucibus diam, sed cursus felis. Curabitur non dictum massa, eu ornare ante. Vivamus gravida, risus vel venenatis luctus, erat dolor sollicitudin lectus, vel rhoncus diam arcu id felis.",
+      "category_ids": ["merch"],
+      "images": [
+        "/mock-data/imgs/6631-1.webp"
+      ],
+      "price": 25,
+      "discount_price": 19,
+      "availability": "normal",
+      "created_at": "2024-03-08T12:00"
+    },
+    {
+      "id": "2372",
+      "name": "Angular Sweatshirt",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis lacus tortor, scelerisque nec lectus et, elementum hendrerit justo. Vestibulum varius placerat accumsan. Mauris sed sagittis tortor, non accumsan leo. Vestibulum sollicitudin in odio quis ultricies. Curabitur accumsan lacus quis enim lobortis, non tempor sem mollis. Phasellus dignissim nec lacus sed varius. Ut ornare justo sed tortor mattis blandit. Vivamus ac faucibus diam, sed cursus felis. Curabitur non dictum massa, eu ornare ante. Vivamus gravida, risus vel venenatis luctus, erat dolor sollicitudin lectus, vel rhoncus diam arcu id felis.",
+      "category_ids": ["merch"],
+      "images": [
+        "/mock-data/imgs/2372-1.webp"
+      ],
+      "price": 39,
+      "discount_price": 0,
+      "availability": "normal",
+      "created_at": "2024-03-07T12:00"
+    },
+    {
+      "id": "3936",
+      "name": "Angular Stickers",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis lacus tortor, scelerisque nec lectus et, elementum hendrerit justo. Vestibulum varius placerat accumsan. Mauris sed sagittis tortor, non accumsan leo. Vestibulum sollicitudin in odio quis ultricies. Curabitur accumsan lacus quis enim lobortis, non tempor sem mollis. Phasellus dignissim nec lacus sed varius. Ut ornare justo sed tortor mattis blandit. Vivamus ac faucibus diam, sed cursus felis. Curabitur non dictum massa, eu ornare ante. Vivamus gravida, risus vel venenatis luctus, erat dolor sollicitudin lectus, vel rhoncus diam arcu id felis.",
+      "category_ids": ["merch"],
+      "images": [
+        "/mock-data/imgs/3936-1.webp"
+      ],
+      "price": 5.99,
+      "discount_price": 0,
+      "availability": "normal",
+      "parameters": [
+        {
+          "name": "Count",
+          "value": "8"
+        }
+      ],
+      "created_at": "2024-03-07T11:00"
+    },
+    {
+      "id": "1002",
+      "name": "Angular Mug",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis lacus tortor, scelerisque nec lectus et, elementum hendrerit justo. Vestibulum varius placerat accumsan. Mauris sed sagittis tortor, non accumsan leo. Vestibulum sollicitudin in odio quis ultricies. Curabitur accumsan lacus quis enim lobortis, non tempor sem mollis. Phasellus dignissim nec lacus sed varius. Ut ornare justo sed tortor mattis blandit. Vivamus ac faucibus diam, sed cursus felis. Curabitur non dictum massa, eu ornare ante. Vivamus gravida, risus vel venenatis luctus, erat dolor sollicitudin lectus, vel rhoncus diam arcu id felis.",
+      "category_ids": ["merch"],
+      "images": [
+        "/mock-data/imgs/1002-1.webp"
+      ],
+      "price": 9,
+      "discount_price": 0,
+      "availability": "normal",
+      "created_at": "2024-03-06T12:00"
+    },
+    {
+      "id": "9925",
+      "name": "Google I/O T-shirt",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis lacus tortor, scelerisque nec lectus et, elementum hendrerit justo. Vestibulum varius placerat accumsan. Mauris sed sagittis tortor, non accumsan leo. Vestibulum sollicitudin in odio quis ultricies. Curabitur accumsan lacus quis enim lobortis, non tempor sem mollis. Phasellus dignissim nec lacus sed varius. Ut ornare justo sed tortor mattis blandit. Vivamus ac faucibus diam, sed cursus felis. Curabitur non dictum massa, eu ornare ante. Vivamus gravida, risus vel venenatis luctus, erat dolor sollicitudin lectus, vel rhoncus diam arcu id felis.",
+      "category_ids": ["merch"],
+      "images": [
+        "/mock-data/imgs/9925-1.webp"
+      ],
+      "price": 25,
+      "discount_price": 0,
+      "availability": "normal",
+      "created_at": "2024-03-05T12:00"
+    },
+    {
+      "id": "1202",
+      "name": "Google I/O Sweatshirt",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis lacus tortor, scelerisque nec lectus et, elementum hendrerit justo. Vestibulum varius placerat accumsan. Mauris sed sagittis tortor, non accumsan leo. Vestibulum sollicitudin in odio quis ultricies. Curabitur accumsan lacus quis enim lobortis, non tempor sem mollis. Phasellus dignissim nec lacus sed varius. Ut ornare justo sed tortor mattis blandit. Vivamus ac faucibus diam, sed cursus felis. Curabitur non dictum massa, eu ornare ante. Vivamus gravida, risus vel venenatis luctus, erat dolor sollicitudin lectus, vel rhoncus diam arcu id felis.",
+      "category_ids": ["merch"],
+      "images": [
+        "/mock-data/imgs/1202-1.webp"
+      ],
+      "price": 39,
+      "discount_price": 29,
+      "availability": "normal",
+      "created_at": "2024-03-04T12:00"
+    },
+    {
+      "id": "5395",
+      "name": "Google I/O Stickers",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis lacus tortor, scelerisque nec lectus et, elementum hendrerit justo. Vestibulum varius placerat accumsan. Mauris sed sagittis tortor, non accumsan leo. Vestibulum sollicitudin in odio quis ultricies. Curabitur accumsan lacus quis enim lobortis, non tempor sem mollis. Phasellus dignissim nec lacus sed varius. Ut ornare justo sed tortor mattis blandit. Vivamus ac faucibus diam, sed cursus felis. Curabitur non dictum massa, eu ornare ante. Vivamus gravida, risus vel venenatis luctus, erat dolor sollicitudin lectus, vel rhoncus diam arcu id felis.",
+      "category_ids": ["merch"],
+      "images": [
+        "/mock-data/imgs/5395-1.webp"
+      ],
+      "price": 5.99,
+      "discount_price": 0,
+      "availability": "normal",
+      "parameters": [
+        {
+          "name": "Count",
+          "value": "8"
+        }
+      ],
+      "created_at": "2024-03-03T12:00"
+    },
+    {
+      "id": "7649",
+      "name": "Google Mug",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis lacus tortor, scelerisque nec lectus et, elementum hendrerit justo. Vestibulum varius placerat accumsan. Mauris sed sagittis tortor, non accumsan leo. Vestibulum sollicitudin in odio quis ultricies. Curabitur accumsan lacus quis enim lobortis, non tempor sem mollis. Phasellus dignissim nec lacus sed varius. Ut ornare justo sed tortor mattis blandit. Vivamus ac faucibus diam, sed cursus felis. Curabitur non dictum massa, eu ornare ante. Vivamus gravida, risus vel venenatis luctus, erat dolor sollicitudin lectus, vel rhoncus diam arcu id felis.",
+      "category_ids": ["merch"],
+      "images": [
+        "/mock-data/imgs/7649-1.webp"
+      ],
+      "price": 9,
+      "discount_price": 2,
+      "availability": "low",
+      "created_at": "2024-03-03T11:00"
+    },
+    {
+      "id": "5551",
+      "name": "Pixel 8 Pro",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis lacus tortor, scelerisque nec lectus et, elementum hendrerit justo. Vestibulum varius placerat accumsan. Mauris sed sagittis tortor, non accumsan leo. Vestibulum sollicitudin in odio quis ultricies. Curabitur accumsan lacus quis enim lobortis, non tempor sem mollis. Phasellus dignissim nec lacus sed varius. Ut ornare justo sed tortor mattis blandit. Vivamus ac faucibus diam, sed cursus felis. Curabitur non dictum massa, eu ornare ante. Vivamus gravida, risus vel venenatis luctus, erat dolor sollicitudin lectus, vel rhoncus diam arcu id felis.",
+      "category_ids": ["tech"],
+      "images": [
+        "/mock-data/imgs/5551-1.webp",
+        "/mock-data/imgs/5551-2.webp",
+        "/mock-data/imgs/5551-3.webp"
+      ],
+      "price": 999,
+      "discount_price": 0,
+      "availability": "normal",
+      "parameters": [
+        {
+          "name": "Space",
+          "value": "128 GB"
+        },
+        {
+          "name": "Color",
+          "value": "Mint"
+        }
+      ],
+      "created_at": "2024-03-03T10:00"
+    },
+    {
+      "id": "7263",
+      "name": "Pixel 8",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis lacus tortor, scelerisque nec lectus et, elementum hendrerit justo. Vestibulum varius placerat accumsan. Mauris sed sagittis tortor, non accumsan leo. Vestibulum sollicitudin in odio quis ultricies. Curabitur accumsan lacus quis enim lobortis, non tempor sem mollis. Phasellus dignissim nec lacus sed varius. Ut ornare justo sed tortor mattis blandit. Vivamus ac faucibus diam, sed cursus felis. Curabitur non dictum massa, eu ornare ante. Vivamus gravida, risus vel venenatis luctus, erat dolor sollicitudin lectus, vel rhoncus diam arcu id felis.",
+      "category_ids": ["tech"],
+      "images": [
+        "/mock-data/imgs/7263-1.webp",
+        "/mock-data/imgs/7263-2.webp",
+        "/mock-data/imgs/7263-3.webp"
+      ],
+      "price": 699,
+      "discount_price": 0,
+      "availability": "normal",
+      "parameters": [
+        {
+          "name": "Space",
+          "value": "128 GB"
+        },
+        {
+          "name": "Color",
+          "value": "Hazel"
+        }
+      ],
+      "created_at": "2024-03-03T09:00"
+    },
+    {
+      "id": "7891",
+      "name": "Google Pixel Watch 2",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis lacus tortor, scelerisque nec lectus et, elementum hendrerit justo. Vestibulum varius placerat accumsan. Mauris sed sagittis tortor, non accumsan leo. Vestibulum sollicitudin in odio quis ultricies. Curabitur accumsan lacus quis enim lobortis, non tempor sem mollis. Phasellus dignissim nec lacus sed varius. Ut ornare justo sed tortor mattis blandit. Vivamus ac faucibus diam, sed cursus felis. Curabitur non dictum massa, eu ornare ante. Vivamus gravida, risus vel venenatis luctus, erat dolor sollicitudin lectus, vel rhoncus diam arcu id felis.",
+      "category_ids": ["tech"],
+      "images": [
+        "/mock-data/imgs/7891-1.webp",
+        "/mock-data/imgs/7891-2.webp"
+      ],
+      "price": 349.99,
+      "discount_price": 0,
+      "availability": "normal",
+      "parameters": [
+        {
+          "name": "Color",
+          "value": "Polished Silver"
+        }
+      ],
+      "created_at": "2024-03-03T08:00"
+    },
+    {
+      "id": "9125",
+      "name": "Pixel Buds Pro",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis lacus tortor, scelerisque nec lectus et, elementum hendrerit justo. Vestibulum varius placerat accumsan. Mauris sed sagittis tortor, non accumsan leo. Vestibulum sollicitudin in odio quis ultricies. Curabitur accumsan lacus quis enim lobortis, non tempor sem mollis. Phasellus dignissim nec lacus sed varius. Ut ornare justo sed tortor mattis blandit. Vivamus ac faucibus diam, sed cursus felis. Curabitur non dictum massa, eu ornare ante. Vivamus gravida, risus vel venenatis luctus, erat dolor sollicitudin lectus, vel rhoncus diam arcu id felis.",
+      "category_ids": ["tech"],
+      "images": [
+        "/mock-data/imgs/9125-1.webp",
+        "/mock-data/imgs/9125-2.webp"
+      ],
+      "price": 199.99,
+      "discount_price": 0,
+      "availability": "normal",
+      "parameters": [
+        {
+          "name": "Color",
+          "value": "Bay"
+        }
+      ],
+      "created_at": "2024-03-02T12:00"
+    },
+    {
+      "id": "2008",
+      "name": "Fitbit Charge 6",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis lacus tortor, scelerisque nec lectus et, elementum hendrerit justo. Vestibulum varius placerat accumsan. Mauris sed sagittis tortor, non accumsan leo. Vestibulum sollicitudin in odio quis ultricies. Curabitur accumsan lacus quis enim lobortis, non tempor sem mollis. Phasellus dignissim nec lacus sed varius. Ut ornare justo sed tortor mattis blandit. Vivamus ac faucibus diam, sed cursus felis. Curabitur non dictum massa, eu ornare ante. Vivamus gravida, risus vel venenatis luctus, erat dolor sollicitudin lectus, vel rhoncus diam arcu id felis.",
+      "category_ids": ["tech"],
+      "images": [
+        "/mock-data/imgs/2008-1.webp",
+        "/mock-data/imgs/2008-2.webp"
+      ],
+      "price": 159.95,
+      "discount_price": 0,
+      "availability": "normal",
+      "parameters": [
+        {
+          "name": "Color",
+          "value": "Coral"
+        }
+      ],
+      "created_at": "2024-03-02T11:00"
+    },
+    {
+      "id": "3103",
+      "name": "Nest Wifi Pro",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis lacus tortor, scelerisque nec lectus et, elementum hendrerit justo. Vestibulum varius placerat accumsan. Mauris sed sagittis tortor, non accumsan leo. Vestibulum sollicitudin in odio quis ultricies. Curabitur accumsan lacus quis enim lobortis, non tempor sem mollis. Phasellus dignissim nec lacus sed varius. Ut ornare justo sed tortor mattis blandit. Vivamus ac faucibus diam, sed cursus felis. Curabitur non dictum massa, eu ornare ante. Vivamus gravida, risus vel venenatis luctus, erat dolor sollicitudin lectus, vel rhoncus diam arcu id felis.",
+      "category_ids": ["tech"],
+      "images": [
+        "/mock-data/imgs/3103-1.webp",
+        "/mock-data/imgs/3103-2.webp"
+      ],
+      "price": 199.99,
+      "discount_price": 0,
+      "availability": "normal",
+      "created_at": "2024-03-02T10:00"
+    },
+    {
+      "id": "4427",
+      "name": "Chromecast with Google TV",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis lacus tortor, scelerisque nec lectus et, elementum hendrerit justo. Vestibulum varius placerat accumsan. Mauris sed sagittis tortor, non accumsan leo. Vestibulum sollicitudin in odio quis ultricies. Curabitur accumsan lacus quis enim lobortis, non tempor sem mollis. Phasellus dignissim nec lacus sed varius. Ut ornare justo sed tortor mattis blandit. Vivamus ac faucibus diam, sed cursus felis. Curabitur non dictum massa, eu ornare ante. Vivamus gravida, risus vel venenatis luctus, erat dolor sollicitudin lectus, vel rhoncus diam arcu id felis.",
+      "category_ids": ["tech"],
+      "images": [
+        "/mock-data/imgs/4427-1.webp"
+      ],
+      "price": 29.99,
+      "discount_price": 0,
+      "availability": "normal",
+      "created_at": "2024-03-02T09:00"
+    },
+    {
+      "id": "5024",
+      "name": "Pixel 7a",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis lacus tortor, scelerisque nec lectus et, elementum hendrerit justo. Vestibulum varius placerat accumsan. Mauris sed sagittis tortor, non accumsan leo. Vestibulum sollicitudin in odio quis ultricies. Curabitur accumsan lacus quis enim lobortis, non tempor sem mollis. Phasellus dignissim nec lacus sed varius. Ut ornare justo sed tortor mattis blandit. Vivamus ac faucibus diam, sed cursus felis. Curabitur non dictum massa, eu ornare ante. Vivamus gravida, risus vel venenatis luctus, erat dolor sollicitudin lectus, vel rhoncus diam arcu id felis.",
+      "category_ids": ["tech"],
+      "images": [
+        "/mock-data/imgs/5024-1.webp",
+        "/mock-data/imgs/5024-2.webp",
+        "/mock-data/imgs/5024-3.webp"
+      ],
+      "price": 499,
+      "discount_price": 0,
+      "availability": "none",
+      "parameters": [
+        {
+          "name": "Color",
+          "value": "Sea"
+        }
+      ],
+      "created_at": "2024-03-02T08:00"
+    },
+    {
+      "id": "8013",
+      "name": "Google Play $25 Gift Card",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis lacus tortor, scelerisque nec lectus et, elementum hendrerit justo. Vestibulum varius placerat accumsan. Mauris sed sagittis tortor, non accumsan leo. Vestibulum sollicitudin in odio quis ultricies. Curabitur accumsan lacus quis enim lobortis, non tempor sem mollis. Phasellus dignissim nec lacus sed varius. Ut ornare justo sed tortor mattis blandit. Vivamus ac faucibus diam, sed cursus felis. Curabitur non dictum massa, eu ornare ante. Vivamus gravida, risus vel venenatis luctus, erat dolor sollicitudin lectus, vel rhoncus diam arcu id felis.",
+      "category_ids": ["giftcard"],
+      "images": [
+        "/mock-data/imgs/8013-1.webp"
+      ],
+      "price": 25,
+      "discount_price": 0,
+      "availability": "normal",
+      "created_at": "2024-03-02T07:00"
+    },
+    {
+      "id": "9231",
+      "name": "Google Play $50 Gift Card",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis lacus tortor, scelerisque nec lectus et, elementum hendrerit justo. Vestibulum varius placerat accumsan. Mauris sed sagittis tortor, non accumsan leo. Vestibulum sollicitudin in odio quis ultricies. Curabitur accumsan lacus quis enim lobortis, non tempor sem mollis. Phasellus dignissim nec lacus sed varius. Ut ornare justo sed tortor mattis blandit. Vivamus ac faucibus diam, sed cursus felis. Curabitur non dictum massa, eu ornare ante. Vivamus gravida, risus vel venenatis luctus, erat dolor sollicitudin lectus, vel rhoncus diam arcu id felis.",
+      "category_ids": ["giftcard"],
+      "images": [
+        "/mock-data/imgs/9231-1.webp"
+      ],
+      "price": 50,
+      "discount_price": 0,
+      "availability": "normal",
+      "created_at": "2024-03-01T12:00"
+    },
+    {
+      "id": "3771",
+      "name": "Google Play $100 Gift Card",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis lacus tortor, scelerisque nec lectus et, elementum hendrerit justo. Vestibulum varius placerat accumsan. Mauris sed sagittis tortor, non accumsan leo. Vestibulum sollicitudin in odio quis ultricies. Curabitur accumsan lacus quis enim lobortis, non tempor sem mollis. Phasellus dignissim nec lacus sed varius. Ut ornare justo sed tortor mattis blandit. Vivamus ac faucibus diam, sed cursus felis. Curabitur non dictum massa, eu ornare ante. Vivamus gravida, risus vel venenatis luctus, erat dolor sollicitudin lectus, vel rhoncus diam arcu id felis.",
+      "category_ids": ["giftcard"],
+      "images": [
+        "/mock-data/imgs/3771-1.webp"
+      ],
+      "price": 100,
+      "discount_price": 0,
+      "availability": "normal",
+      "created_at": "2024-03-01T11:00"
+    },
+    {
+      "id": "2901",
+      "name": "Google Play $200 Gift Card",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis lacus tortor, scelerisque nec lectus et, elementum hendrerit justo. Vestibulum varius placerat accumsan. Mauris sed sagittis tortor, non accumsan leo. Vestibulum sollicitudin in odio quis ultricies. Curabitur accumsan lacus quis enim lobortis, non tempor sem mollis. Phasellus dignissim nec lacus sed varius. Ut ornare justo sed tortor mattis blandit. Vivamus ac faucibus diam, sed cursus felis. Curabitur non dictum massa, eu ornare ante. Vivamus gravida, risus vel venenatis luctus, erat dolor sollicitudin lectus, vel rhoncus diam arcu id felis.",
+      "category_ids": ["giftcard"],
+      "images": [
+        "/mock-data/imgs/2901-1.webp"
+      ],
+      "price": 200,
+      "discount_price": 0,
+      "availability": "normal",
+      "created_at": "2024-03-01T10:00"
+    }
+  ]
+}

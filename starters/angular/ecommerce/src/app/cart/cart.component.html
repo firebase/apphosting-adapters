@@ -1,0 +1,51 @@
+<h2>Cart</h2>
+@if (cart.size()) {
+  <div class="content">
+    <section class="items">
+      @for (product of cart.products(); track product.id) {
+        <ec-cart-item
+          [product]="product"
+          [quantity]="cart.quantities().get(product.id) || 1"
+          (remove)="onItemRemove(product)"
+          (quantityChange)="onItemQuanityUpdate(product, $event)"
+        />
+      }
+    </section>
+    <section class="checkout">
+      <div class="price-components">
+        <p>
+          <span class="label">Subtotal</span>
+          <span class="value">{{ subtotal() | currency }}</span>
+        </p>
+        <p>
+          <span class="label">Shipping</span>
+          <span class="value">{{ shipping | currency }}</span>
+        </p>
+        <p>
+          <span class="label">Taxes</span>
+          <span class="value">{{ taxes() | currency }}</span>
+        </p>
+      </div>
+      <hr />
+      <div class="total">
+        <span class="label">Total</span>
+        <span class="value">{{ total() | currency }}</span>
+      </div>
+      <button
+        ngx-button
+        btnType="primary"
+        class="checkout"
+        size="large"
+        type="button"
+      >
+        Checkout
+      </button>
+    </section>
+  </div>
+} @else {
+  <hr />
+  <p class="empty-cart">
+    <ngx-icon name="Cart" size="xlg" />
+    Oops! Your cart is empty.
+  </p>
+}

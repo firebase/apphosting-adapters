@@ -1,0 +1,10 @@
+:host {
+  display: block;
+
+  input {
+    display: block;
+    width: 100%;
+    font-size: var(--search-input-font-size, 0.875rem);
+    padding: var(--search-input-padding, 0.5rem);
+  }
+}

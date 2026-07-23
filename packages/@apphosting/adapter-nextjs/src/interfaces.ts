@@ -1,4 +1,6 @@
 import type { RouteHas } from "next/dist/lib/load-custom-routes.js";
+import type { AssetBinding } from "next/dist/build/webpack/loaders/get-module-build-info.js";
+import type { MiddlewareMatcher } from "next/dist/build//analysis/get-page-static-info.js";
 
 export interface RoutesManifestRewriteObject {
   beforeFiles?: RoutesManifestRewrite[];
@@ -71,7 +73,6 @@ export interface RoutesManifest {
     localeDetection?: false;
   };
 }
-
 // The output bundle options are specified here
 export interface OutputBundleOptions {
   /**
@@ -102,10 +103,40 @@ export interface OutputBundleOptions {
   outputStaticDirectoryPath: string;
 }
 
-// Metadata schema for bundle.yaml outputted by next.js adapter
-export interface Metadata {
+// Metadata schema for adapter metadata
+export interface AdapterMetadata {
   adapterPackageName: string;
   adapterVersion: string;
+}
+
+// Metadata schema for bundle.yaml outputted by next.js adapter
+export interface Metadata extends AdapterMetadata {
   framework: string;
   frameworkVersion: string;
+}
+
+/* 
+  Next.js exposed internal interface for middleware manifest (middleware-manifest.json)
+  https://github.com/vercel/next.js/blob/v15.2.0-canary.76/packages/next/src/build/webpack/plugins/middleware-plugin.ts#L54
+*/
+export interface MiddlewareManifest {
+  version: 3;
+  sortedMiddleware: string[];
+  middleware: {
+    [page: string]: EdgeFunctionDefinition;
+  };
+  functions: {
+    [page: string]: EdgeFunctionDefinition;
+  };
+}
+
+// Next.js exposed internal interface for edge function definitions
+interface EdgeFunctionDefinition {
+  files: string[];
+  name: string;
+  page: string;
+  matchers: MiddlewareMatcher[];
+  wasm?: AssetBinding[];
+  assets?: AssetBinding[];
+  regions?: string[] | string;
 }

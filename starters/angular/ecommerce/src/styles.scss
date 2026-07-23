@@ -1,0 +1,41 @@
+/* You can add global styles to this file, and also import other style files */
+
+@use 'global';
+@use 'typography';
+
+// Variables
+
+:root {
+  --app-max-width: 1280px;
+}
+
+// Chips
+
+.ec-chip {
+  @extend %chip-text;
+  display: inline-block;
+  text-align: center;
+  user-select: none;
+  color: var(
+    --chip-color,
+    color-mix(
+      in srgb,
+      var(--chip-accent, var(--color-french-violet)) 90%,
+      var(--white) 20%
+    )
+  );
+
+  &.solid {
+    padding: 0.25rem 0.5rem;
+    border-radius: 3rem;
+    background: color-mix(
+      in srgb,
+      var(--chip-accent, var(--color-french-violet)) 10%,
+      var(--white) 2%
+    );
+  }
+
+  &.large {
+    @extend %chip-text-large;
+  }
+}

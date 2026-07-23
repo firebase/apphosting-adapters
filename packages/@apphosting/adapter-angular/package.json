@@ -1,6 +1,6 @@
 {
   "name": "@apphosting/adapter-angular",
-  "version": "17.2.12",
+  "version": "17.2.17",
   "main": "dist/index.js",
   "description": "Experimental addon to the Firebase CLI to add web framework support",
   "repository": {
@@ -23,7 +23,7 @@
   "scripts": {
     "build": "rm -rf dist && tsc && chmod +x ./dist/bin/*",
     "test": "npm run test:unit && npm run test:functional",
-    "test:unit": "ts-mocha -p tsconfig.json src/**/*.spec.ts",
+    "test:unit": "ts-mocha -p tsconfig.json 'src/**/*.spec.ts' 'src/*.spec.ts'",
     "test:functional": "node --loader ts-node/esm ./e2e/run-local.ts",
     "localregistry:start": "npx verdaccio --config ../publish-dev/verdaccio-config.yaml",
     "localregistry:publish": "(npm view --registry=http://localhost:4873 @apphosting/adapter-angular && npm unpublish --@apphosting:registry=http://localhost:4873 --force); npm publish --@apphosting:registry=http://localhost:4873"

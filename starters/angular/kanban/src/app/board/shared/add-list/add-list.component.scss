@@ -1,0 +1,54 @@
+@use 'typography';
+@use '../styles/variables' as vars;
+
+:host {
+  display: block;
+  flex: 0 0 vars.$list-width;
+  width: 100%;
+  border-radius: vars.$list-border-radius;
+  background-color: var(--color-septenary);
+  overflow: hidden;
+
+  .add-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: inherit;
+    height: 100%;
+    background-color: transparent;
+    border: none;
+    color: var(--color-quaternary);
+    padding: 1rem 0;
+    transition: background-color 200ms ease;
+
+    ngx-icon {
+      margin-bottom: 0.25rem;
+    }
+
+    p {
+      @extend %heading-600;
+      margin: 0;
+    }
+
+    &:hover {
+      color: var(--color-tertiary);
+      background-color: var(--color-senary);
+    }
+  }
+
+  form {
+    padding: 1rem;
+
+    input {
+      width: 100%;
+      font-weight: bold;
+    }
+
+    button {
+      margin-top: 0.5rem;
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
+}

@@ -1,0 +1,73 @@
+$ate-textarea-font-size: 1rem;
+
+%heading-text-style {
+  font-size: 1.5rem;
+}
+
+%monospaced-text-style {
+  font-family: monospace;
+  background-color: var(--color-septenary);
+  font-size: 0.875rem;
+}
+
+@mixin editor-textarea-styles {
+  .ate-textarea {
+    line-height: 1.625rem;
+    font-size: 1rem;
+
+    p {
+      margin: 0 !important;
+    }
+
+    a {
+      color: rgb(72, 131, 197);
+      text-decoration: underline;
+    }
+
+    .fmt {
+      // Inline styles
+      &.bd {
+        font-weight: bold;
+      }
+
+      &.x-bd {
+        font-weight: normal;
+      }
+
+      &.ul {
+        text-decoration: underline;
+      }
+
+      &.x-ul {
+        // Can't undo without adverse effects
+      }
+
+      &.it {
+        font-style: italic;
+      }
+
+      &.x-it {
+        font-style: normal;
+      }
+
+      // Block styles
+      &.hd,
+      &.mono {
+        display: block;
+      }
+
+      &.hd {
+        @extend %heading-text-style;
+        margin: 2rem 0 0.75rem 0;
+      }
+
+      &.mono {
+        @extend %monospaced-text-style;
+        padding: 0.25rem 0.75rem;
+        border-radius: 0.2rem;
+        margin: 0.375rem 0;
+        flex: 1;
+      }
+    }
+  }
+}

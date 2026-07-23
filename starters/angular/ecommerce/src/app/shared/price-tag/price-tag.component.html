@@ -1,0 +1,22 @@
+@if (product().discountPrice) {
+  <span>
+    <span class="current" aria-label="Discounted price">{{
+      product().discountPrice | currency
+    }}</span>
+    @if (type() !== 'current-price') {
+      <s aria-label="Old price">{{ product().price | currency }}</s>
+    }
+  </span>
+  @if (type() === 'full') {
+    <span
+      class="ec-chip solid"
+      [class.large]="isLargeTag"
+      aria-label="Discount percentage"
+      >{{ 1 - product().discountPrice / product().price | percent }} Off</span
+    >
+  }
+} @else {
+  <span class="current" aria-label="Price">{{
+    product().price | currency
+  }}</span>
+}

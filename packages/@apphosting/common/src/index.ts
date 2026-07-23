@@ -1,10 +1,19 @@
 import { spawn } from "child_process";
+import * as fs from "node:fs";
+import * as path from "node:path";
+
+// List of apphosting supported frameworks.
+export const SupportedFrameworks = ["nextjs", "angular"] as const;
+export type Framework = (typeof SupportedFrameworks)[number];
+
+// **** OutputBundleConfig interfaces ****
 
 // Output bundle metadata specifications to be written to bundle.yaml
 export interface OutputBundleConfig {
   version: "v1";
   runConfig: RunConfig;
   metadata: Metadata;
+  outputFiles?: OutputFiles;
 }
 
 // Fields needed to configure the App Hosting server
@@ -38,20 +47,55 @@ export interface Metadata {
   frameworkVersion?: string;
 }
 
+// **** Apphosting Config interfaces ****
+
+export interface ApphostingConfig {
+  runconfig?: ApphostingRunConfig;
+  env?: EnvVarConfig[];
+  scripts?: Script;
+  outputFiles?: OutputFiles;
+}
+
+export interface ApphostingRunConfig {
+  minInstances?: number;
+  maxInstances?: number;
+  concurrency?: number;
+}
+
+export interface Script {
+  buildCommand?: string;
+  runCommand?: string;
+}
+
+// **** Shared interfaces ****
+
+// Optional outputFiles to configure outputFiles and optimize server files + static assets.
+// If this is not set then all of the source code will be uploaded
+export interface OutputFiles {
+  serverApp: ServerApp;
+}
+
+// ServerApp holds a list of directories + files relative to the app root dir that frameworks need to deploy to the App Hosting server,
+// generally this will be the output/dist directory (e.g. .output or dist). To include all files set this to [“.”]
+interface ServerApp {
+  include: string[];
+}
+
 // Represents a single environment variable.
 export interface EnvVarConfig {
   // Name of the variable
   variable: string;
   // Value associated with the variable
   value: string;
-  // Where the variable will be available, for now only RUNTIME is supported
-  availability: Availability.Runtime[];
+  // Where the variable will be available
+  availability: Availability[];
 }
 
 // Represents where environment variables are made available
 export enum Availability {
   // Runtime environment variables are available on the server when the app is run
   Runtime = "RUNTIME",
+  Build = "BUILD",
 }
 
 // Options to configure the build of a framework application
@@ -115,7 +159,7 @@ export function getBuildOptions(): BuildOptions {
   if (process.env.MONOREPO_COMMAND) {
     return {
       buildCommand: process.env.MONOREPO_COMMAND,
-      buildArgs: ["run", "build"].concat(process.env.MONOREPO_BUILD_ARGS?.split(".") || []),
+      buildArgs: ["run", "build"].concat(process.env.MONOREPO_BUILD_ARGS?.split(",") || []),
       projectDirectory: process.env.GOOGLE_BUILDABLE || "",
       projectName: process.env.MONOREPO_PROJECT,
     };
@@ -125,4 +169,27 @@ export function getBuildOptions(): BuildOptions {
     buildArgs: ["run", "build"],
     projectDirectory: process.cwd(),
   };
+}
+
+/**
+ * Updates or creates a .gitignore file with the given entries in the given path
+ */
+export function updateOrCreateGitignore(dirPath: string, entries: string[]) {
+  const gitignorePath = path.join(dirPath, ".gitignore");
+
+  if (!fs.existsSync(gitignorePath)) {
+    console.log(`creating ${gitignorePath} with entries: ${entries.join("\n")}`);
+    fs.writeFileSync(gitignorePath, entries.join("\n"));
+    return;
+  }
+
+  let content = fs.readFileSync(gitignorePath, "utf-8");
+  for (const entry of entries) {
+    if (!content.split("\n").includes(entry)) {
+      console.log(`adding ${entry} to ${gitignorePath}`);
+      content += `\n${entry}`;
+    }
+  }
+
+  fs.writeFileSync(gitignorePath, content);
 }

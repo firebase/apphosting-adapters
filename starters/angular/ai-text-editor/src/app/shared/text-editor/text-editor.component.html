@@ -1,0 +1,45 @@
+<div class="toolbar">
+  <ate-formatting-bar
+    (format)="onFormat($event)"
+    (controlsInit)="formatCtrls.set($event)"
+    [isTextSelected]="isTextSelected()"
+  />
+  <div class="controls">
+    @if (showSavedLabel()) {
+      <p class="saved-label">Saved</p>
+    }
+    @if (docStore.html().length || editorDirty()) {
+      <button
+        title="Hint"
+        [class.new-hint]="editorDirty() && !docStore.html().length"
+        (click)="showHint()"
+      >
+        <ngx-icon name="Lightbulb" size="md" />
+      </button>
+      <div class="vr"></div>
+    }
+    <button (click)="download()" title="Download as an HTML document">
+      <ngx-icon name="Download" size="md" />
+    </button>
+    <button (click)="clearDocument()" title="Clear the document">
+      <ngx-icon name="Delete" size="md" />
+    </button>
+  </div>
+</div>
+<ate-textarea
+  [initContents]="docStore.html()"
+  [formatCtrls]="formatCtrls()"
+  (ref)="docStore.provideSource($event)"
+  (ctrl)="onTextareaControllerInit($event)"
+  (input)="onInput()"
+  (textSelect)="onTextSelect($event)"
+/>
+@if (showAiEnhancer()) {
+  <ate-ai-enhancer-menu
+    [position]="aiEnhancerPos()"
+    (mouseup)="$event.stopPropagation()"
+    (touchend)="$event.stopPropagation()"
+    (mousedown)="$event.stopPropagation()"
+    (enhance)="onAiEnhance()"
+  />
+}

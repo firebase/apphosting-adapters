@@ -1,0 +1,42 @@
+:host {
+  display: block;
+
+  button {
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 1rem;
+    border: none;
+    background-color: transparent;
+    color: var(--color-text);
+    text-align: left;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    overflow: hidden;
+    width: 250px;
+
+    .widget-wrapper {
+      position: relative;
+      transform: scale(0.5);
+
+      & ::ng-deep > .widget {
+        width: 400px;
+        height: 250px;
+        margin-top: -50px;
+      }
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: -50px;
+        left: 0;
+        right: 0;
+        bottom: -75px;
+      }
+    }
+
+    &:hover {
+      background-color: var(--color-septenary);
+    }
+  }
+}

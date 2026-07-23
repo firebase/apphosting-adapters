@@ -1,0 +1,12 @@
+specVersion: "v1beta"
+serviceId: "firebase-ecommerce"
+location: "us-central1"
+schema:
+  source: "./schema"
+  datasource:
+    postgresql:
+      database: "firebase-ecommerce"
+      cloudSql:
+        instanceId: "firebase-ecommerce"
+      # schemaValidation: "COMPATIBLE"
+connectorDirs: ["./connector"]

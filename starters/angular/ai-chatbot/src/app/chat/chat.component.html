@@ -1,0 +1,22 @@
+<div #conversation class="conversation">
+  @if (!loading()) {
+    @for (q of queries(); track q.id) {
+      <acb-query [query]="q" [isNew]="isNewQuery(q)" />
+    } @empty {
+      <acb-chat-intro (message)="sendPredefined($event)" />
+    }
+    @if (chat() && chat()!.totalQueries > queries().size) {
+      <ngx-infinite-scroll
+        [scrollCont]="conversation"
+        (loadNext)="loadNextPage($event)"
+      />
+    }
+  } @else {
+    <acb-query-skeleton [lines]="4" />
+    <acb-query-skeleton [lines]="2" />
+  }
+</div>
+<acb-chat-input #input (send)="send($event)" (abort)="abort()" />
+<p class="disclaimer">
+  The chatbot can make mistakes, so double-check the information.
+</p>

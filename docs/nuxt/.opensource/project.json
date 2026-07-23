@@ -1,0 +1,11 @@
+{
+    "name": "Nuxt adapter",
+    "platforms": [
+      "app_hosting"
+    ],
+    "related": [
+      "FirebaseExtended/firebase-framework-tools::docs::nitro"
+    ],
+    "description": "Deploy Nuxt applications to Firebase App Hosting using the community-supported Nitro adapter",
+    "content": "README.md"
+}

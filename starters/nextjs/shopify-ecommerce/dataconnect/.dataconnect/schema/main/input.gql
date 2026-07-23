@@ -1,0 +1,428 @@
+"""
+✨ `Product_KeyOutput` returns the primary key fields of table type `Product`.
+
+It has the same format as `Product_Key`, but is only used as mutation return value.
+"""
+scalar Product_KeyOutput
+"""
+✨ `Review_KeyOutput` returns the primary key fields of table type `Review`.
+
+It has the same format as `Review_Key`, but is only used as mutation return value.
+"""
+scalar Review_KeyOutput
+"""
+✨ Generated data input type for table 'Product'. It includes all necessary fields for creating or upserting rows into table.
+"""
+input Product_Data {
+  """
+  ✨ Generated from Field `Product`.`id` of type `UUID!`
+  """
+  id: UUID
+  """
+  ✨ `_expr` server value variant of `id` (✨ Generated from Field `Product`.`id` of type `UUID!`)
+  """
+  id_expr: UUID_Expr
+  """
+  ✨ Generated from Field `Product`.`description` of type `String!`
+  """
+  description: String
+  """
+  ✨ `_expr` server value variant of `description` (✨ Generated from Field `Product`.`description` of type `String!`)
+  """
+  description_expr: String_Expr
+  """
+  ✨ Generated from Field `Product`.`descriptionEmbedding` of type `Vector!`
+  """
+  descriptionEmbedding: Vector
+  """
+  ✨ `_embed` server value variant of `descriptionEmbedding` (✨ Generated from Field `Product`.`descriptionEmbedding` of type `Vector!`)
+  """
+  descriptionEmbedding_embed: Vector_Embed
+  """
+  ✨ Generated from Field `Product`.`name` of type `String!`
+  """
+  name: String
+  """
+  ✨ `_expr` server value variant of `name` (✨ Generated from Field `Product`.`name` of type `String!`)
+  """
+  name_expr: String_Expr
+  """
+  ✨ Generated from Field `Product`.`nameEmbedding` of type `Vector!`
+  """
+  nameEmbedding: Vector
+  """
+  ✨ `_embed` server value variant of `nameEmbedding` (✨ Generated from Field `Product`.`nameEmbedding` of type `Vector!`)
+  """
+  nameEmbedding_embed: Vector_Embed
+  """
+  ✨ Generated from Field `Product`.`price` of type `Float!`
+  """
+  price: Float
+  """
+  ✨ Generated from Field `Product`.`productID` of type `String!`
+  """
+  productID: String
+  """
+  ✨ `_expr` server value variant of `productID` (✨ Generated from Field `Product`.`productID` of type `String!`)
+  """
+  productID_expr: String_Expr
+  """
+  ✨ Generated from Field `Product`.`productSlug` of type `String!`
+  """
+  productSlug: String
+  """
+  ✨ `_expr` server value variant of `productSlug` (✨ Generated from Field `Product`.`productSlug` of type `String!`)
+  """
+  productSlug_expr: String_Expr
+}
+"""
+✨ Generated filter input type for table 'Product'. This input allows filtering objects using various conditions. Use `_or`, `_and`, and `_not` to compose complex filters.
+"""
+input Product_Filter {
+  """
+  Apply multiple filter conditions using `AND` logic.
+  """
+  _and: [Product_Filter!]
+  """
+  Negate the result of the provided filter condition.
+  """
+  _not: Product_Filter
+  """
+  Apply multiple filter conditions using `OR` logic.
+  """
+  _or: [Product_Filter!]
+  """
+  ✨ Generated from Field `Product`.`id` of type `UUID!`
+  """
+  id: UUID_Filter
+  """
+  ✨ Generated from Field `Product`.`description` of type `String!`
+  """
+  description: String_Filter
+  """
+  ✨ Generated from Field `Product`.`descriptionEmbedding` of type `Vector!`
+  """
+  descriptionEmbedding: Vector_Filter
+  """
+  ✨ Generated from Field `Product`.`name` of type `String!`
+  """
+  name: String_Filter
+  """
+  ✨ Generated from Field `Product`.`nameEmbedding` of type `Vector!`
+  """
+  nameEmbedding: Vector_Filter
+  """
+  ✨ Generated from Field `Product`.`price` of type `Float!`
+  """
+  price: Float_Filter
+  """
+  ✨ Generated from Field `Product`.`productID` of type `String!`
+  """
+  productID: String_Filter
+  """
+  ✨ Generated from Field `Product`.`productSlug` of type `String!`
+  """
+  productSlug: String_Filter
+}
+"""
+✨ Generated first-row input type for table 'Product'. This input selects the first row matching the filter criteria, ordered according to the specified conditions.
+"""
+input Product_FirstRow {
+  """
+  Order the result by the specified fields.
+  """
+  orderBy: [Product_Order!]
+  """
+  Filters rows based on the specified conditions.
+  """
+  where: Product_Filter
+}
+"""
+✨ Generated key input type for table 'Product'. It represents the primary key fields used to uniquely identify a row in the table.
+"""
+input Product_Key {
+  """
+  ✨ Generated from Field `Product`.`id` of type `UUID!`
+  """
+  id: UUID
+  """
+  ✨ `_expr` server value variant of `id` (✨ Generated from Field `Product`.`id` of type `UUID!`)
+  """
+  id_expr: UUID_Expr
+}
+"""
+✨ Generated list filter input type for table 'Product'. This input applies filtering logic based on the count or existence of related objects that matches certain criteria.
+"""
+input Product_ListFilter {
+  """
+  The desired number of objects that match the condition (defaults to at least one).
+  """
+  count: Int_Filter = {gt:0}
+  """
+  Condition of the related objects to filter for.
+  """
+  exist: Product_Filter
+}
+"""
+✨ Generated order input type for table 'Product'. This input defines the sorting order of rows in query results based on one or more fields.
+"""
+input Product_Order {
+  """
+  ✨ Generated from Field `Product`.`id` of type `UUID!`
+  """
+  id: OrderDirection
+  """
+  ✨ Generated from Field `Product`.`description` of type `String!`
+  """
+  description: OrderDirection
+  """
+  ✨ Generated from Field `Product`.`descriptionEmbedding` of type `Vector!`
+  """
+  descriptionEmbedding: OrderDirection
+  """
+  ✨ Generated from Field `Product`.`name` of type `String!`
+  """
+  name: OrderDirection
+  """
+  ✨ Generated from Field `Product`.`nameEmbedding` of type `Vector!`
+  """
+  nameEmbedding: OrderDirection
+  """
+  ✨ Generated from Field `Product`.`price` of type `Float!`
+  """
+  price: OrderDirection
+  """
+  ✨ Generated from Field `Product`.`productID` of type `String!`
+  """
+  productID: OrderDirection
+  """
+  ✨ Generated from Field `Product`.`productSlug` of type `String!`
+  """
+  productSlug: OrderDirection
+}
+"""
+✨ Generated data input type for table 'Review'. It includes all necessary fields for creating or upserting rows into table.
+"""
+input Review_Data {
+  """
+  ✨ Generated from Field `Review`.`id` of type `UUID!`
+  """
+  id: UUID
+  """
+  ✨ `_expr` server value variant of `id` (✨ Generated from Field `Review`.`id` of type `UUID!`)
+  """
+  id_expr: UUID_Expr
+  """
+  ✨ Generated from Field `Review`.`content` of type `String!`
+  """
+  content: String
+  """
+  ✨ `_expr` server value variant of `content` (✨ Generated from Field `Review`.`content` of type `String!`)
+  """
+  content_expr: String_Expr
+  """
+  ✨ Generated from Field `Review`.`contentEmbedding` of type `Vector!`
+  """
+  contentEmbedding: Vector
+  """
+  ✨ `_embed` server value variant of `contentEmbedding` (✨ Generated from Field `Review`.`contentEmbedding` of type `Vector!`)
+  """
+  contentEmbedding_embed: Vector_Embed
+  """
+  ✨ Generated from Field `Review`.`createdAt` of type `Date!`
+  """
+  createdAt: Date
+  """
+  ✨ `_date` server value variant of `createdAt` (✨ Generated from Field `Review`.`createdAt` of type `Date!`)
+  """
+  createdAt_date: Date_Relative
+  """
+  ✨ `_expr` server value variant of `createdAt` (✨ Generated from Field `Review`.`createdAt` of type `Date!`)
+  """
+  createdAt_expr: Date_Expr
+  """
+  ✨ Generated from Field `Review`.`productID` of type `String!`
+  """
+  productID: String
+  """
+  ✨ `_expr` server value variant of `productID` (✨ Generated from Field `Review`.`productID` of type `String!`)
+  """
+  productID_expr: String_Expr
+  """
+  ✨ Generated from Field `Review`.`productName` of type `String!`
+  """
+  productName: String
+  """
+  ✨ `_expr` server value variant of `productName` (✨ Generated from Field `Review`.`productName` of type `String!`)
+  """
+  productName_expr: String_Expr
+  """
+  ✨ Generated from Field `Review`.`productSlug` of type `String!`
+  """
+  productSlug: String
+  """
+  ✨ `_expr` server value variant of `productSlug` (✨ Generated from Field `Review`.`productSlug` of type `String!`)
+  """
+  productSlug_expr: String_Expr
+  """
+  ✨ Generated from Field `Review`.`rating` of type `Float!`
+  """
+  rating: Float
+  """
+  ✨ Generated from Field `Review`.`userID` of type `String!`
+  """
+  userID: String
+  """
+  ✨ `_expr` server value variant of `userID` (✨ Generated from Field `Review`.`userID` of type `String!`)
+  """
+  userID_expr: String_Expr
+  """
+  ✨ Generated from Field `Review`.`userName` of type `String!`
+  """
+  userName: String
+  """
+  ✨ `_expr` server value variant of `userName` (✨ Generated from Field `Review`.`userName` of type `String!`)
+  """
+  userName_expr: String_Expr
+}
+"""
+✨ Generated filter input type for table 'Review'. This input allows filtering objects using various conditions. Use `_or`, `_and`, and `_not` to compose complex filters.
+"""
+input Review_Filter {
+  """
+  Apply multiple filter conditions using `AND` logic.
+  """
+  _and: [Review_Filter!]
+  """
+  Negate the result of the provided filter condition.
+  """
+  _not: Review_Filter
+  """
+  Apply multiple filter conditions using `OR` logic.
+  """
+  _or: [Review_Filter!]
+  """
+  ✨ Generated from Field `Review`.`id` of type `UUID!`
+  """
+  id: UUID_Filter
+  """
+  ✨ Generated from Field `Review`.`content` of type `String!`
+  """
+  content: String_Filter
+  """
+  ✨ Generated from Field `Review`.`contentEmbedding` of type `Vector!`
+  """
+  contentEmbedding: Vector_Filter
+  """
+  ✨ Generated from Field `Review`.`createdAt` of type `Date!`
+  """
+  createdAt: Date_Filter
+  """
+  ✨ Generated from Field `Review`.`productID` of type `String!`
+  """
+  productID: String_Filter
+  """
+  ✨ Generated from Field `Review`.`productName` of type `String!`
+  """
+  productName: String_Filter
+  """
+  ✨ Generated from Field `Review`.`productSlug` of type `String!`
+  """
+  productSlug: String_Filter
+  """
+  ✨ Generated from Field `Review`.`rating` of type `Float!`
+  """
+  rating: Float_Filter
+  """
+  ✨ Generated from Field `Review`.`userID` of type `String!`
+  """
+  userID: String_Filter
+  """
+  ✨ Generated from Field `Review`.`userName` of type `String!`
+  """
+  userName: String_Filter
+}
+"""
+✨ Generated first-row input type for table 'Review'. This input selects the first row matching the filter criteria, ordered according to the specified conditions.
+"""
+input Review_FirstRow {
+  """
+  Order the result by the specified fields.
+  """
+  orderBy: [Review_Order!]
+  """
+  Filters rows based on the specified conditions.
+  """
+  where: Review_Filter
+}
+"""
+✨ Generated key input type for table 'Review'. It represents the primary key fields used to uniquely identify a row in the table.
+"""
+input Review_Key {
+  """
+  ✨ Generated from Field `Review`.`id` of type `UUID!`
+  """
+  id: UUID
+  """
+  ✨ `_expr` server value variant of `id` (✨ Generated from Field `Review`.`id` of type `UUID!`)
+  """
+  id_expr: UUID_Expr
+}
+"""
+✨ Generated list filter input type for table 'Review'. This input applies filtering logic based on the count or existence of related objects that matches certain criteria.
+"""
+input Review_ListFilter {
+  """
+  The desired number of objects that match the condition (defaults to at least one).
+  """
+  count: Int_Filter = {gt:0}
+  """
+  Condition of the related objects to filter for.
+  """
+  exist: Review_Filter
+}
+"""
+✨ Generated order input type for table 'Review'. This input defines the sorting order of rows in query results based on one or more fields.
+"""
+input Review_Order {
+  """
+  ✨ Generated from Field `Review`.`id` of type `UUID!`
+  """
+  id: OrderDirection
+  """
+  ✨ Generated from Field `Review`.`content` of type `String!`
+  """
+  content: OrderDirection
+  """
+  ✨ Generated from Field `Review`.`contentEmbedding` of type `Vector!`
+  """
+  contentEmbedding: OrderDirection
+  """
+  ✨ Generated from Field `Review`.`createdAt` of type `Date!`
+  """
+  createdAt: OrderDirection
+  """
+  ✨ Generated from Field `Review`.`productID` of type `String!`
+  """
+  productID: OrderDirection
+  """
+  ✨ Generated from Field `Review`.`productName` of type `String!`
+  """
+  productName: OrderDirection
+  """
+  ✨ Generated from Field `Review`.`productSlug` of type `String!`
+  """
+  productSlug: OrderDirection
+  """
+  ✨ Generated from Field `Review`.`rating` of type `Float!`
+  """
+  rating: OrderDirection
+  """
+  ✨ Generated from Field `Review`.`userID` of type `String!`
+  """
+  userID: OrderDirection
+  """
+  ✨ Generated from Field `Review`.`userName` of type `String!`
+  """
+  userName: OrderDirection
+}

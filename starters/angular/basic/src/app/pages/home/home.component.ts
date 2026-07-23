@@ -9,14 +9,13 @@ import { YouTubeIconComponent } from '../../components/icons/youtube-icon.compon
 const icons = [ArrowBoxIconComponent, GithubIconComponent, TwitterIconComponent, YouTubeIconComponent];
 
 @Component({
-  selector: 'app-home',
-  standalone: true,
-  imports: [RouterLink, ExternalLinkDirective, ...icons],
-  templateUrl: './home.component.html',
-  styleUrl: './home.component.scss',
-  host: {
-    'class': 'content'
-  }
+    selector: 'app-home',
+    imports: [RouterLink, ExternalLinkDirective, ...icons],
+    templateUrl: './home.component.html',
+    styleUrl: './home.component.scss',
+    host: {
+        'class': 'content'
+    }
 })
 export class HomeComponent {
 

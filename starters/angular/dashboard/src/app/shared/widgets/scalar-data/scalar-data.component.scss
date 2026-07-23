@@ -1,0 +1,44 @@
+:host {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  transition: opacity 300ms ease;
+  opacity: 0.7;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  .wrapper {
+    margin-top: -3rem;
+    cursor: pointer;
+
+    .label {
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+
+      ngx-icon {
+        margin-left: 0.25rem;
+        color: rgb(187, 74, 74);
+
+        &.positive {
+          transform: rotate(180deg);
+          color: rgb(61, 196, 54);
+        }
+      }
+
+      .no-change {
+        margin-left: 0.5rem;
+        color: var(--color-quaternary);
+      }
+    }
+
+    .value {
+      .unit {
+        font-size: 1rem;
+      }
+    }
+  }
+}

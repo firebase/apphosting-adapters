@@ -1,0 +1,69 @@
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    color: var(--foreground);
+    background: var(--background);
+    font-family: 'Google Sans', Arial, sans-serif;
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :root {
+    --foreground: 0 0% 7.45%;
+    --background: 0 0% 100%;
+
+    --gray-100: 0 0% 96.86%;
+    --gray-200: 0 0% 93.33%;
+    --gray-300: 0 0% 90.59%;
+    --gray-400: 0 0% 56.47%;
+    --gray-500: 0 0% 53.33%;
+    --gray-600: 0 0% 18.82%;
+
+    --error: 11.95 100% 43.33%;
+
+    --m-ease: cubic-bezier(0.86, 0, 0.07, 1);
+  }
+  .dark {
+    --foreground: 0 0% 93.33%;
+    --background: 0 0% 7.45%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-gray-300 dark:border-gray-600;
+  }
+  body {
+    @apply bg-background text-foreground text-base;
+  }
+}
+
+@layer components {
+  .mobile-nav-menu {
+    @apply absolute top-0 left-0 h-dvh w-full bg-background pt-20 px-5 transition-[opacity,transform] duration-300 ease-in-out;
+  }
+  .button {
+    @apply cursor-pointer text-foreground text-base inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-colors outline-none ring-offset-1 focus-visible:ring-1 ring-foreground disabled:pointer-events-none disabled:opacity-20 [&_svg]:shrink-0;
+  }
+  .container {
+    @apply lg:px-20;
+  }
+  .selected {
+    border-radius: 99px !important;
+  }
+  .blurred-edges {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    mask-image: radial-gradient(ellipse at center, transparent 40%, black 70%);
+    -webkit-mask-image: radial-gradient(ellipse at center, transparent 40%, black 70%);
+    backdrop-filter: blur(var(--blur));
+  }
+}

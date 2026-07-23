@@ -1,0 +1,55 @@
+<div class="header">
+  <div class="title-cont">
+    <kb-interactive-title
+      [value]="card().title"
+      [maxLength]="env.cardTitleMaxLength"
+      (titleBlur)="updateTitle($event)"
+      title="Card title input"
+    />
+    <button (click)="ctrl.close()">
+      <ngx-icon name="Close" size="md" />
+    </button>
+  </div>
+  <div class="labels">
+    @for (label of labels(); track label.id) {
+      <button
+        [kbLabelColoring]="label"
+        (click)="removeLabelFromCard(label.id)"
+        [title]="'Remove ' + label.name"
+      >
+        <ngx-icon name="Delete" size="sm" />
+        <span>{{ label.name }}</span>
+      </button>
+    }
+    <button (click)="openLabelManager($event)" class="add-label">
+      <ngx-icon name="Add" size="sm" />
+      <span>Label</span>
+    </button>
+  </div>
+</div>
+<div class="content">
+  <form [formGroup]="descriptionForm" (ngSubmit)="updateDescription()">
+    <textarea
+      formControlName="description"
+      placeholder="Enter a description"
+      [maxLength]="env.cardDescriptionMaxLength"
+      rows="7"
+    ></textarea>
+    @if (descriptionForm.dirty) {
+      <div class="form-ctrls">
+        <button ngx-button btnType="primary">Save</button>
+        <button
+          ngx-button
+          btnType="secondary"
+          type="button"
+          (click)="resetDescriptionForm()"
+        >
+          Discard
+        </button>
+      </div>
+    }
+  </form>
+  <button ngx-button btnType="secondary" class="delete" (click)="deleteCard()">
+    <ngx-icon name="Delete" size="md" />
+  </button>
+</div>

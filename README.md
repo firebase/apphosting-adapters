@@ -18,7 +18,7 @@ Any framework that can generate a build output in accordance with the App Hostin
 The output bundle primarily consists of a `bundle.yaml` file that sits inside of the `.apphosting` directory. This bundle.yaml contains all the ways that frameworks can configure App Hosting when users deploy their applications.
 
 > [!NOTE]  
-> App Hosting technically supports all all node applications, but no custom framework features will be enabled without the output bundle.
+> App Hosting technically supports all node applications, but no custom framework features will be enabled without the output bundle.
 
 ## Output bundle Schema
 
@@ -37,6 +37,7 @@ interface OutputBundle {
   version: "v1"
   runConfig: RunConfig;
   metadata: Metadata;
+  outputFiles?: OutputFiles;
 }
 ```
 
@@ -108,16 +109,44 @@ interface Metadata {
 | `framework` | `string` | Name of the framework that is being supported | y |
 | `frameworkVersion` | `string` |Version of the framework that is being supported | n |
 
-Here is a sample `bundle.yaml` file putting all this together:
+### OutputFiles
+
+OutputFiles is an optional field to configure outputFiles and optimize server files + static assets.
+
+```typescript
+interface OutputFiles {
+  serverApp: ServerApp
+}
 
 ```
-> cat .apphosting/bundle.yaml
 
+| Field  | Type | Description | Required? |
+| ---------- | ------- | - | - |
+| `serverApp` | `ServerApp` | ServerApp holds configurations related to the serving files at runtime from Cloud Run | y |
+
+### ServerApp
+
+OutputFiles is an optional field to configure outputFiles and optimize server files + static assets.
+
+```typescript
+interface ServerApp {
+  include:  string[]
+}
+
+```
+
+| Field  | Type | Description | Required? |
+| ---------- | ------- | - | - |
+| `include` | `string[]` | include holds a list of directories + files relative to the app root dir that frameworks need to deploy to the App Hosting server, generally this will be the output/dist directory (e.g. .output or dist). In the case that the framework wants to include all files they can use [“.”] | y |
+
+## Sample
+
+Here is a sample `.apphosting/bundle.yaml` file putting all this together:
+
+```yaml
 version: v1
 runConfig:
-  runCommand:
-    - node
-    - dist/index.js
+  runCommand: node dist/index.js
   environmentVariables:
     - variable: VAR
       value: 8080
@@ -127,13 +156,18 @@ runConfig:
   memoryMiB: 512
   minInstances: 0
   maxInstances: 14
+
+outputFiles:
+  serverApp:
+    include: 
+      - dist
+      - .output
     
 metadata:
-  adapterNpmPackageName: npm-name
+  adapterPackageName: npm-name
   adapterVersion: 12.0.0
-  frameworkNpmPackageName: framework-name
-  adapterVersion: 1.0.0
-
+  framework: framework-name
+  frameworkVersion: 1.0.0
 ```
 
 As long as you have the `bundle.yaml` in this format, App Hosting will be able to deploy any framework that supports server side rendering.

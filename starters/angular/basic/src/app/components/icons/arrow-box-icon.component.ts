@@ -1,10 +1,9 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-arrow-box',
-  standalone: true,
-  imports: [],
-  template: `
+    selector: 'app-arrow-box',
+    imports: [],
+    template: `
     <svg
       width="16"
       height="16"
@@ -24,7 +23,7 @@ import { Component } from '@angular/core';
         </clipPath>
       </defs>
     </svg>
-  `,
+  `
 })
 export class ArrowBoxIconComponent {
 

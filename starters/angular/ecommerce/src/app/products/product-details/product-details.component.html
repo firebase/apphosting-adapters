@@ -1,0 +1,40 @@
+<section class="header">
+  <h2 class="product-name" aria-label="Product name">{{ product().name }}</h2>
+  <p class="categories">
+    @for (category of categories(); track category) {
+      <a routerLink="/products" [queryParams]="{ category: category?.id }">{{
+        category?.name
+      }}</a>
+    }
+  </p>
+  @switch (product().availability) {
+    @case ('none') {
+      <div class="ec-chip solid large unavailable">Unavailable</div>
+    }
+    @case ('low') {
+      <div class="ec-chip solid large last-items">Last Items</div>
+    }
+  }
+</section>
+<section class="preview">
+  <ec-image-gallery [product]="product()" />
+</section>
+<section class="details">
+  <ec-price-tag [product]="product()" size="large" />
+  <ec-add-to-cart-btn [product]="product()" />
+  <hr />
+  <p class="description">{{ product().description }}</p>
+  @if (product().parameters.size) {
+    <hr class="params-hr" />
+    <table class="parameters">
+      <tbody>
+        @for (p of product().parameters; track $index) {
+          <tr>
+            <td>{{ p.name }}</td>
+            <td>{{ p.value }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</section>

@@ -1,0 +1,22 @@
+@use 'typography' as tg;
+@use '../../styles/card';
+
+:host {
+  display: block;
+
+  textarea {
+    font-family: tg.$font-family;
+    resize: none;
+    overflow: hidden;
+    box-sizing: border-box;
+
+    &:focus {
+      outline: none;
+      border: 2px solid var(--color-french-violet);
+    }
+
+    &:hover {
+      background-color: var(--color-senary);
+    }
+  }
+}

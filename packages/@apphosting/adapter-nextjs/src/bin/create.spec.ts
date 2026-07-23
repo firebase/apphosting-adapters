@@ -25,6 +25,6 @@ describe("peer dependencies", () => {
   it("expected next version requirement to match", async () => {
     const packageJson = await readPackageJson;
     const nextVersionRange = packageJson.peerDependencies["next"];
-    assert.equal(expectedNextJSRange, nextVersionRange);
+    assert.equal("*", nextVersionRange);
   });
 });

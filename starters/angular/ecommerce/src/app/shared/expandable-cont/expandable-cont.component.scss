@@ -1,0 +1,81 @@
+@use 'screen-breakpoints' as sb;
+
+:host {
+  display: block;
+
+  .wrapper {
+    button {
+      background-color: transparent;
+      padding: 0;
+      margin: 0 0 1rem 0;
+      border: none;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      display: none;
+
+      ngx-icon {
+        --icon-color: var(--color-primary);
+        transform: rotate(90deg);
+        transition: transform 100ms ease;
+      }
+    }
+
+    &.expanded {
+      ngx-icon {
+        transform: rotate(270deg) !important;
+      }
+
+      .content {
+        // Currently hardcoded to 500px
+        max-height: 500px !important;
+      }
+    }
+
+    @mixin activate {
+      button {
+        display: flex;
+      }
+
+      .content {
+        overflow: hidden;
+        max-height: 0;
+        transition: max-height 300ms ease;
+      }
+    }
+
+    &.active {
+      @include activate;
+    }
+
+    &.active-at-1100w {
+      @include sb.bp-1100w {
+        @include activate;
+      }
+    }
+
+    &.active-at-1000w {
+      @include sb.bp-1000w {
+        @include activate;
+      }
+    }
+
+    &.active-at-800w {
+      @include sb.bp-800w {
+        @include activate;
+      }
+    }
+
+    &.active-at-600w {
+      @include sb.bp-600w {
+        @include activate;
+      }
+    }
+
+    &.active-at-400w {
+      @include sb.bp-400w {
+        @include activate;
+      }
+    }
+  }
+}

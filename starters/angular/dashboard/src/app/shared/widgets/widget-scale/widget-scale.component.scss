@@ -1,0 +1,14 @@
+:host {
+  user-select: none;
+
+  .scale-line {
+    stroke: var(--color-senary);
+    stroke-width: 1;
+  }
+
+  .scale-label {
+    text-anchor: end;
+    fill: var(--color-quaternary);
+    font-size: 0.75rem;
+  }
+}

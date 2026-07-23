@@ -1,0 +1,28 @@
+:host {
+  display: block;
+  position: relative;
+
+  button {
+    display: block;
+    border: none;
+    background-color: transparent;
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+
+    &:hover {
+      img {
+        filter: brightness(120%);
+      }
+    }
+
+    img {
+      width: 100%;
+      height: auto;
+      border-radius: 0.25rem;
+      transition: filter 300ms ease;
+      display: block;
+    }
+  }
+}

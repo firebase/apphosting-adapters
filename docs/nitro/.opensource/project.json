@@ -1,0 +1,11 @@
+{
+    "name": "Nitro preset",
+    "platforms": [
+      "app_hosting"
+    ],
+    "related": [
+      "FirebaseExtended/firebase-framework-tools::docs::nuxt"
+    ],
+    "description": "Community-supported Nitro preset for Firebase App Hosting",
+    "content": "README.md"
+}

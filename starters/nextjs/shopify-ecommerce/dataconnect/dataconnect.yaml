@@ -1,0 +1,12 @@
+specVersion: 'v1beta'
+serviceId: 'ecommerce-template'
+location: 'us-central1'
+schema:
+  source: './schema'
+  datasource:
+    postgresql:
+      database: 'ecommerce-template'
+      cloudSql:
+        instanceId: 'fb-tools-dev'
+      # schemaValidation: "COMPATIBLE"
+connectorDirs: ['./connector']

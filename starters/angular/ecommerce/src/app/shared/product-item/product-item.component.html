@@ -1,0 +1,30 @@
+<a [routerLink]="productUrl()" [attr.aria-label]="product().name">
+  <div class="img-cont">
+    <ec-product-image
+      [product]="product()"
+      [priority]="isLcp()"
+      size="lg 400w, xlg 600w, md"
+    />
+  </div>
+  <div class="data">
+    <p class="product-name" aria-label="Product name">
+      {{ product().name }}
+    </p>
+    <div class="categories" aria-label="Categories">
+      <span class="ec-chip">{{ categories().toArray().join(', ') }}</span>
+    </div>
+    @if (product().availability !== 'none') {
+      <div class="price-row">
+        <ec-price-tag
+          [product]="product()"
+          [type]="product().availability === 'low' ? 'prices-only' : 'full'"
+        />
+        @if (product().availability === 'low') {
+          <div class="ec-chip solid last-items">Last Items</div>
+        }
+      </div>
+    } @else {
+      <div class="ec-chip solid unavailable">Unavailable</div>
+    }
+  </div>
+</a>

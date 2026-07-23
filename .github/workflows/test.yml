@@ -57,7 +57,7 @@ jobs:
     needs: build
     strategy:
       matrix:
-        node: [18, 20, 22]
+        node: [18, 22]
       fail-fast: false
     name: Test Node ${{ matrix.node }}
     steps:
@@ -130,6 +130,7 @@ jobs:
       - run: true
 
   publish:
+    environment: release
     runs-on: ubuntu-latest
     name: Publish (NPM)
     needs: ["build", "test"]

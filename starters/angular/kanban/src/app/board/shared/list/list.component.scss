@@ -1,0 +1,120 @@
+@use 'scrollbars';
+@use 'theme-mixins' as tm;
+@use '../styles/variables' as vars;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 vars.$list-width;
+  width: vars.$list-width;
+  max-height: 100%;
+  border: 1px solid var(--color-quinary);
+  background-color: var(--color-septenary);
+  box-sizing: border-box;
+  border-radius: vars.$list-border-radius;
+
+  .header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: vars.$list-padding;
+
+    kb-interactive-title {
+      --font-weight: bold;
+      --vertical-padding: 4px;
+      --width: #{vars.$list-name-input-width};
+      border: none;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: nowrap;
+
+      button {
+        background-color: transparent;
+        transition: background-color 200ms ease;
+        border-radius: 0.25rem;
+        padding: 0.25rem;
+        margin-left: 8px;
+        border: none;
+
+        &:hover {
+          background-color: var(--color-senary);
+        }
+      }
+    }
+  }
+
+  .cards {
+    overflow-x: hidden;
+    overflow-y: auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 0 8px;
+
+    .new-card-top {
+      margin-bottom: vars.$list-padding;
+    }
+
+    .new-card-bottom {
+      margin-top: vars.$list-padding;
+    }
+
+    .empty-list {
+      margin: 0;
+    }
+  }
+
+  .add-btn-wrapper {
+    padding: vars.$list-padding;
+
+    .add-card-bottom {
+      background-color: transparent;
+      transition: background-color 200ms ease;
+      border-radius: 0.25rem;
+      padding: 0.5rem;
+      border: none;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+
+      &:hover {
+        background-color: var(--color-senary);
+      }
+
+      ngx-icon {
+        margin-right: 0.25rem;
+      }
+    }
+  }
+}
+
+::-webkit-scrollbar {
+  width: 1rem;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 0 solid rgba(0, 0, 0, 0);
+
+  border-left-width: 0rem;
+  border-right-width: 0.5rem;
+  background-clip: padding-box;
+  border-radius: 0;
+}
+
+@include tm.if-dark-theme {
+  :host {
+    ::-webkit-scrollbar-thumb {
+      background-color: color-mix(
+        in srgb,
+        var(--color-senary) 70%,
+        var(--color-octonary) 30%
+      );
+
+      &:hover {
+        background-color: var(--color-quinary);
+      }
+    }
+  }
+}

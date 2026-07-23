@@ -1,0 +1,202 @@
+tests:
+  - name: with-js-config-object-style
+    config: |
+      /** @type {import('next').NextConfig} */
+      const nextConfig = {
+        reactStrictMode: true,
+        async headers() {
+          return [
+            {
+              source: '/:path*',
+              headers: [
+                {
+                  key: 'x-custom-header',
+                  value: 'js-config-value',
+                },
+                {
+                  key: 'x-config-type',
+                  value: 'object',
+                },
+              ],
+            },
+          ];
+        },
+      };
+
+      module.exports = nextConfig;
+    file: next.config.js
+  - name: with-js-config-function-style
+    config: |
+      /** @type {import('next').NextConfig} */
+      const nextConfig = (phase, { defaultConfig }) => {
+        return {
+          reactStrictMode: true,
+          async headers() {
+            return [
+              {
+                source: '/:path*',
+                headers: [
+                  {
+                    key: 'x-custom-header',
+                    value: 'js-config-value',
+                  },
+                  {
+                    key: 'x-config-type',
+                    value: 'function',
+                  },
+                ],
+              },
+            ];
+          }
+        };
+      };
+
+      module.exports = nextConfig;
+    file: next.config.js
+  - name: with-js-async-function
+    config: |
+      // @ts-check
+
+      module.exports = async (phase, { defaultConfig }) => {
+        /**
+        * @type {import('next').NextConfig}
+        */
+        const nextConfig = {
+          async headers() {
+            return [
+              {
+                source: '/:path*',
+                headers: [
+                  {
+                    key: 'x-custom-header',
+                    value: 'js-config-value',
+                  },
+                  {
+                    key: 'x-config-type',
+                    value: 'function',
+                  },
+                ],
+              },
+            ];
+          }
+        }
+        return nextConfig
+      }
+    file: next.config.js
+  - name: with-ts-config
+    config: |
+      import type { NextConfig } from 'next'
+
+      const nextConfig: NextConfig = {
+        async headers() {
+          return [
+            {
+              source: '/:path*',
+              headers: [
+                {
+                  key: 'x-custom-header',
+                  value: 'ts-config-value',
+                }
+              ],
+            },
+          ];
+        }
+      }
+
+      export default nextConfig
+    file: next.config.ts
+  - name: with-ecmascript-modules
+    config: |
+      // @ts-check
+
+      /**
+      * @type {import('next').NextConfig}
+      */
+      const nextConfig = {
+        /* config options here */
+        async headers() {
+          return [
+            {
+              source: '/:path*',
+              headers: [
+                {
+                  key: 'x-custom-header',
+                  value: 'mjs-config-value',
+                },
+              ],
+            },
+          ];
+        }
+      }
+
+      export default nextConfig
+    file: next.config.mjs
+  - name: with-empty-config
+    config: |
+      // @ts-check
+
+      /** @type {import('next').NextConfig} */
+      const nextConfig = {
+        /* config options here */
+      }
+
+      module.exports = nextConfig
+    file: next.config.js
+  - name: with-images-unoptimized-false
+    config: |
+      /** @type {import('next').NextConfig} */
+      const nextConfig = {
+        reactStrictMode: true,
+        images: {
+          unoptimized: false,
+        },
+        async headers() {
+          return [
+            {
+              source: '/:path*',
+              headers: [
+                {
+                  key: 'x-custom-header',
+                  value: 'js-config-value',
+                },
+                {
+                  key: 'x-config-type',
+                  value: 'object',
+                },
+              ],
+            },
+          ];
+        },
+      };
+
+      module.exports = nextConfig;
+    file: next.config.js
+  - name: with-custom-image-loader
+    config: |
+      /** @type {import('next').NextConfig} */
+      const nextConfig = {
+        images: {
+          loader: "akamai",
+          path: "",
+        },
+        async headers() {
+          return [
+            {
+              source: '/:path*',
+              headers: [
+                {
+                  key: 'x-custom-header',
+                  value: 'js-config-value',
+                },
+                {
+                  key: 'x-config-type',
+                  value: 'object',
+                },
+              ],
+            },
+          ];
+        },
+      };
+
+      module.exports = nextConfig;
+    file: next.config.js

@@ -1,0 +1,35 @@
+@use './shared/styles/variables' as vars;
+
+:host {
+  display: block;
+  width: 100%;
+
+  .wrapper {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    overflow-x: auto;
+    padding: 0 1rem 0.5rem 1rem;
+    box-sizing: border-box;
+    height: vars.$list-height;
+    padding-bottom: 1rem;
+
+    kb-list {
+      margin-right: 1rem;
+
+      ngx-drop-grid {
+        --grid-slot-background: transparent;
+        --grid-slot-border: 1px solid var(--color-electric-lavander);
+        --grid-slot-border-radius: 0.5rem;
+        flex: 1;
+        display: block;
+        min-height: 3rem;
+
+        &.disabled-spacer {
+          min-height: unset;
+        }
+      }
+    }
+  }
+}

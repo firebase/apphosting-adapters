@@ -1,0 +1,41 @@
+@use '../styles/card';
+@use '../styles/variables' as vars;
+
+:host {
+  display: block;
+
+  button {
+    cursor: pointer;
+    text-align: left;
+    max-width: vars.$card-max-width;
+    word-wrap: break-word;
+
+    .title {
+      color: var(--color-text);
+    }
+
+    .labels {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      flex-wrap: wrap;
+
+      .label {
+        @extend %body-short-03;
+        font-weight: bold;
+        border-radius: 15px;
+        text-align: center;
+        padding: 0rem 0.5rem;
+        margin: 6px 6px 0 0;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        max-width: 200px;
+        overflow: hidden;
+
+        &:last-of-type {
+          margin-right: 0;
+        }
+      }
+    }
+  }
+}

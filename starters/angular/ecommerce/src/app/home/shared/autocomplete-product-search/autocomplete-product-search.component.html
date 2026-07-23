@@ -1,0 +1,38 @@
+<form class="search-form" [formGroup]="form" (ngSubmit)="onSearch()">
+  <ec-search-input
+    #searchInput
+    formControlName="search"
+    placeholder="Search for a product"
+    (focused)="onInputFocus($event)"
+    (ngModelChange)="onSearchFieldChange()"
+  />
+  <button
+    class="search-btn"
+    btnType="secondary"
+    [disabled]="form.invalid"
+    data-text="Search"
+    title="Search"
+  >
+    <ngx-icon name="Search" size="lg" />
+  </button>
+</form>
+@if (showResults()) {
+  <div class="results-cont">
+    @if (products().size) {
+      <ul
+        #results
+        class="results"
+        (focus)="noop()"
+        (mouseover)="onResultsHover()"
+      >
+        @for (p of products(); track p.id; let idx = $index) {
+          <li>
+            <ec-search-item [focused]="focusedResult() === idx" [product]="p" />
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="no-results">No results ...</p>
+    }
+  </div>
+}

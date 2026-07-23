@@ -1,0 +1,22 @@
+@use 'typography';
+
+:host {
+  display: block;
+  min-width: var(--app-min-width);
+
+  footer {
+    @extend %body-short-03;
+    padding: 64px 0 96px 0;
+    text-align: center;
+    color: var(--color-quaternary);
+
+    p {
+      margin: 1rem 0;
+    }
+
+    ngx-icon {
+      display: inline-block;
+      vertical-align: bottom;
+    }
+  }
+}

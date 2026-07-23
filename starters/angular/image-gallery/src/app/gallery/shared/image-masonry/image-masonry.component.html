@@ -1,0 +1,12 @@
+@for (column of columns(); track $index; let i = $index) {
+  <div class="col">
+    @for (extImg of column; track extImg.image.src) {
+      <ig-image
+        [image]="extImg.image"
+        [index]="extImg.index"
+        [priority]="extImg.index <= PRIORITIZE_FIRST"
+        (imageClick)="imageClick.emit($event)"
+      />
+    }
+  </div>
+}

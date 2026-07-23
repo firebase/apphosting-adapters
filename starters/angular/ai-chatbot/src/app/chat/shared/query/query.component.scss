@@ -1,0 +1,47 @@
+:host {
+  margin: 1.25rem 0;
+  display: block;
+
+  .row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+
+    .vis {
+      flex: 0 0 60px;
+      color: var(--color-reddish-orange);
+    }
+
+    &.bot > .vis {
+      color: var(--color-french-violet);
+    }
+
+    .msg {
+      line-height: 1.5rem;
+      flex: 1;
+      padding-right: 0.5rem;
+
+      a {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .animated {
+    animation: slide-down 300ms ease;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+  }
+}
+
+@keyframes slide-down {
+  from {
+    transform: translateY(-15px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

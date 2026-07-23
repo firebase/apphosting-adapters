@@ -1,0 +1,78 @@
+<div class="logo"></div>
+@switch (state()) {
+  @case ('standby') {
+    <div class="options">
+      <button
+        ngx-button
+        btnType="primary"
+        size="minimal"
+        (click)="formalize()"
+        title="Formalize the current text selection"
+      >
+        Formalize
+      </button>
+      <button
+        ngx-button
+        btnType="primary"
+        size="minimal"
+        (click)="expand()"
+        title="Expand the current text selection"
+      >
+        Expand
+      </button>
+      <button
+        ngx-button
+        btnType="primary"
+        size="minimal"
+        (click)="useAsPrompt()"
+        title="Use the current text selection as a prompt"
+      >
+        Use as prompt
+      </button>
+      <button
+        ngx-button
+        btnType="secondary"
+        size="minimal"
+        (click)="activateUserPrompt()"
+        title="Use a custom prompt"
+      >
+        Other
+      </button>
+    </div>
+  }
+  @case ('user-prompt') {
+    <form [formGroup]="userPromptForm" (ngSubmit)="executeUserPrompt()">
+      <input
+        #promptInput
+        placeholder="Type your prompt here"
+        formControlName="prompt"
+      />
+      <button ngx-button btnType="primary" [disabled]="userPromptForm.invalid">
+        Enhance
+      </button>
+    </form>
+  }
+  @case ('loading') {
+    <div class="output">
+      <div class="skeleton-line"></div>
+      <div class="skeleton-line"></div>
+      <div class="skeleton-line"></div>
+    </div>
+  }
+  @case ('ready') {
+    <p class="output" title="Enhancer output">{{ output() }}</p>
+    <div class="controls">
+      <button ngx-button btnType="secondary" size="minimal" (click)="retry()">
+        Retry
+      </button>
+      <button
+        ngx-button
+        btnType="primary"
+        size="minimal"
+        (click)="replaceSelection()"
+      >
+        Replace
+      </button>
+    </div>
+  }
+}

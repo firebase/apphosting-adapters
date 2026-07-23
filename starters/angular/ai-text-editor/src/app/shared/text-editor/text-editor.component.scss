@@ -1,0 +1,135 @@
+@use 'typography';
+@use './styles/control-button';
+@use 'theme-mixins' as tm;
+
+:host {
+  display: block;
+  background-color: var(--color-octonary);
+  border: 1px solid var(--color-senary);
+  box-shadow: 0 5px 15px var(--color-septenary);
+  border-radius: 0.25rem;
+
+  .toolbar {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem 0 1rem;
+    flex-wrap: wrap;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0.75rem;
+      right: 0.75rem;
+      bottom: 0;
+      height: 1px;
+      background-color: var(--color-septenary);
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      flex-wrap: wrap;
+
+      .vr {
+        height: 25px;
+        width: 1px;
+        background-color: var(--color-septenary);
+        margin-left: 10px;
+        margin-bottom: 0.75rem;
+      }
+
+      .saved-label {
+        @extend %caption-text;
+        animation: fade-in 300ms ease;
+        animation-iteration-count: 1;
+        animation-fill-mode: forwards;
+        margin-right: 20px;
+        margin-bottom: 0.75rem;
+        user-select: none;
+      }
+
+      button {
+        @extend %control-button;
+
+        &:not(:first-of-type) {
+          margin-left: 10px;
+        }
+
+        &.new-hint {
+          animation: highlight 2s ease;
+          animation-fill-mode: forwards;
+          animation-iteration-count: 1;
+
+          ngx-icon {
+            animation: shake 0.75s ease;
+            animation-fill-mode: forwards;
+            animation-iteration-count: 1;
+          }
+        }
+      }
+    }
+  }
+}
+
+@include tm.if-light-theme {
+  :host {
+    border-color: var(--color-quinary);
+    box-shadow: 0 5px 15px var(--color-senary);
+
+    .toolbar::before {
+      background-color: var(--color-senary);
+    }
+
+    .vr {
+      background-color: var(--color-senary) !important;
+    }
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes highlight {
+  from {
+    box-shadow: 0 0 10px var(--color-electric-lavander);
+  }
+  to {
+    box-shadow: 0 0 0 var(--color-electric-lavander);
+  }
+}
+
+@keyframes shake {
+  0% {
+    transform: rotate(20deg);
+  }
+  15% {
+    transform: rotate(-18deg);
+  }
+  30% {
+    transform: rotate(16deg);
+  }
+  45% {
+    transform: rotate(-14deg);
+  }
+  60% {
+    transform: rotate(12deg);
+  }
+  75% {
+    transform: rotate(-10deg);
+  }
+  95% {
+    transform: rotate(8deg);
+  }
+  100% {
+    transform: rotate(0);
+  }
+}

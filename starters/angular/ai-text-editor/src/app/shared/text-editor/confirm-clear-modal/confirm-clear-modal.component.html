@@ -1,0 +1,14 @@
+<ngx-modal-content [controller]="ctrl">
+  <ng-container title>Clear the document?</ng-container>
+  <ng-container content>
+    <p>Are you sure you want to clear the document?</p>
+    <div class="options">
+      <button ngx-button btnType="danger" (click)="ctrl.close(true)">
+        Yes, clear it
+      </button>
+      <button ngx-button btnType="secondary" (click)="ctrl.close(false)">
+        No
+      </button>
+    </div>
+  </ng-container>
+</ngx-modal-content>

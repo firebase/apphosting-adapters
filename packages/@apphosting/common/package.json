@@ -1,6 +1,6 @@
 {
   "name": "@apphosting/common",
-  "version": "0.0.5",
+  "version": "0.0.9",
   "description": "Shared library code for App Hosting framework adapters",
   "author": {
     "name": "Firebase",
@@ -17,6 +17,7 @@
   },
   "scripts": {
     "build": "tsc",
+    "test": "ts-mocha -p tsconfig.json 'src/**/*.spec.ts' 'src/*.spec.ts'",
     "localregistry:start": "npx verdaccio --config ../publish-dev/verdaccio-config.yaml",
     "localregistry:publish": "(npm view --registry=http://localhost:4873 @apphosting/common && npm unpublish --@apphosting:registry=http://localhost:4873 --force); npm publish --@apphosting:registry=http://localhost:4873"
   },

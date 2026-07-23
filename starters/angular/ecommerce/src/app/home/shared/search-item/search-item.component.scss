@@ -1,0 +1,37 @@
+@use 'typography';
+
+:host {
+  display: block;
+
+  a {
+    @extend %body-short-01;
+    display: flex;
+    padding: 0.75rem;
+    transition: background-color 200ms ease;
+    align-items: center;
+    font-weight: 600;
+
+    .img {
+      border-radius: 0.25rem;
+      background-color: var(--color-septenary);
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 0.75rem;
+    }
+
+    span {
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    &:hover,
+    &:focus {
+      background-color: var(--color-senary);
+      outline: none;
+    }
+  }
+}

@@ -1,0 +1,13 @@
+<label for="sort-selector" aria-label="Sort products by">Sort by</label>
+<select id="sort-selector" (change)="onSortTypeChange($event)">
+  @for (value of SORT_VALUES; track value) {
+    <!--
+    Setting the selected attribute results in a quicker
+    UI update when reloading the page instead of assigning the
+    value directly to the <select> element.
+  -->
+    <option [value]="value" [attr.selected]="isSelected(value)">
+      {{ VAL_NAME[value] }}
+    </option>
+  }
+</select>

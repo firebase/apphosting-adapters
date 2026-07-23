@@ -6,14 +6,14 @@ import { parse as parseYaml } from "yaml";
 import { spawn } from "child_process";
 import fsExtra from "fs-extra";
 
-const { readFileSync, mkdirp, readJSON, writeJSON, rmdir } = fsExtra;
+const { readFileSync, mkdirp, readJSON, writeJSON, rm } = fsExtra;
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const starterTemplateDir = "../../../starters/angular/basic";
 
 const errors: any[] = [];
 
-await rmdir(join(__dirname, "runs"), { recursive: true }).catch(() => undefined);
+await rm(join(__dirname, "runs"), { recursive: true }).catch(() => undefined);
 
 console.log("\nBuilding and starting test projects in parallel...");
 

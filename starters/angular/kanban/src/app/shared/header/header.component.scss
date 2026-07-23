@@ -1,0 +1,35 @@
+:host {
+  width: 100%;
+  border-block-end: 1px solid var(--color-septenary);
+  background-color: var(--color-bg);
+  display: block;
+
+  header {
+    position: relative;
+    max-width: var(--app-max-width);
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+
+    .controls {
+      display: flex;
+      align-items: center;
+
+      button {
+        padding: 0;
+        border: none;
+        background-color: transparent;
+        margin-left: 1.5rem;
+        color: var(--color-quaternary);
+        transition: color 300ms ease;
+        cursor: pointer;
+
+        &:hover {
+          color: var(--color-primary);
+        }
+      }
+    }
+  }
+}

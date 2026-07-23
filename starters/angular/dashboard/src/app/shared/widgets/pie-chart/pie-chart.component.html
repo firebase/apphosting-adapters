@@ -1,0 +1,28 @@
+<svg #svgElement xmlns="http://www.w3.org/2000/svg">
+  <g>
+    @for (sector of sectors(); track $index; let i = $index) {
+      <path
+        [dbWidgetTooltip]="data().get(i)!"
+        [tooltipSecondaryVal]="
+          (normalizedData().get(i)!.value * 100 | number: '1.2-2') + '%'
+        "
+        [attr.d]="
+          sector
+            | sectorPathDefinition
+              : {
+                  center: center(),
+                  radius: center().y * PIE_CHART_RADIUS
+                }
+        "
+        [attr.stroke]="colorsArray()[i]"
+        [attr.stroke-width]="SECTOR_WIDTH"
+        class="sector"
+      />
+      @if (labels()[i]; as label) {
+        <text [attr.x]="label.pos.x" [attr.y]="label.pos.y">
+          {{ label.name | chartLabel }}
+        </text>
+      }
+    }
+  </g>
+</svg>

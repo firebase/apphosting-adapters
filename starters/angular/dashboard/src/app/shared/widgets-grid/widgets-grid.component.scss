@@ -1,0 +1,59 @@
+@use 'typography';
+@use '../widgets/widget-vars' as wv;
+
+:host {
+  display: block;
+
+  .controls {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+
+    .edit-mode-label {
+      @extend %caption-text;
+      background: repeating-linear-gradient(
+        45deg,
+        #e4ac4c,
+        #e4ac4c 5px,
+        #c39139 5px,
+        #c39139 10px
+      );
+      padding: 0.25rem 0.5rem;
+      border-radius: 1rem;
+      color: var(--white);
+      font-weight: bold;
+    }
+
+    .buttons {
+      display: flex;
+      flex-direction: row-reverse;
+      align-items: center;
+      flex: 1;
+
+      button {
+        margin-left: 0.5rem;
+      }
+    }
+  }
+
+  .no-widgets {
+    text-align: center;
+
+    p {
+      @extend %heading-200;
+      margin: 1rem 0 2rem 0;
+      color: var(--color-quaternary);
+    }
+
+    button {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+  }
+
+  ngx-drop-grid {
+    --grid-slot-background: var(--color-bg);
+    --grid-slot-border: 1px solid var(--color-electric-lavander);
+    --grid-slot-border-radius: #{wv.$widget-border-radius};
+  }
+}

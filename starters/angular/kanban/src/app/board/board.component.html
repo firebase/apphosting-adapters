@@ -1,0 +1,25 @@
+<div ngxDropGridGroup class="wrapper" #wrapper>
+  @for (list of lists.value(); track list.id) {
+    <kb-list
+      [list]="list"
+      (cardCreatorEnabled)="disabledSpacerFor(list.id, $event)"
+    >
+      <ngx-drop-grid
+        [columns]="1"
+        [cellGap]="8"
+        [class.disabled-spacer]="disabledSpacerListId() === list.id"
+        (moved)="onCardMoved(list.id, $event)"
+        (drag)="onCardDrag($event)"
+      >
+        @for (card of cards.fromList(list.id)(); track card.id) {
+          <kb-card
+            *ngxDraggable="card.id; size: 1; position: card.pos; cols: 1"
+            (open)="openCard($event.id)"
+            [card]="card"
+          />
+        }
+      </ngx-drop-grid>
+    </kb-list>
+  }
+  <kb-add-list (listCreate)="lists.createList($event)" />
+</div>

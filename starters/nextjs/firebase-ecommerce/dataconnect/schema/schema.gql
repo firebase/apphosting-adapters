@@ -1,0 +1,123 @@
+type ProductOption @table {
+  id: UUID! @default(expr: "uuidV4()")
+  product: Product!
+  name: String! @col(name: "name", dataType: "varchar(50)")
+  values: [String] @col(name: "values", dataType: "text[]")
+}
+
+# This will be a proper table to store selected options
+type SelectedOption @table {
+  id: UUID! @default(expr: "uuidV4()")
+  productVariant: ProductVariant!
+  name: String @col(name: "name", dataType: "varchar(50)")
+  value: String @col(name: "value", dataType: "varchar(50)")
+}
+
+type ProductVariant @table {
+  id: UUID! @default(expr: "uuidV4()")
+  product: Product!
+  title: String! @col(name: "title", dataType: "varchar(100)")
+  price: Float! @col(name: "price", dataType: "decimal(10,2)")
+  availableForSale: Boolean! @col(name: "available_for_sale", dataType: "boolean")
+  sku: String @col(name: "sku", dataType: "varchar(50)")
+  inventoryQuantity: Int! @col(name: "inventory_quantity", dataType: "int")
+  # The selected options will be available as a reverse relation
+  # selectedOptions: [SelectedOption!]!  <- this will be generated automatically
+}
+
+type ProductImage @table {
+  id: UUID! @default(expr: "uuidV4()")
+  product: Product!
+  featured: Boolean! @col(name: "featured", dataType: "boolean")
+  url: String! @col(name: "url", dataType: "text")
+  altText: String @col(name: "alt_text", dataType: "text")
+  width: Int! @col(name: "width", dataType: "int")
+  height: Int! @col(name: "height", dataType: "int")
+  displayPosition: Int! @col(name: "display_position", dataType: "int")
+}
+
+# Product
+type Product @table {
+  id: UUID! @default(expr: "uuidV4()")
+  handle: String! @col(name: "handle", dataType: "varchar(100)") @unique
+  title: String! @col(name: "title", dataType: "varchar(100)")
+  titleEmbedding: Vector! @col(size: 768)
+  description: String @col(name: "description", dataType: "text")
+  descriptionEmbedding: Vector! @col(size: 768)
+  availableForSale: Boolean! @col(name: "available_for_sale", dataType: "boolean")
+  productType: String @col(name: "product_type", dataType: "varchar(100)")
+  featuredImage: ProductImage
+  seo: SEO
+  createdAt: Date! @default(expr: "request.time")
+  updatedAt: Date! @default(expr: "request.time")
+}
+
+type Customer @table {
+  id: String! @col(name: "customer_auth")
+  firstName: String! @col(name: "first_name", dataType: "varchar(50)")
+  lastName: String! @col(name: "last_name", dataType: "varchar(50)")
+  email: String! @col(name: "email", dataType: "varchar(50)")
+  phone: String! @col(name: "phone", dataType: "varchar(50)")
+  acceptsMarketing: Boolean! @col(name: "accepts_marketing", dataType: "boolean")
+}
+
+type OrderItem @table {
+  id: UUID! @default(expr: "uuidV4()")
+  order: Order!
+  product: Product!
+  quantity: Int! @col(name: "quantity", dataType: "int")
+  price: Float! @col(name: "price", dataType: "float")
+}
+
+type Order @table {
+  id: UUID! @default(expr: "uuidV4()")
+  customer: Customer!
+  chargeId: String @col(name: "charge_id", dataType: "varchar(100)")
+  paymentIntentId: String @col(name: "payment_intent_id", dataType: "varchar(100)")
+  receiptUrl: String @col(name: "receipt_url", dataType: "varchar(255)")
+  subtotalPrice: Float! @col(name: "subtotal_price", dataType: "float")
+  totalTax: Float! @col(name: "total_tax", dataType: "float")
+  totalShippingPrice: Float! @col(name: "total_shipping_price", dataType: "float")
+  totalPrice: Float! @col(name: "total_price", dataType: "float")
+  processedAt: Date!
+    @col(name: "processed_at", dataType: "timestamp")
+    @default(expr: "request.time")
+  financialStatus: String! @col(name: "financial_status", dataType: "varchar(50)")
+  fulfillmentStatus: String! @col(name: "fulfillment_status", dataType: "varchar(50)")
+}
+
+type SEO @table {
+  id: UUID! @default(expr: "uuidV4()")
+  title: String!
+  description: String!
+  keywords: String!
+}
+
+type ProductReview @table(name: "product_reviews", key: ["product", "customer"]) {
+  id: UUID! @default(expr: "uuidV4()")
+  product: Product!
+  customer: Customer!
+  rating: Int!
+  content: String!
+  contentEmbedding: Vector! @col(size: 768)
+  date: Date! @default(expr: "request.time")
+}
+
+type Collection @table {
+  id: UUID! @default(expr: "uuidV4()")
+  handle: String! @col(name: "handle", dataType: "varchar(100)") @unique
+  name: String! @col(name: "name", dataType: "varchar(100)")
+  description: String @col(name: "description", dataType: "text")
+  featuredImage: ProductImage
+  seo: SEO
+  page: String @col(name: "page", dataType: "varchar(100)")
+  createdAt: Date! @default(expr: "request.time")
+  updatedAt: Date! @default(expr: "request.time")
+}
+
+# Junction table for Collection-Product many-to-many relationship
+type ProductCollection @table(name: "product_collection_products", key: ["collection", "product"]) {
+  collection: Collection!
+  product: Product!
+  displayPosition: Int! @col(name: "display_position", dataType: "int")
+}

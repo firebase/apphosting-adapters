@@ -1,0 +1,49 @@
+# Settings for Backend (on Cloud Run).
+# See https://firebase.google.com/docs/app-hosting/configure#cloud-run
+runConfig:
+  minInstances: 0
+
+# Environment variables and secrets.
+# Grant access to secrets in Cloud Secret Manager.
+# See https://firebase.google.com/docs/app-hosting/configure#secret-parameters
+# If you would like to change any keys' values in local development with the emulator
+# (e.g. using Stripe Sandbox keys), you can overwrite values in apphosting.emulator.yaml
+env:
+  # Values for Firebase config can be found by clicking the cog next to "Project Overview"
+  # in the firebase console and clicking "project settings"
+  # - variable: NEXT_PUBLIC_FIREBASE_API_KEY
+  #   value: <YOUR VALUE HERE>
+  # - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+  #   value: <YOUR VALUE HERE>
+  # - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+  #   value: <YOUR VALUE HERE>
+  # - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+  #   value: <YOUR VALUE HERE>
+  # - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+  #   value: <YOUR VALUE HERE>
+  # - variable: NEXT_PUBLIC_FIREBASE_APP_ID
+  #   value: <YOUR VALUE HERE>
+
+  # The Google API key needs access to the Generative AI APIs. Create your key by visiting
+  # https://ai.google.dev/gemini-api/docs and clicking "Get a Gemini API Key"
+  # You can then run `firebase apphosting:secrets:set google-api-key and pasting the value.
+  # - variable: GOOGLE_API_KEY
+  #   secret: google-api-key
+
+  # To use stripe, you must create an account on stripe.com. From the stripe dashboard
+  # You can copy the NEXT_PUBLIC_STRIPE_PUB_KEY from "Publishable key" in the dashboard.
+  # You can set STRIPE_SECRET_KEY by calling `firebase apphosting:secrets:set stripe-secret-key`
+  # and pasting the value listed as "Secret key" in the dashboard.
+  # To get the stripe webhook secret, create a stripe webhook as described in README.md,
+  # go to the webhook details page and click "Reveal" under "Signing secret". Copy that value,
+  # run `firebase apphosting:secrets:set stripe-webhook-secret` and paste the secret value when
+  # prompted. The value for STRIPE_ACCOUNT_ID can be found in the upper right corner of the
+  # webhook details page.
+  # - variable: NEXT_PUBLIC_STRIPE_PUB_KEY
+  #   value: <YOUR VALUE HERE>
+  # - variable: STRIPE_SECRET_KEY
+  #   secret: stripe-secret-key
+  # - variable: STRIPE_ACCOUNT_ID
+  #   value: <YOUR VALUE HERE>
+  # - variable: STRIPE_WEBHOOK_SECRET
+  #   secret: stripe-webhook-secret

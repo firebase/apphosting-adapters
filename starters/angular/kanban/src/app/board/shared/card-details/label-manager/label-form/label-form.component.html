@@ -1,0 +1,11 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <input
+    placeholder="Label name"
+    formControlName="name"
+    [maxLength]="env.labelNameMaxLength"
+  />
+  <kb-color-picker formControlName="color" />
+  <button ngx-button btnType="primary" [disabled]="form.invalid">
+    {{ submitButtonName() }}
+  </button>
+</form>

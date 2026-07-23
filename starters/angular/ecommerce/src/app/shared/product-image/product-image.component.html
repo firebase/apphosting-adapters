@@ -1,0 +1,20 @@
+@if (baseSrc()) {
+  <picture>
+    @for (pair of sizes(); track $index) {
+      <source
+        [media]="buildMediaQuery(pair[1])"
+        [srcset]="buildSrcset(baseSrc(), pair[0])"
+      />
+    }
+    <img
+      [ngSrc]="baseSrc()"
+      [alt]="altText()"
+      [priority]="priority()"
+      [width]="defaultSize()"
+      [height]="defaultSize()"
+      draggable="false"
+    />
+  </picture>
+} @else {
+  <ngx-icon name="NoPhoto" size="xxlg" />
+}

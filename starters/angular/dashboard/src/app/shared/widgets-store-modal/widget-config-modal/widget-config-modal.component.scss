@@ -1,0 +1,53 @@
+@use 'typography';
+
+:host {
+  width: 70vw;
+  max-width: 400px;
+  display: block;
+
+  .box-cont {
+    display: flex;
+    justify-content: center;
+
+    .size-box {
+      border: 1px solid rgb(22, 133, 212);
+      background-color: rgba(22, 133, 212, 0.5);
+      width: 16px;
+      height: 16px;
+      margin: 0 1px;
+    }
+  }
+
+  hr {
+    background: var(--color-senary);
+    margin: 1.5rem 0;
+  }
+
+  .label {
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .no-data-source {
+    @extend %chip-text;
+    text-transform: uppercase;
+    color: var(--color-reddish-orange);
+  }
+
+  input {
+    width: 100%;
+  }
+
+  button {
+    margin-top: 1rem;
+    width: 100%;
+  }
+
+  .src-type {
+    @extend %chip-text;
+    background-color: var(--color-septenary);
+    margin-left: 0.5rem;
+    border-radius: 0.25rem;
+    padding: 2px 4px;
+  }
+}

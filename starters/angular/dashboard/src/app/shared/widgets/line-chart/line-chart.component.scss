@@ -1,0 +1,75 @@
+:host {
+  user-select: none;
+
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+
+    text {
+      fill: #fff;
+      font-size: 20px;
+    }
+
+    path {
+      stroke-width: 2;
+      stroke-linecap: round;
+      fill: none;
+    }
+
+    .hor-scale-line {
+      stroke-width: 1;
+      stroke: var(--color-senary);
+    }
+
+    .hor-scale-label {
+      text-anchor: middle;
+      fill: var(--color-quinary);
+      font-size: 0.75rem;
+    }
+
+    .data-point-hover-area {
+      pointer-events: bounding-box;
+      fill: transparent;
+      stroke-width: 1;
+      cursor: pointer;
+
+      &:hover + .data-point-info {
+        display: block;
+      }
+    }
+
+    .data-point-info {
+      display: none;
+      pointer-events: none;
+
+      line {
+        stroke-width: 1;
+        stroke: var(--color-senary);
+      }
+    }
+  }
+
+  .legend {
+    position: absolute;
+    bottom: 15px;
+    left: 20px;
+    display: flex;
+    flex-wrap: nowrap;
+
+    .legend-label {
+      color: var(--color-tertiary);
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      margin-right: 20px;
+
+      .legend-line {
+        width: 15px;
+        height: 2px;
+        margin-right: 5px;
+      }
+    }
+  }
+}

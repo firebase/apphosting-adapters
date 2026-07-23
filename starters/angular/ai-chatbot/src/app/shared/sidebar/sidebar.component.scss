@@ -1,0 +1,122 @@
+@use 'typography';
+@use 'screen-breakpoints' as sb;
+@use './variables' as vars;
+
+@property --grad1 {
+  syntax: '<color>';
+  inherits: false;
+  initial-value: #000;
+}
+
+@property --grad2 {
+  syntax: '<color>';
+  inherits: false;
+  initial-value: #000;
+}
+
+:host {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  background-color: var(--color-septenary);
+  padding: 1rem;
+  transition: width vars.$sidebar-anim-duration ease;
+  width: vars.$sidebar-collapsed-width;
+  box-sizing: border-box;
+  overflow: hidden;
+
+  &.expanded {
+    width: 275px;
+
+    .fade-in {
+      animation: fade-in 300ms ease;
+      animation-iteration-count: 1;
+      animation-fill-mode: forwards;
+      animation-delay: vars.$sidebar-anim-duration;
+    }
+
+    .new-chat-btn {
+      padding: 0.5rem !important;
+      border-radius: 0.5rem !important;
+      width: 120px !important;
+
+      @include sb.bp-600w {
+        width: 140px !important;
+      }
+
+      &::after {
+        content: 'New Chat';
+        margin-left: 0.5rem;
+      }
+    }
+  }
+
+  .sidebar-toggle {
+    padding: 0;
+    border: none;
+    background-color: transparent;
+  }
+
+  .fade-in {
+    opacity: 0;
+  }
+
+  .content {
+    margin-top: 2rem;
+
+    .new-chat-btn {
+      --grad1: var(--color-senary);
+      --grad2: var(--color-senary);
+      @extend %heading-600;
+      background: linear-gradient(90deg, var(--grad1) 0%, var(--grad2) 100%);
+      display: block;
+      border-radius: 20px;
+      width: 24px;
+      box-sizing: border-box;
+      padding: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      transition:
+        --grad1 300ms ease,
+        --grad2 300ms ease,
+        width 200ms ease;
+
+      @include sb.bp-600w {
+        font-size: 1.125rem;
+      }
+
+      &:hover {
+        --grad1: #f637e3;
+        --grad2: #8514f5;
+        color: var(--white);
+      }
+    }
+
+    .chats {
+      max-height: 60vh;
+      overflow-x: hidden;
+      overflow-y: auto;
+      margin-top: 2rem;
+      box-sizing: border-box;
+      padding-right: 1px;
+    }
+  }
+
+  acb-footer {
+    margin-top: 2rem;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

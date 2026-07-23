@@ -1,0 +1,7 @@
+<a [routerLink]="[RoutePrefix.Chat, chat().id]" class="name">
+  <ngx-icon name="Chat" size="sm" />
+  {{ chat().name }}
+</a>
+<button class="delete-btn" (click)="deleteChat()" title="Delete chat">
+  <ngx-icon name="Delete" size="sm" />
+</button>

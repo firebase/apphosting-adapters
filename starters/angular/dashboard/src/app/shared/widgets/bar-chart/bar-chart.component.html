@@ -1,0 +1,43 @@
+<svg
+  #svgElement
+  xmlns="http://www.w3.org/2000/svg"
+  [style.width]="contentWidth() + 'px'"
+>
+  <g
+    dbWidgetScale
+    [x]="BARS_LEFT_PADDING - SCALE_SIDE_PADDING"
+    [y]="BARS_TOP_PADDING"
+    [width]="
+      contentWidth() -
+      BARS_RIGHT_PADDING -
+      BARS_LEFT_PADDING +
+      SCALE_SIDE_PADDING * 2
+    "
+    [height]="maxBarHeight()"
+    [max]="nearestMax()"
+  />
+  <g
+    class="bars"
+    [attr.transform]="[BARS_LEFT_PADDING, BARS_TOP_PADDING] | translate"
+  >
+    @for (item of normalizedData(); track item.label + $index; let i = $index) {
+      <rect
+        [attr.width]="barWidth()"
+        [attr.x]="(barWidth() + BAR_SPACING) * i"
+        [attr.y]="this.maxBarHeight() - item.value"
+        [attr.height]="item.value"
+        [attr.fill]="colorsArray()[i]"
+        [dbWidgetTooltip]="data().get(i)!"
+        rx="4"
+        ry="4"
+      />
+      <text
+        [attr.x]="(barWidth() + BAR_SPACING) * i + barWidth() / 2"
+        [attr.y]="this.maxBarHeight() + LABELS_MARGIN_TOP"
+        class="label"
+      >
+        {{ item.label | chartLabel }}
+      </text>
+    }
+  </g>
+</svg>

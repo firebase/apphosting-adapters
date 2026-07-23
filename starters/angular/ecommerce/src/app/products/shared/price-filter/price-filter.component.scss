@@ -1,0 +1,24 @@
+@use 'typography';
+
+:host {
+  display: block;
+
+  .label {
+    @extend %caption-text;
+    margin-bottom: 0.5rem;
+    color: var(--color-tertiary);
+  }
+
+  .filter {
+    display: flex;
+    align-items: center;
+
+    span {
+      margin: 0 0.5rem;
+    }
+
+    input {
+      width: 50%;
+    }
+  }
+}

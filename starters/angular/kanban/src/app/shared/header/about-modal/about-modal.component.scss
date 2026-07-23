@@ -1,0 +1,15 @@
+@use 'typography';
+
+:host {
+  display: block;
+  color: var(--color-quaternary);
+
+  p {
+    margin: 1rem 0;
+  }
+
+  ngx-icon {
+    display: inline-block;
+    vertical-align: bottom;
+  }
+}

@@ -1,0 +1,193 @@
+extend type Query {
+  """
+  ✨ Look up a single `Product` based on `id`, `key` or `first` and return selected fields (or `null` if not found).
+  """
+  product(
+    """
+    The unique ID of the object.
+    """
+    id: UUID
+
+    """
+    The key used to identify the object.
+    """
+    key: Product_Key
+
+    """
+    Fetch the first row based on the filters and ordering.
+    """
+    first: Product_FirstRow
+  ): Product @fdc_generated(from: "Product", purpose: QUERY_SINGLE)
+  """
+  ✨ Look up a single `Review` based on `id`, `key` or `first` and return selected fields (or `null` if not found).
+  """
+  review(
+    """
+    The unique ID of the object.
+    """
+    id: UUID
+
+    """
+    The key used to identify the object.
+    """
+    key: Review_Key
+
+    """
+    Fetch the first row based on the filters and ordering.
+    """
+    first: Review_FirstRow
+  ): Review @fdc_generated(from: "Review", purpose: QUERY_SINGLE)
+  """
+  ✨ List `Product` objects in the table, optionally filtered by `where` conditions.
+  """
+  products(
+    """
+    Filter condition to narrow down the query results.
+    """
+    where: Product_Filter
+
+    """
+    Order the query results by specific fields.
+    """
+    orderBy: [Product_Order!]
+
+    """
+    Number of rows to skip before starting to return the results.
+    """
+    offset: Int
+
+    """
+    Maximum number of rows to return (defaults to 100 rows).
+    """
+    limit: Int = 100
+  ): [Product!]! @fdc_generated(from: "Product", purpose: QUERY_MULTIPLE)
+  """
+  ✨ List `Review` objects in the table, optionally filtered by `where` conditions.
+  """
+  reviews(
+    """
+    Filter condition to narrow down the query results.
+    """
+    where: Review_Filter
+
+    """
+    Order the query results by specific fields.
+    """
+    orderBy: [Review_Order!]
+
+    """
+    Number of rows to skip before starting to return the results.
+    """
+    offset: Int
+
+    """
+    Maximum number of rows to return (defaults to 100 rows).
+    """
+    limit: Int = 100
+  ): [Review!]! @fdc_generated(from: "Review", purpose: QUERY_MULTIPLE)
+  """
+  ✨ List `Product` objects ordered by vector similarity between the `descriptionEmbedding` field and `compare_embed`.
+  (Alternatively, `compare` can be used if the input is a raw Vector.)
+  """
+  products_descriptionEmbedding_similarity(
+    """
+    Vector to compare with the stored vectors.
+    """
+    compare: Vector
+
+    """
+    ✨ `_embed` server value variant of `compare` (Vector to compare with the stored vectors.)
+    """
+    compare_embed: Vector_Embed
+
+    """
+    Similarity method to use for vector comparison (defaults to `INNER_PRODUCT`).
+    """
+    method: VectorSimilarityMethod = INNER_PRODUCT
+
+    """
+    Threshold for distance comparison.
+    """
+    within: Float
+
+    """
+    Filter condition to apply when searching for similar vectors.
+    """
+    where: Product_Filter
+
+    """
+    Limit the number of similar vectors returned (defaults to 100 rows).
+    """
+    limit: Int = 100
+  ): [Product!]! @fdc_generated(from: "Product.descriptionEmbedding", purpose: QUERY_MULTIPLE_BY_SIMILARITY)
+  """
+  ✨ List `Product` objects ordered by vector similarity between the `nameEmbedding` field and `compare_embed`.
+  (Alternatively, `compare` can be used if the input is a raw Vector.)
+  """
+  products_nameEmbedding_similarity(
+    """
+    Vector to compare with the stored vectors.
+    """
+    compare: Vector
+
+    """
+    ✨ `_embed` server value variant of `compare` (Vector to compare with the stored vectors.)
+    """
+    compare_embed: Vector_Embed
+
+    """
+    Similarity method to use for vector comparison (defaults to `INNER_PRODUCT`).
+    """
+    method: VectorSimilarityMethod = INNER_PRODUCT
+
+    """
+    Threshold for distance comparison.
+    """
+    within: Float
+
+    """
+    Filter condition to apply when searching for similar vectors.
+    """
+    where: Product_Filter
+
+    """
+    Limit the number of similar vectors returned (defaults to 100 rows).
+    """
+    limit: Int = 100
+  ): [Product!]! @fdc_generated(from: "Product.nameEmbedding", purpose: QUERY_MULTIPLE_BY_SIMILARITY)
+  """
+  ✨ List `Review` objects ordered by vector similarity between the `contentEmbedding` field and `compare_embed`.
+  (Alternatively, `compare` can be used if the input is a raw Vector.)
+  """
+  reviews_contentEmbedding_similarity(
+    """
+    Vector to compare with the stored vectors.
+    """
+    compare: Vector
+
+    """
+    ✨ `_embed` server value variant of `compare` (Vector to compare with the stored vectors.)
+    """
+    compare_embed: Vector_Embed
+
+    """
+    Similarity method to use for vector comparison (defaults to `INNER_PRODUCT`).
+    """
+    method: VectorSimilarityMethod = INNER_PRODUCT
+
+    """
+    Threshold for distance comparison.
+    """
+    within: Float
+
+    """
+    Filter condition to apply when searching for similar vectors.
+    """
+    where: Review_Filter
+
+    """
+    Limit the number of similar vectors returned (defaults to 100 rows).
+    """
+    limit: Int = 100
+  ): [Review!]! @fdc_generated(from: "Review.contentEmbedding", purpose: QUERY_MULTIPLE_BY_SIMILARITY)
+}

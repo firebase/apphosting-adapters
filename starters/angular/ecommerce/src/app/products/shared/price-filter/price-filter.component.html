@@ -1,0 +1,22 @@
+<p class="label">Price filter</p>
+<div class="filter" aria-label="Price filter">
+  <input
+    #fromInput
+    placeholder="From"
+    type="number"
+    [value]="range().from"
+    [min]="0"
+    [max]="range().to"
+    (blur)="onFromChangeEnd($event)"
+  />
+  <span>–</span>
+  <input
+    #toInput
+    placeholder="To"
+    type="number"
+    [value]="range().to"
+    [min]="range().from"
+    [max]="default().to"
+    (blur)="onToChangeEnd($event)"
+  />
+</div>

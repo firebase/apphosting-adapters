@@ -1,0 +1,99 @@
+# Create a new product
+mutation CreateProduct(
+  $productID: String!
+  $productSlug: String!
+  $name: String!
+  $description: String!
+  $price: Float!
+) @auth(level: NO_ACCESS) {
+  product_insert(
+    data: {
+      productID: $productID
+      productSlug: $productSlug
+      name: $name
+      description: $description
+      price: $price
+      nameEmbedding_embed: { model: "textembedding-gecko@003", text: $name }
+      descriptionEmbedding_embed: { model: "textembedding-gecko@003", text: $description }
+    }
+  )
+}
+
+# Update an existing product
+mutation UpdateProduct(
+  $id: UUID!
+  $name: String!
+  $description: String!
+  $price: Float!
+  $productID: String!
+  $productSlug: String!
+) @auth(level: NO_ACCESS) {
+  product_update(
+    key: { id: $id }
+    data: {
+      name: $name
+      description: $description
+      price: $price
+      productID: $productID
+      productSlug: $productSlug
+      nameEmbedding_embed: { model: "textembedding-gecko@003", text: $name }
+      descriptionEmbedding_embed: { model: "textembedding-gecko@003", text: $description }
+    }
+  )
+}
+
+# Delete a product
+mutation DeleteProduct($id: UUID!) @auth(level: NO_ACCESS) {
+  product_delete(key: { id: $id })
+}
+
+# Create a new review
+mutation CreateReview(
+  $productID: String!
+  $productSlug: String!
+  $productName: String!
+  $userID: String!
+  $userName: String!
+  $rating: Float!
+  $content: String!
+) @auth(level: USER) {
+  review_insert(
+    data: {
+      productID: $productID
+      productSlug: $productSlug
+      productName: $productName
+      userID_expr: "auth.uid"
+      userName: $userName
+      rating: $rating
+      content: $content
+      contentEmbedding_embed: { model: "textembedding-gecko@003", text: $content }
+    }
+  )
+}
+
+# Update an existing review
+mutation UpdateReview($id: UUID!, $rating: Float!, $content: String!) @auth(level: USER) {
+  query {
+    review(id: $id) @redact {
+      userID @check(expr: "this == auth.uid", message: "You can only update your own reviews")
+    }
+  }
+  review_update(
+    key: { id: $id }
+    data: {
+      rating: $rating
+      content: $content
+      contentEmbedding_embed: { model: "textembedding-gecko@003", text: $content }
+    }
+  )
+}
+
+# Delete a review
+mutation DeleteReview($id: UUID!) @auth(level: USER) {
+    query {
+    review(id: $id) @redact {
+      userID @check(expr: "this == auth.uid", message: "You can only update your own reviews")
+    }
+  }
+  review_delete(key: { id: $id })
+}

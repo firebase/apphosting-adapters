@@ -1,0 +1,33 @@
+/* You can add global styles to this file, and also import other style files */
+
+@use 'global';
+@use 'scrollbars';
+
+acb-root {
+  height: 100%;
+}
+
+/* Chat message global styles */
+
+.acb-chat-msg {
+  & > h1:first-child,
+  & > h2:first-child,
+  & > h3:first-child,
+  & > h4:first-child,
+  & > h5:first-child,
+  & > h6:first-child,
+  & > ul:first-child,
+  & > ol:first-child {
+    margin-top: 0;
+  }
+
+  a {
+    text-decoration: underline;
+  }
+
+  p,
+  ul > li,
+  ol > li {
+    margin-bottom: 0.5rem;
+  }
+}

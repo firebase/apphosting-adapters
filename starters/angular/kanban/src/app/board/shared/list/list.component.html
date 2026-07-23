@@ -1,0 +1,42 @@
+<div class="header">
+  <kb-interactive-title
+    [value]="list().name"
+    (titleBlur)="updateName($event)"
+    [maxLength]="env.listNameMaxLength"
+    title="List name input"
+  />
+  <div class="controls">
+    <button (click)="cardCreator.set('top')" title="Add a card">
+      <ngx-icon name="Add" size="md" />
+    </button>
+    <button (click)="openCtxMenu($event)" title="More options">
+      <ngx-icon name="MoreVert" size="md" />
+    </button>
+  </div>
+</div>
+<div class="cards" #cards>
+  @if (cardCreator() === 'top') {
+    <kb-new-card-input
+      (cardCreate)="createCard($event, true); cardCreator.set('none')"
+      (cardBlur)="cardCreator.set('none')"
+      class="new-card-top"
+      [class.empty-list]="isListEmpty()"
+    />
+  }
+  <ng-content />
+  @if (cardCreator() === 'bottom') {
+    <kb-new-card-input
+      (cardCreate)="createCard($event); cardCreator.set('none')"
+      (cardBlur)="cardCreator.set('none')"
+      (cardInput)="cards.scrollTo(0, cards.scrollHeight)"
+      class="new-card-bottom"
+      [class.empty-list]="isListEmpty()"
+    />
+  }
+</div>
+<div class="add-btn-wrapper">
+  <button class="add-card-bottom" (click)="cardCreator.set('bottom')">
+    <ngx-icon name="Add" size="md" />
+    <span>Add a card</span>
+  </button>
+</div>
