@@ -19,6 +19,9 @@ export interface Options extends UserOptions {
   client: string;
   assets: string;
   trailingSlash?: SSRManifest["trailingSlash"];
+  staticHeaders?: boolean;
+  bodySizeLimit?: number;
+  experimentalDisableStreaming?: boolean;
 }
 
 export interface CreateServerOptions {

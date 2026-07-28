@@ -2,6 +2,8 @@
 
 Experimental support for Astro on Firebase App Hosting, [see the work-in-progress here](https://github.com/FirebaseExtended/firebase-framework-tools/pull/297).
 
+Supports Astro 5, 6 and 7, with the corresponding `@astrojs/node` major (9, 10 or 11).
+
 ## Instructions for use
 
 To use follow these instructions:
