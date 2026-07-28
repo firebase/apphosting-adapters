@@ -4,6 +4,6 @@
     "packages": [
       "packages/*",
       "packages/@apphosting/*",
-      "packages/@apphosting/community/*"
+      "packages/@apphosting/experimental/*"
     ]
   }
