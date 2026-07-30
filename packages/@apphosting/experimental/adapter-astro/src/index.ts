@@ -1,4 +1,4 @@
-import * as fs from "node:fs/promises";
+import { writeFile } from "node:fs/promises";
 import { stringify as yamlStringify } from "yaml";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
@@ -16,17 +16,7 @@ import {
   usesVirtualConfig,
 } from "./utils.js";
 import { OutputBundleConfig, Availability } from "@apphosting/common";
-export const {
-  move,
-  exists,
-  writeFile,
-  readJson,
-  readdir,
-  readFileSync,
-  existsSync,
-  mkdir,
-  ensureDir,
-} = fsExtra;
+export const { readFileSync, existsSync, ensureDir } = fsExtra;
 
 export function getAdapter(options: Options): AstroAdapter {
   const require = createRequire(import.meta.url);
@@ -128,7 +118,7 @@ export default function createIntegration(userOptions: UserOptions): AstroIntegr
             frameworkVersion: packageVersion,
           },
         };
-        await fs.writeFile(`./.apphosting/bundle.yaml`, yamlStringify(outputBundle));
+        await writeFile(`./.apphosting/bundle.yaml`, yamlStringify(outputBundle));
       },
     },
   };
