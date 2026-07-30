@@ -20,8 +20,8 @@ export const { readFileSync, existsSync, ensureDir } = fsExtra;
 
 export function getAdapter(options: Options): AstroAdapter {
   const require = createRequire(import.meta.url);
-  const serverEntrypoint = path.join(require.resolve("@astrojs/node"), "../server.js");
-  const previewEntrypoint = path.join(require.resolve("@astrojs/node"), "../preview.js");
+  const serverEntrypoint = path.join(require.resolve("@astrojs/node"), "..", "server.js");
+  const previewEntrypoint = path.join(require.resolve("@astrojs/node"), "..", "preview.js");
 
   if (usesVirtualConfig()) {
     return {
@@ -97,7 +97,7 @@ export default function createIntegration(userOptions: UserOptions): AstroIntegr
       "astro:build:done": async () => {
         await ensureDir("./.apphosting");
         const directoryName = dirname(fileURLToPath(import.meta.url));
-        const packageJsonPath = `${directoryName}/../package.json`;
+        const packageJsonPath = path.join(directoryName, "..", "package.json");
         if (!existsSync(packageJsonPath)) {
           throw new Error(`Astro adapter package.json file does not exist at ${packageJsonPath}`);
         }
@@ -118,7 +118,7 @@ export default function createIntegration(userOptions: UserOptions): AstroIntegr
             frameworkVersion: packageVersion,
           },
         };
-        await writeFile(`./.apphosting/bundle.yaml`, yamlStringify(outputBundle));
+        await writeFile(path.join(".", ".apphosting", "bundle.yaml"), yamlStringify(outputBundle));
       },
     },
   };
