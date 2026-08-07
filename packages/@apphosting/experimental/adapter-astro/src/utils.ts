@@ -2,7 +2,6 @@ import { createRequire } from "module";
 import fsExtra from "fs-extra";
 import type { AstroAdapterFeatureMap } from "astro";
 import type { Options } from "./types.js";
-import { join } from "path";
 
 const { readFileSync } = fsExtra;
 
@@ -33,7 +32,8 @@ export function getPackageVersion(packageName: string): string | undefined {
   const require = createRequire(import.meta.url);
 
   try {
-    const packageJsonPath = require.resolve(join(packageName, "package.json"), {
+    // A module specifier, not a filesystem path: it must stay forward-slashed on every platform.
+    const packageJsonPath = require.resolve(`${packageName}/package.json`, {
       paths: [process.cwd()],
     });
     const { version } = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
