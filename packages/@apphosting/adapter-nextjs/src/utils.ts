@@ -31,7 +31,8 @@ export function checkNextJSVersion(version: string | undefined) {
   }
   const isPrerelease = semVer.prerelease(version) !== null;
   const baseVersion = isPrerelease ? semVer.coerce(version)?.version : null;
-  const isSafe = satisfies(version, SAFE_NEXTJS_VERSIONS) ||
+  const isSafe =
+    satisfies(version, SAFE_NEXTJS_VERSIONS) ||
     (baseVersion && satisfies(baseVersion, STRICTLY_SAFE_NEXTJS_VERSIONS));
 
   if (!isSafe) {
