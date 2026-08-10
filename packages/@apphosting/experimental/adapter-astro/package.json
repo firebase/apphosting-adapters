@@ -1,0 +1,67 @@
+{
+    "name": "@apphosting/astro-adapter",
+    "version": "0.0.2",
+    "description": "",
+    "type": "module",
+    "scripts": {
+        "build": "rm -rf dist && tsc",
+        "test": "npm run test:unit",
+        "test:unit": "ts-mocha -p tsconfig.json 'src/**/*.spec.ts' 'src/*.spec.ts'"
+    },
+    "exports": {
+      ".": "./dist/index.js",
+      "./dist/*": {
+        "node": "./dist/*",
+        "default": null
+      },
+      "./package.json": "./package.json"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/FirebaseExtended/firebase-framework-tools.git"
+      },
+    "files": [
+      "dist"
+    ],
+    "author": "",
+    "license": "ISC",
+    "keywords": [
+      "astro-adapter",
+      "withastro"
+    ],
+    "dependencies": {
+      "fs-extra": "^11.2.0",
+      "send": "^0.18.0",
+      "server-destroy": "^1.0.1",
+      "yaml": "^2.6.1",
+      "@apphosting/common": "*"
+    },
+    "peerDependencies": {
+      "astro": "^5 || ^6 || ^7",
+      "@astrojs/node": "^9 || ^10 || ^11"
+    },
+    "peerDependenciesMeta": {
+      "astro": {
+        "optional": true
+      },
+      "@astrojs/node": {
+        "optional": true
+      }
+    },
+    "devDependencies": {
+      "@types/fs-extra": "^11.0.4",
+      "@types/mocha": "*",
+      "@types/node": "^18.17.8",
+      "@types/send": "^0.17.4",
+      "@types/server-destroy": "^1.0.3",
+      "astro": "^7.0.0",
+      "cheerio": "1.0.0-rc.12",
+      "express": "^4.19.2",
+      "mocha": "*",
+      "node-mocks-http": "^1.14.1",
+      "ts-mocha": "*",
+      "ts-node": "*",
+      "typescript": "^5.7.2"
+    }
+  }
+  
