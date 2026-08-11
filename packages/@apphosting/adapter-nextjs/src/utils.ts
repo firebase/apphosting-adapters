@@ -23,7 +23,7 @@ export const { satisfies } = semVer;
 const SAFE_NEXTJS_VERSIONS =
   ">=16.1.0 || ~16.0.7 || ~v15.5.7 || ~v15.4.8 || ~v15.3.6 || ~v15.2.6 || ~v15.1.9 || ~v15.0.5 || <14.3.0-canary.77";
 const STRICTLY_SAFE_NEXTJS_VERSIONS =
-  "==16.1.0 || >=16.1.1 || ~16.0.8 || ~v15.5.8 || ~v15.4.9 || ~v15.3.7 || ~v15.2.7 || ~v15.1.10 || ~v15.0.6 || <14.3.0-canary.77";
+  ">=16.1.1 || ~16.0.8 || ~v15.5.8 || ~v15.4.9 || ~v15.3.7 || ~v15.2.7 || ~v15.1.10 || ~v15.0.6 || <14.3.0-canary.77";
 
 export function checkNextJSVersion(version: string | undefined) {
   if (!version) {
