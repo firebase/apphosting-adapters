@@ -4,6 +4,24 @@ import type { Options } from "./types.js";
 
 const importUtils = import("@apphosting/astro-adapter/dist/utils.js");
 
+describe("resolveImageEntrypoint", () => {
+  it("serves builds from the Node endpoint", async () => {
+    const { resolveImageEntrypoint } = await importUtils;
+    assert.equal(resolveImageEntrypoint(undefined, "build"), "astro/assets/endpoint/node");
+  });
+
+  it("serves `astro dev` from the dev endpoint", async () => {
+    const { resolveImageEntrypoint } = await importUtils;
+    assert.equal(resolveImageEntrypoint(undefined, "dev"), "astro/assets/endpoint/dev");
+  });
+
+  it("keeps a user-configured entrypoint for every command", async () => {
+    const { resolveImageEntrypoint } = await importUtils;
+    assert.equal(resolveImageEntrypoint("my/custom/endpoint", "build"), "my/custom/endpoint");
+    assert.equal(resolveImageEntrypoint("my/custom/endpoint", "dev"), "my/custom/endpoint");
+  });
+});
+
 describe("createConfigPlugin", () => {
   const config = { mode: "standalone", host: true, port: 4321 } as Options;
 

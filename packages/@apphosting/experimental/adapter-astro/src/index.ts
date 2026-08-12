@@ -11,6 +11,7 @@ import type { Options, UserOptions } from "./types.js";
 import {
   createConfigPlugin,
   getPackageVersion,
+  resolveImageEntrypoint,
   ASTRO_PACKAGE_NAME,
   SUPPORTED_ASTRO_FEATURES,
   usesVirtualConfig,
@@ -59,10 +60,13 @@ export default function createIntegration(userOptions: UserOptions): AstroIntegr
   return {
     name: "@apphosting/astro-adapter",
     hooks: {
-      "astro:config:setup": ({ updateConfig, config }) => {
+      "astro:config:setup": ({ updateConfig, config, command }) => {
         updateConfig({
           image: {
-            endpoint: config.image.endpoint ?? "astro/assets/endpoint/node",
+            endpoint: {
+              route: config.image.endpoint.route,
+              entrypoint: resolveImageEntrypoint(config.image.endpoint.entrypoint, command),
+            },
           },
           vite: {
             ssr: {

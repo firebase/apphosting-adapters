@@ -22,6 +22,21 @@ export const SUPPORTED_ASTRO_FEATURES: AstroAdapterFeatureMap = {
   i18nDomains: "experimental",
   envGetSecret: "stable",
 } as const;
+const IMAGE_ENDPOINT = {
+  dev: "astro/assets/endpoint/dev",
+  node: "astro/assets/endpoint/node",
+} as const;
+
+/**
+ * Resolves which entrypoint serves the image endpoint. A user-configured entrypoint always wins;
+ * otherwise Astro's dev endpoint serves `astro dev` and its Node endpoint serves builds.
+ * @param entrypoint The entrypoint already set on the Astro config, if any.
+ * @param command The Astro command running this build.
+ * @return The entrypoint to serve the image endpoint from.
+ */
+export function resolveImageEntrypoint(entrypoint: string | undefined, command: string): string {
+  return entrypoint ?? (command === "dev" ? IMAGE_ENDPOINT.dev : IMAGE_ENDPOINT.node);
+}
 
 /**
  * Reads the version of a package as installed in the user's project.
