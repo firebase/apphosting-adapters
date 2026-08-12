@@ -64,8 +64,8 @@ export default function createIntegration(userOptions: UserOptions): AstroIntegr
         updateConfig({
           image: {
             endpoint: {
-              route: config.image.endpoint.route,
-              entrypoint: resolveImageEntrypoint(config.image.endpoint.entrypoint, command),
+              route: config.image.endpoint?.route,
+              entrypoint: resolveImageEntrypoint(config.image.endpoint?.entrypoint, command),
             },
           },
           vite: {
