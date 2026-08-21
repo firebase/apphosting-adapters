@@ -5,7 +5,7 @@
     "description": "Experimental addon to the Firebase CLI to add web framework support",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/FirebaseExtended/firebase-framework-tools.git"
+        "url": "git+https://github.com/firebase/apphosting-adapters.git"
     },
     "bin": {
         "discover": "dist/bin/discover.js"

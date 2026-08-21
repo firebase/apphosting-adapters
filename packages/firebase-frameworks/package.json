@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/FirebaseExtended/firebase-framework-tools.git"
+    "url": "git+https://github.com/firebase/apphosting-adapters.git"
   },
   "author": {
     "name": "Firebase",
@@ -54,7 +54,7 @@
   },
   "peerDependencies": {
     "firebase": "^9.9.0 || ^10.0.0 || ^11.0.0 || ^12.0.0",
-    "firebase-admin": "^11.0.1 || ^12.0.0 || ^13.0.0",
+    "firebase-admin": "^11.0.1 || ^12.0.0 || ^13.0.0 || ^14.0.0",
     "sharp": "^0.32 || ^0.33"
   },
   "peerDependenciesMeta": {

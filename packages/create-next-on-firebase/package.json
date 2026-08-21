@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/FirebaseExtended/firebase-framework-tools.git"
+    "url": "git+https://github.com/firebase/apphosting-adapters.git"
   },
   "author": "Firebase",
   "license": "Apache-2.0",
