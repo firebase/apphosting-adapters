@@ -171,3 +171,173 @@ metadata:
 ```
 
 As long as you have the `bundle.yaml` in this format, App Hosting will be able to deploy any framework that supports server side rendering.
+<!DOCTYPE html><html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Transmissions Foyer PRO</title>
+  <script src="https://cdn.tailwindcss.com"></script>  <!-- Firebase -->  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script></head>
+<body class="bg-gray-100 p-4"><div class="max-w-4xl mx-auto">
+  <h1 class="text-2xl font-bold mb-4">📋 Transmissions - Foyer (Dossier jeune)</h1>  <!-- LOGIN -->  <div id="login" class="bg-white p-4 rounded-2xl shadow mb-4">
+    <input id="email" placeholder="Email" class="border p-2 w-full mb-2 rounded" />
+    <input id="password" type="password" placeholder="Mot de passe" class="border p-2 w-full mb-2 rounded" />
+    <button onclick="login()" class="bg-blue-500 text-white px-4 py-2 rounded-2xl w-full">Connexion</button>
+  </div>  <!-- APP -->  <div id="app" class="hidden">
+    <button onclick="logout()" class="bg-red-500 text-white px-4 py-2 rounded-2xl mb-4">Déconnexion</button><!-- SELECTION JEUNE -->
+<select id="selectJeune" onchange="showJeune()" class="border p-2 w-full mb-4 rounded"></select>
+
+<!-- DOSSIER JEUNE -->
+<div id="ficheJeune" class="bg-white p-4 rounded-xl shadow mb-4 hidden">
+  <h2 id="nomJeune" class="text-xl font-bold mb-2"></h2>
+  <div id="statsJeune" class="text-sm text-gray-600"></div>
+</div>
+
+<button onclick="toggleForm()" class="bg-blue-500 text-white px-4 py-2 rounded-2xl mb-4">
+  ➕ Nouvelle transmission
+</button>
+
+<div id="form" class="hidden bg-white p-4 rounded-2xl shadow mb-4">
+  <input id="jeune" placeholder="Nom du jeune" class="border p-2 w-full mb-2 rounded" />
+  <input id="educ" placeholder="Éducateur" class="border p-2 w-full mb-2 rounded" />
+  <select id="type" class="border p-2 w-full mb-2 rounded">
+    <option>Info</option>
+    <option>Incident</option>
+    <option>Médical</option>
+    <option>Comportement</option>
+  </select>
+  <textarea id="message" placeholder="Transmission..." class="border p-2 w-full mb-2 rounded"></textarea>
+  <button onclick="addTransmission()" class="bg-green-500 text-white px-4 py-2 rounded-2xl">
+    ✅ Enregistrer
+  </button>
+</div>
+
+<div id="list" class="space-y-2"></div>
+
+  </div>
+</div><script>
+const firebaseConfig = {
+  apiKey: "TON_API_KEY",
+  authDomain: "TON_PROJECT.firebaseapp.com",
+  projectId: "TON_PROJECT_ID",
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const auth = firebase.auth();
+
+let allData = [];
+let currentJeune = null;
+
+function login() {
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  auth.signInWithEmailAndPassword(email, password)
+    .catch(err => alert(err.message));
+}
+
+function logout() {
+  auth.signOut();
+}
+
+auth.onAuthStateChanged(user => {
+  if (user) {
+    document.getElementById('login').classList.add('hidden');
+    document.getElementById('app').classList.remove('hidden');
+    loadData();
+  } else {
+    document.getElementById('login').classList.remove('hidden');
+    document.getElementById('app').classList.add('hidden');
+  }
+});
+
+function toggleForm() {
+  document.getElementById('form').classList.toggle('hidden');
+}
+
+function addTransmission() {
+  const jeune = document.getElementById('jeune').value;
+  const educ = document.getElementById('educ').value;
+  const type = document.getElementById('type').value;
+  const message = document.getElementById('message').value;
+
+  if (!jeune || !educ || !message) {
+    alert("Merci de remplir tous les champs");
+    return;
+  }
+
+  db.collection("transmissions").add({
+    jeune,
+    educ,
+    type,
+    message,
+    date: new Date()
+  });
+
+  document.getElementById('jeune').value = '';
+  document.getElementById('educ').value = '';
+  document.getElementById('message').value = '';
+}
+
+function populateJeunes() {
+  const select = document.getElementById('selectJeune');
+  const names = [...new Set(allData.map(d => d.data().jeune))];
+
+  select.innerHTML = '<option value="">-- Choisir un jeune --</option>';
+  names.forEach(name => {
+    const opt = document.createElement('option');
+    opt.value = name;
+    opt.innerText = name;
+    select.appendChild(opt);
+  });
+}
+
+function showJeune() {
+  const name = document.getElementById('selectJeune').value;
+  currentJeune = name;
+
+  if (!name) return;
+
+  const filtered = allData.filter(d => d.data().jeune === name);
+
+  document.getElementById('ficheJeune').classList.remove('hidden');
+  document.getElementById('nomJeune').innerText = name;
+
+  let incidents = 0;
+  filtered.forEach(d => {
+    if (d.data().type === "Incident") incidents++;
+  });
+
+  document.getElementById('statsJeune').innerText =
+    `Total : ${filtered.length} | Incidents : ${incidents}`;
+
+  render(filtered);
+}
+
+function render(data) {
+  const list = document.getElementById('list');
+  list.innerHTML = '';
+
+  data.forEach(doc => {
+    const t = doc.data();
+    const div = document.createElement('div');
+    div.className = 'bg-white p-3 rounded-2xl shadow';
+    div.innerHTML = `
+      <div class="text-sm text-gray-500">${new Date(t.date.seconds*1000).toLocaleString()}</div>
+      <div><strong>${t.jeune}</strong> - ${t.type}</div>
+      <div class="text-sm">👤 ${t.educ}</div>
+      <div class="mt-2">${t.message}</div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+function loadData() {
+  db.collection("transmissions").orderBy("date", "desc")
+    .onSnapshot(snapshot => {
+      allData = snapshot.docs;
+      populateJeunes();
+      render(allData);
+    });
+}
+</script></body>
+</html>![IMG_20251108_174123](https://github.com/user-attachments/assets/07ca3d0e-8d12-43a3-b764-ba97e5c42ba0)
