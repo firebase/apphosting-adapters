@@ -19,7 +19,7 @@
     "@angular/platform-browser-dynamic": "^20.0.0",
     "@angular/platform-server": "^20.0.0",
     "@angular/router": "^20.0.0",
-    "@angular/ssr": "^20.0.0",
+    "@angular/ssr": "^20.3.25",
     "@google/generative-ai": "^0.24.0",
     "@ngx-templates/shared": "^1.0.3",
     "@types/showdown": "^2.0.6",
