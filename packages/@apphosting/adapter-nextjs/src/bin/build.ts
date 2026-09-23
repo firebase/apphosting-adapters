@@ -43,12 +43,13 @@ const nextConfig = await loadConfig(root, opts.projectDirectory);
  * one does not exist in the app's root: https://github.com/vercel/next.js/blob/23681508ca34b66a6ef55965c5eac57de20eb67f/packages/next/src/server/config.ts#L1115
  */
 const nextConfigPath = join(root, nextConfig.configFileName);
-if (await exists(nextConfigPath)) {
-  await overrideNextConfig(root, nextConfig.configFileName);
-  await validateNextConfigOverride(root, opts.projectDirectory, nextConfig.configFileName);
-}
 
 try {
+  if (await exists(nextConfigPath)) {
+    await overrideNextConfig(root, nextConfig.configFileName);
+    await validateNextConfigOverride(root, opts.projectDirectory, nextConfig.configFileName);
+  }
+
   await runBuild();
 
   const adapterMetadata = getAdapterMetadata();

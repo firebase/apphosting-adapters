@@ -349,6 +349,26 @@ describe("next config overrides", () => {
     );
   });
 
+  it("should restore the original config when the override fails", async () => {
+    const { overrideNextConfig } = await importOverrides;
+    const originalConfig = `module.exports = { /* config options here */ }`;
+
+    // ".cjs" stands in for any extension the override does not know how to rewrite. If it
+    // ever becomes supported, pick another unsupported extension rather than deleting this.
+    fs.writeFileSync(path.join(tmpDir, "next.config.cjs"), originalConfig);
+
+    await assert.rejects(
+      async () => await overrideNextConfig(tmpDir, "next.config.cjs"),
+      /Unsupported file extension for Next Config/,
+    );
+
+    assert.equal(fs.readFileSync(path.join(tmpDir, "next.config.cjs"), "utf-8"), originalConfig);
+    assert.ok(
+      !fs.existsSync(path.join(tmpDir, "next.config.original.cjs")),
+      "No next.config.original.cjs backup should be left behind",
+    );
+  });
+
   it("should not do anything if no next.config.* file exists", async () => {
     const { overrideNextConfig } = await importOverrides;
     await overrideNextConfig(tmpDir, "next.config.js");
