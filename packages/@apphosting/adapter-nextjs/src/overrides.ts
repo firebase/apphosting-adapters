@@ -63,6 +63,7 @@ export async function overrideNextConfig(projectRoot: string, nextConfigFileName
     console.log(`Successfully created ${nextConfigFileName} with Firebase App Hosting overrides`);
   } catch (error) {
     console.error(`Error overriding Next.js config: ${error}`);
+    await restoreNextConfig(projectRoot, nextConfigFileName);
     throw error;
   }
 }
