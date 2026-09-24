@@ -1,3 +1,33 @@
+[service-worker.js](https://github.com/user-attachments/files/31294306/service-worker.js)
+[rizvi-data.js](https://github.com/user-attachments/files/31294305/rizvi-data.js)
+[rizvi-app.js](https://github.com/user-attachments/files/31294304/rizvi-app.js)
+[real-employees.js](https://github.com/user-attachments/files/31294300/real-employees.js)
+[README.md](https://github.com/user-attachments/files/31294299/README.md)
+[manifest.json](https://github.com/user-attachments/files/31294298/manifest.json)
+[index.html](https://github.com/user-attachments/files/31294297/index.html)
+[firestore.indexes.json](https://github.com/user-attachments/files/31294289/firestore.indexes.json)
+[firebase-config.js](https://github.com/user-attachments/files/31294287/firebase-config.js)
+[firebase-app.js](https://github.com/user-attachments/files/31294286/firebase-app.js)
+[firebase.json](https://github.com/user-attachments/files/31294284/firebase.json)
+
+[DEPLOY.md](https://github.com/user-attachments/files/31294270/DEPLOY.md)
+
+
+[README.md](https://github.com/user-attachments/files/31294258/README.md)
+[service-worker.js](https://github.com/user-attachments/files/31294255/service-worker.js)
+[rizvi-data.js](https://github.com/user-attachments/files/31294254/rizvi-data.js)
+[rizvi-app.js](https://github.com/user-attachments/files/31294253/rizvi-app.js)
+[real-employees.js](https://github.com/user-attachments/files/31294244/real-employees.js)
+
+[deploy.yml](https://github.com/user-attachments/files/31294212/deploy.yml)
+<img width="512" height="512" alt="icon-512" src="https://github.com/user-attachments/assets/40ffe5cd-091b-427e-8331-ce7f29fcf31c" />
+<img width="192" height="192" alt="icon-192" src="https://github.com/user-attachments/assets/c395abd5-0c54-4feb-8226-6a41e58b85c1" />
+<img width="512" height="512" alt="icon" src="https://github.com/user-attachments/assets/b7364d86-d526-4a57-aee9-3c7ff936dad6" />
+<img width="32" height="32" alt="favicon" src="https://github.com/user-attachments/assets/fec17ae8-1598-4f94-a64e-f754f11c4eac" />
+<img width="180" height="180" alt="apple-touch-icon" src="https://github.com/user-attachments/assets/865776f7-1933-4247-abc7-074a37bebfef" />
+[README.md](https://github.com/user-attachments/files/31294189/README.md)
+[README (2).md](https://github.com/user-attachments/files/31294183/README.2.md)
+[README (1).md](https://github.com/user-attachments/files/31294181/README.1.md)
 # App Hosting adapters
 
 ## Overview
