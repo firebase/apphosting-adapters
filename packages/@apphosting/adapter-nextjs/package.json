@@ -1,6 +1,6 @@
 {
   "name": "@apphosting/adapter-nextjs",
-  "version": "14.0.21",
+  "version": "14.0.22",
   "main": "dist/index.js",
   "description": "Experimental addon to the Firebase CLI to add web framework support",
   "repository": {
