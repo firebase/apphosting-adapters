@@ -17,7 +17,7 @@
     "@angular/forms": "^20.0.0",
     "@angular/platform-browser": "^20.0.0",
     "@angular/platform-browser-dynamic": "^20.0.0",
-    "@angular/platform-server": "^20.0.0",
+    "@angular/platform-server": "^20.3.19",
     "@angular/router": "^20.0.0",
     "@angular/ssr": "^20.0.0",
     "@google/generative-ai": "^0.24.0",
