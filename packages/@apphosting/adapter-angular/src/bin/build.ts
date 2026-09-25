@@ -1,12 +1,16 @@
-#! /usr/bin/env node
+#!/usr/bin/env node
 import {
   generateBuildOutput,
   checkBuildConditions,
   validateOutputDirectory,
   parseOutputBundleOptions,
   metaFrameworkOutputBundleExists,
+  validateEnvironment,
 } from "../utils.js";
 import { getBuildOptions, runBuild } from "@apphosting/common";
+
+// Validate environment variables before executing the build
+validateEnvironment();
 
 const opts = getBuildOptions();
 
