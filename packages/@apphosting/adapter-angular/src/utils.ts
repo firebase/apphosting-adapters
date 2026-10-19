@@ -280,7 +280,11 @@ export async function validateOutputDirectory(
 export const isMain = (meta: ImportMeta) => {
   if (!meta) return false;
   if (!process.argv[1]) return false;
-  return process.argv[1] === fileURLToPath(meta.url);
+  try {
+    return fsExtra.realpathSync(process.argv[1]) === fileURLToPath(meta.url);
+  } catch {
+    return false;
+  }
 };
 
 export const metaFrameworkOutputBundleExists = () => {
