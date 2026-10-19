@@ -136,6 +136,12 @@ ${manifest}
     );
   });
 
+  it("parses a manifest with trailing whitespace", async () => {
+    const { parseOutputBundleOptions } = await importUtils;
+    const output = manifest.replace(/$/gm, " \t");
+    assert.equal(parseOutputBundleOptions(output).serverFilePath, serverFilePath);
+  });
+
   it("parses a single-line manifest", async () => {
     const { parseOutputBundleOptions } = await importUtils;
     const output = JSON.stringify(manifestObject);

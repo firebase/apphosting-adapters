@@ -179,7 +179,8 @@ function extractManifest(output: string): ValidManifest {
   const prefixRegex = /^[^\s:]+:build: ?/gm;
   const lines = stripAnsi(output)
     .replace(prefixRegex, "")
-    .split(/\r\n?|\n/);
+    .split(/\r\n?|\n/)
+    .map((line) => line.trimEnd());
   let schemaError: ZodError | undefined;
   // Logs can contain braces and JSON too (an npm-echoed `${VAR}` script, prerender logs), so try
   // each candidate, last first, until one is a valid manifest.
