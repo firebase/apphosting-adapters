@@ -1,5 +1,6 @@
 import { cp } from "fs/promises";
 import promiseSpawn from "@npmcli/promise-spawn";
+import { tmpdir } from "os";
 import { dirname, join, relative } from "path";
 import { fileURLToPath } from "url";
 import { parse as parseYaml } from "yaml";
@@ -76,8 +77,9 @@ const scenarios: Scenario[] = [
 ];
 
 const errors: any[] = [];
+const runsDir = join(tmpdir(), "e2e-runs");
 
-await rmdir(join(__dirname, "runs"), { recursive: true }).catch(() => undefined);
+await rmdir(runsDir, { recursive: true }).catch(() => undefined);
 
 // Run each scenario
 for (const scenario of scenarios) {
@@ -88,7 +90,7 @@ for (const scenario of scenarios) {
   );
 
   const runId = `${scenario.name}-${Math.random().toString().split(".")[1]}`;
-  const cwd = join(__dirname, "runs", runId);
+  const cwd = join(runsDir, runId);
   await mkdirp(cwd);
 
   console.log(`[${runId}] Copying ${starterTemplateDir} to working directory`);
