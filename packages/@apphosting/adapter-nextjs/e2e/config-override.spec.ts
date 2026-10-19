@@ -1,4 +1,5 @@
 import * as assert from "assert";
+import { tmpdir } from "os";
 import { posix } from "path";
 import fsExtra from "fs-extra";
 
@@ -17,19 +18,11 @@ if (!runId) {
   throw new Error("RUN_ID environment variable expected");
 }
 
-const compiledFilesPath = posix.join(
-  process.cwd(),
-  "e2e",
-  "runs",
-  runId,
-  ".next",
-  "standalone",
-  ".next",
-);
+const compiledFilesPath = posix.join(tmpdir(), "e2e-runs", runId, ".next", "standalone", ".next");
 
-const standalonePath = posix.join(process.cwd(), "e2e", "runs", runId, ".next", "standalone");
+const standalonePath = posix.join(tmpdir(), "e2e-runs", runId, ".next", "standalone");
 
-const appPath = posix.join(process.cwd(), "e2e", "runs", runId);
+const appPath = posix.join(tmpdir(), "e2e-runs", runId);
 
 const requiredServerFilePath = posix.join(compiledFilesPath, "required-server-files.json");
 

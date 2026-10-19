@@ -19,14 +19,14 @@ describe("app", () => {
     const response = await fetch(host);
     assert.ok(response.ok);
     assert.equal(response.headers.get("content-type")?.toLowerCase(), "text/html; charset=utf-8");
-    assert.equal(response.headers.get("cache-control"), "s-maxage=31536000, ");
+    assert.equal(response.headers.get("cache-control"), "s-maxage=31536000");
   });
 
   it("/ssg", async () => {
     const response = await fetch(posix.join(host, "ssg"));
     assert.ok(response.ok);
     assert.equal(response.headers.get("content-type")?.toLowerCase(), "text/html; charset=utf-8");
-    assert.equal(response.headers.get("cache-control"), "s-maxage=31536000, ");
+    assert.equal(response.headers.get("cache-control"), "s-maxage=31536000");
     const text = await response.text();
     assert.ok(text.includes("SSG"));
     assert.ok(text.includes("Generated"));
@@ -81,7 +81,7 @@ describe("app", () => {
     const response = await fetch(posix.join(host, "isr", "demand"));
     assert.ok(response.ok);
     assert.equal(response.headers.get("content-type")?.toLowerCase(), "text/html; charset=utf-8");
-    assert.equal(response.headers.get("cache-control"), "s-maxage=31536000, ");
+    assert.equal(response.headers.get("cache-control"), "s-maxage=31536000");
     const text = await response.text();
     assert.ok(text.includes("A cached page"));
     assert.ok(text.includes("Generated"));
