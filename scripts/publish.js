@@ -15,6 +15,7 @@ const wombatDressingRoomTokens = new Map([
   ["@apphosting/adapter-nextjs", process.env.ADAPTER_NEXTJS_NPM_TOKEN],
   ["@apphosting/adapter-angular", process.env.ADAPTER_ANGULAR_NPM_TOKEN],
   ["@apphosting/common", process.env.ADAPTER_COMMON_NPM_TOKEN],
+  ["@apphosting/astro-adapter", process.env.ADAPTER_ASTRO_NPM_TOKEN],
 ]);
 
 wombatDressingRoomTokens.forEach((token, pkg) => {

@@ -18,7 +18,6 @@ const adminAuth = getAdminAuth(adminApp);
 const firebaseAppsLRU = new LRU<string, FirebaseApp>({
   max: LRU_MAX_INSTANCES,
   ttl: LRU_TTL,
-  allowStale: true,
   updateAgeOnGet: true,
   dispose: (value) => {
     deleteApp(value);
@@ -64,6 +63,10 @@ const handleAuth = async (req: Request, res: Response) => {
       .verifySessionCookie(__session, true)
       .catch((e: Error) => console.error(e.message)));
     if (isRevoked) return;
+    // A concurrent request may have initialized the app while we awaited
+    app = firebaseAppsLRU.get(uid);
+  }
+  if (!app) {
     const random = Math.random().toString(36).split(".")[1];
     const appName = `authenticated-context:${uid}:${random}`;
     // Force JS SDK autoinit with the undefined
@@ -90,7 +93,8 @@ export const handleFactory =
     if (req.url === "/__session") {
       await mintCookie(req, res);
     } else {
-      await handleAuth(req, res);
+      // Auth failure = unauthenticated request
+      await handleAuth(req, res).catch((e: Error) => console.error(e.message));
       frameworkHandle(req, res);
     }
   };

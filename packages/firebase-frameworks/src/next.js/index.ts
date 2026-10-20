@@ -15,8 +15,10 @@ const nextApp: NextServer = createNextServer({
   port: 8080,
 });
 
+const preparePromise = nextApp.prepare();
+
 export const handle = async (req: Request, res: Response): Promise<void> => {
-  await nextApp.prepare();
+  await preparePromise;
   const parsedUrl = parse(req.url, true);
   const incomingMessage = incomingMessageFromExpress(req);
   await nextApp.getRequestHandler()(incomingMessage, res, parsedUrl);

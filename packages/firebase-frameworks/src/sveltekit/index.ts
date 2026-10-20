@@ -44,7 +44,8 @@ function toSvelteKitRequest(request: Request) {
   return new Request(href, {
     method: request.method,
     headers: toSvelteKitHeaders(request.headers),
-    body: request.rawBody ? request.rawBody : null,
+    // rawBody Buffer is ArrayBuffer-backed at runtime; assert to satisfy BodyInit prevents a copy.
+    body: request.rawBody ? (request.rawBody as Uint8Array<ArrayBuffer>) : null,
   });
 }
 

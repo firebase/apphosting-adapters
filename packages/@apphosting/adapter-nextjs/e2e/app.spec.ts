@@ -19,14 +19,14 @@ describe("app", () => {
     const response = await fetch(host);
     assert.ok(response.ok);
     assert.equal(response.headers.get("content-type")?.toLowerCase(), "text/html; charset=utf-8");
-    assert.equal(response.headers.get("cache-control"), "s-maxage=31536000, ");
+    assert.equal(response.headers.get("cache-control"), "s-maxage=31536000");
   });
 
   it("/ssg", async () => {
     const response = await fetch(posix.join(host, "ssg"));
     assert.ok(response.ok);
     assert.equal(response.headers.get("content-type")?.toLowerCase(), "text/html; charset=utf-8");
-    assert.equal(response.headers.get("cache-control"), "s-maxage=31536000, ");
+    assert.equal(response.headers.get("cache-control"), "s-maxage=31536000");
     const text = await response.text();
     assert.ok(text.includes("SSG"));
     assert.ok(text.includes("Generated"));
@@ -81,7 +81,7 @@ describe("app", () => {
     const response = await fetch(posix.join(host, "isr", "demand"));
     assert.ok(response.ok);
     assert.equal(response.headers.get("content-type")?.toLowerCase(), "text/html; charset=utf-8");
-    assert.equal(response.headers.get("cache-control"), "s-maxage=31536000, ");
+    assert.equal(response.headers.get("cache-control"), "s-maxage=31536000");
     const text = await response.text();
     assert.ok(text.includes("A cached page"));
     assert.ok(text.includes("Generated"));
@@ -110,6 +110,14 @@ describe("app", () => {
 
     // Check if the UUID has changed, indicating successful revalidation
     assert.notEqual(initialUUID, newUUID, "UUID should change after revalidation");
+  });
+
+  it("serves public assets", async () => {
+    for (const asset of ["between-links.svg", "between-cards.svg"]) {
+      const response = await fetch(posix.join(host, asset));
+      assert.ok(response.ok, `${asset} should be served from public/`);
+      assert.ok((await response.text()).includes("<svg"), `${asset} should be an SVG`);
+    }
   });
 
   it(`404`, async () => {

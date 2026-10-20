@@ -295,6 +295,37 @@ outputFiles:
     };
     validateTestFiles(tmpDir, expectedFiles);
   });
+
+  it("merges the public directory when the standalone output is partially populated", async () => {
+    const { generateBuildOutput, validateOutputDirectory } = await importUtils;
+    const files = {
+      ".next/standalone/.next/package.json": "",
+      ".next/standalone/server.js": "",
+      ".next/static/staticfile": "",
+      "public/a.svg": "a",
+      "public/b.svg": "b",
+      // Next already copied a.svg here while tracing a server component's file reads,
+      // so public/ exists in the output but is incomplete.
+      ".next/standalone/public/a.svg": "a",
+    };
+    generateTestFiles(tmpDir, files);
+    await generateBuildOutput(
+      tmpDir,
+      tmpDir,
+      outputBundleOptions,
+      path.join(tmpDir, ".next"),
+      defaultNextVersion,
+      adapterMetadata,
+    );
+    await validateOutputDirectory(outputBundleOptions, path.join(tmpDir, ".next"));
+
+    const expectedFiles = {
+      ".next/standalone/public/a.svg": "a",
+      ".next/standalone/public/b.svg": "b",
+    };
+    validateTestFiles(tmpDir, expectedFiles);
+  });
+
   it("test populate output bundle options", async () => {
     const { populateOutputBundleOptions } = await importUtils;
     const expectedOutputBundleOptions = {

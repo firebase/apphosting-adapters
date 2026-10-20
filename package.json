@@ -12,6 +12,7 @@
   },
   "workspaces": [
     "packages/@apphosting/*",
+    "packages/@apphosting/experimental/*",
     "packages/create-next-on-firebase",
     "packages/firebase-frameworks"
   ],

@@ -23,7 +23,7 @@ export const { satisfies } = semVer;
 const SAFE_NEXTJS_VERSIONS =
   ">=16.1.0 || ~16.0.7 || ~v15.5.7 || ~v15.4.8 || ~v15.3.6 || ~v15.2.6 || ~v15.1.9 || ~v15.0.5 || <14.3.0-canary.77";
 const STRICTLY_SAFE_NEXTJS_VERSIONS =
-  "==16.1.0 || >=16.1.1 || ~16.0.8 || ~v15.5.8 || ~v15.4.9 || ~v15.3.7 || ~v15.2.7 || ~v15.1.10 || ~v15.0.6 || <14.3.0-canary.77";
+  ">=16.1.1 || ~16.0.8 || ~v15.5.8 || ~v15.4.9 || ~v15.3.7 || ~v15.2.7 || ~v15.1.10 || ~v15.0.6 || <14.3.0-canary.77";
 
 export function checkNextJSVersion(version: string | undefined) {
   if (!version) {
@@ -31,7 +31,8 @@ export function checkNextJSVersion(version: string | undefined) {
   }
   const isPrerelease = semVer.prerelease(version) !== null;
   const baseVersion = isPrerelease ? semVer.coerce(version)?.version : null;
-  const isSafe = satisfies(version, SAFE_NEXTJS_VERSIONS) ||
+  const isSafe =
+    satisfies(version, SAFE_NEXTJS_VERSIONS) ||
     (baseVersion && satisfies(baseVersion, STRICTLY_SAFE_NEXTJS_VERSIONS));
 
   if (!isSafe) {
@@ -155,6 +156,7 @@ export async function generateBuildOutput(
   const staticDirectory = join(nextBuildDirectory, "static");
   await Promise.all([
     copy(staticDirectory, opts.outputStaticDirectoryPath, { overwrite: true }),
+    copyPublicDirectory(appDir, opts.outputPublicDirectoryPath),
     copyResources(appDir, opts.outputDirectoryAppPath, opts.bundleYamlPath),
     generateBundleYaml(opts, rootDir, nextVersion, adapterMetadata),
   ]);
@@ -163,6 +165,16 @@ export async function generateBuildOutput(
   const normalizedBundleDir = normalize(relative(rootDir, opts.outputDirectoryBasePath));
   updateOrCreateGitignore(rootDir, [`/${normalizedBundleDir}/`]);
   return;
+}
+
+// Copy the app's public directory into the standalone output. Next.js' standalone output does not
+// reliably include it: the webpack builder omits it entirely, and file tracing can pre-create it
+// holding only the assets a server component reads. Merging per file completes either case.
+// https://nextjs.org/docs/app/api-reference/config/next-config-js/output#automatically-copying-traced-files
+async function copyPublicDirectory(appDir: string, outputPublicDir: string): Promise<void> {
+  const publicDirectory = join(appDir, "public");
+  if (!(await exists(publicDirectory))) return;
+  await copy(publicDirectory, outputPublicDir, { overwrite: true });
 }
 
 // Copy all files and directories to apphosting output directory.
@@ -180,7 +192,9 @@ async function copyResources(
     const existsInOutputBundle = await exists(join(outputBundleAppDir, path));
     // Keep apphosting.yaml files in the root directory still, as later steps expect them to be there
     const isApphostingYaml = path === "apphosting_preprocessed" || path === "apphosting.yaml";
-    if (!isbundleYamlDir && !existsInOutputBundle && !isApphostingYaml) {
+    // The public directory is handled by copyPublicDirectory.
+    const isPublicDir = path === "public";
+    if (!isbundleYamlDir && !existsInOutputBundle && !isApphostingYaml && !isPublicDir) {
       await copy(join(appDir, path), join(outputBundleAppDir, path));
     }
   }

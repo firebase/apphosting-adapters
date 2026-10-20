@@ -11,7 +11,7 @@ import { join, extname } from "path";
 import { rename as renamePromise } from "fs/promises";
 
 /**
- * Overrides the user's Next Config file (next.config.[ts|js|mjs]) to add configs
+ * Overrides the user's Next Config file (next.config.[ts|mts|js|mjs]) to add configs
  * optimized for Firebase App Hosting.
  */
 export async function overrideNextConfig(projectRoot: string, nextConfigFileName: string) {
@@ -40,6 +40,7 @@ export async function overrideNextConfig(projectRoot: string, nextConfigFileName
         importStatement = `const originalConfig = require('./${originalConfigName}');`;
         break;
       case ".mjs":
+      case ".mts":
         importStatement = `import originalConfig from './${originalConfigName}';`;
         break;
       case ".ts":
@@ -50,7 +51,7 @@ export async function overrideNextConfig(projectRoot: string, nextConfigFileName
         break;
       default:
         throw new Error(
-          `Unsupported file extension for Next Config: "${fileExtension}", please use ".js", ".mjs", or ".ts"`,
+          `Unsupported file extension for Next Config: "${fileExtension}", please use ".js", ".mjs", ".ts", or ".mts"`,
         );
     }
 
@@ -62,6 +63,7 @@ export async function overrideNextConfig(projectRoot: string, nextConfigFileName
     console.log(`Successfully created ${nextConfigFileName} with Firebase App Hosting overrides`);
   } catch (error) {
     console.error(`Error overriding Next.js config: ${error}`);
+    await restoreNextConfig(projectRoot, nextConfigFileName);
     throw error;
   }
 }
@@ -73,10 +75,11 @@ export async function overrideNextConfig(projectRoot: string, nextConfigFileName
  * - images.unoptimized = true, unless user explicitly sets images.unoptimized to false or
  * is using a custom image loader.
  * @param importStatement The import statement for the original config.
- * @param fileExtension The file extension of the original config. Use ".js", ".mjs", or ".ts"
+ * @param fileExtension The file extension of the original config. Use ".js", ".mjs", ".ts", or ".mts"
  * @return The custom Next.js config.
  */
 function getCustomNextConfig(importStatement: string, fileExtension: string) {
+  const isEsm = [".mjs", ".mts"].includes(fileExtension);
   return `
   // @ts-nocheck
   ${importStatement}
@@ -99,7 +102,7 @@ function getCustomNextConfig(importStatement: string, fileExtension: string) {
       }
     : fahOptimizedConfig(originalConfig);
 
-  ${fileExtension === ".mjs" ? "export default config;" : "module.exports = config;"}
+  ${isEsm ? "export default config;" : "module.exports = config;"}
   `;
 }
 
@@ -143,7 +146,7 @@ export async function validateNextConfigOverride(
 }
 
 /**
- * Restores the user's original Next Config file (next.config.original.[ts|js|mjs])
+ * Restores the user's original Next Config file (next.config.original.[ts|mts|js|mjs])
  * to leave user code the way we found it.
  */
 export async function restoreNextConfig(projectRoot: string, nextConfigFileName: string) {
