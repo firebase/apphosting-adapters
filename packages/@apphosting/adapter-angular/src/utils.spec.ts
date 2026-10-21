@@ -67,3 +67,62 @@ describe("metaFrameworkOutputBundleExists", () => {
     assert(!metaFrameworkOutputBundleExists());
   });
 });
+
+describe("validateEnvironment", () => {
+  let originalEnv: NodeJS.ProcessEnv;
+
+  beforeEach(() => {
+    originalEnv = { ...process.env };
+  });
+
+  afterEach(() => {
+    process.env = originalEnv;
+  });
+
+  it("should succeed if environment variables are correctly set", async () => {
+    const { validateEnvironment } = await importUtils;
+    process.env.NG_ALLOWED_HOSTS = "example.com";
+    process.env.NG_TRUST_PROXY_HEADERS = "X-Forwarded-Host";
+    assert.doesNotThrow(() => validateEnvironment());
+  });
+
+  it("should throw an error if NG_ALLOWED_HOSTS is not set", async () => {
+    const { validateEnvironment } = await importUtils;
+    delete process.env.NG_ALLOWED_HOSTS;
+    process.env.NG_TRUST_PROXY_HEADERS = "X-Forwarded-Host";
+    assert.throws(
+      () => validateEnvironment(),
+      /NG_ALLOWED_HOSTS environment variable must be set and not empty/,
+    );
+  });
+
+  it("should throw an error if NG_ALLOWED_HOSTS is empty", async () => {
+    const { validateEnvironment } = await importUtils;
+    process.env.NG_ALLOWED_HOSTS = "   ";
+    process.env.NG_TRUST_PROXY_HEADERS = "X-Forwarded-Host";
+    assert.throws(
+      () => validateEnvironment(),
+      /NG_ALLOWED_HOSTS environment variable must be set and not empty/,
+    );
+  });
+
+  it("should throw an error if NG_TRUST_PROXY_HEADERS is not set", async () => {
+    const { validateEnvironment } = await importUtils;
+    process.env.NG_ALLOWED_HOSTS = "example.com";
+    delete process.env.NG_TRUST_PROXY_HEADERS;
+    assert.throws(
+      () => validateEnvironment(),
+      /NG_TRUST_PROXY_HEADERS environment variable must be set to 'X-Forwarded-Host'/,
+    );
+  });
+
+  it("should throw an error if NG_TRUST_PROXY_HEADERS is not set correctly", async () => {
+    const { validateEnvironment } = await importUtils;
+    process.env.NG_ALLOWED_HOSTS = "example.com";
+    process.env.NG_TRUST_PROXY_HEADERS = "true";
+    assert.throws(
+      () => validateEnvironment(),
+      /NG_TRUST_PROXY_HEADERS environment variable must be set to 'X-Forwarded-Host'/,
+    );
+  });
+});
