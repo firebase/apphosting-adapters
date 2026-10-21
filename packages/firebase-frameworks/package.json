@@ -48,7 +48,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@hapi/accept": "^6.0.1",
-    "cookie": "^0.5.0",
+    "cookie": "^0.7.0",
     "lru-cache": "^7.14.0",
     "tslib": "^2.3.1"
   },
