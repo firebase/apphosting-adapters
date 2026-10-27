@@ -327,6 +327,11 @@ export function buildNextRoutingManifest(input: BuildRoutingManifestInput): Next
       : [];
 
   const strippedMiddlewareMatchers = rawMiddlewareMatchers.map(stripMatcherConditions);
+  // Next gives a proxy without its own matcher a match-all matcher. If a proxy still arrives with
+  // no matchers, guard every request instead of none (fail closed).
+  if (outputs?.middleware && strippedMiddlewareMatchers.length === 0) {
+    strippedMiddlewareMatchers.push({ sourceRegex: "^.*$" });
+  }
 
   // Collect pathnames for @next/routing resolveRoutes (excluding .segments/* and redundant .rsc duplicates)
   const pathnameSet = new Set<string>();
@@ -554,9 +559,10 @@ export function buildNextRoutingManifest(input: BuildRoutingManifestInput): Next
     const mwMatchersRaw = Array.isArray(outputs.middleware.config?.matchers)
       ? outputs.middleware.config.matchers
       : rawMiddlewareMatchers;
+    const mwMatchers = mwMatchersRaw.map(stripMatcherConditions);
     middlewareBlock = {
       runtime: outputs.middleware.runtime === "edge" ? "edge" : "nodejs",
-      matchers: mwMatchersRaw.map(stripMatcherConditions),
+      matchers: mwMatchers.length > 0 ? mwMatchers : strippedMiddlewareMatchers,
     };
   }
 

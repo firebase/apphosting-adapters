@@ -14,6 +14,7 @@ import adapter, {
   validateRepoRelativePath,
   validateContainedSubpath,
   stripMatcherConditions,
+  buildNextRoutingManifest,
   type BundleYamlV2,
   type NextRoutingManifest,
   type OnBuildCompleteContext,
@@ -753,6 +754,23 @@ describe("@google-cloud/adapter-nextjs", () => {
       assert.strictEqual(validateContainedSubpath(tempDir, tempDir), "");
       assert.throws(() => validateContainedSubpath(path.join(tempDir, "a"), tempDir), /is outside/);
       assert.throws(() => validateRepoRelativePath(tempDir, "../x"), /escapes repoRoot/);
+    });
+
+    it("guards every request when a proxy has no matchers (fail closed)", () => {
+      const manifest = buildNextRoutingManifest({
+        repoRoot: tempDir,
+        nextVersion: "16.4.3",
+        buildId: "build-1",
+        outputMode: "standalone",
+        projectDir: ".",
+        distDir: ".next",
+        serverDir: ".next/standalone",
+        config: {},
+        routing: {},
+        outputs: { middleware: { pathname: "/_middleware", runtime: "nodejs" } as never },
+      });
+      assert.deepStrictEqual(manifest.routing.middlewareMatchers, [{ sourceRegex: "^.*$" }]);
+      assert.deepStrictEqual(manifest.middleware?.matchers, [{ sourceRegex: "^.*$" }]);
     });
 
     it("turns a malformed proxy matcher into a match-all matcher (fail closed)", () => {
