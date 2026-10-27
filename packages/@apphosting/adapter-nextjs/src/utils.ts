@@ -81,16 +81,16 @@ export async function loadConfig(root: string, projectRoot: string): Promise<Nex
 async function buildsWithTurbopack(root: string, nextVersion: string): Promise<boolean> {
   const packageJsonPath = join(root, "package.json");
   if (
-    semVer.major(nextVersion) < 16 ||
+    (semVer.coerce(nextVersion)?.major ?? 0) < 16 ||
     process.env.NEXT_RSPACK ||
     !(await exists(packageJsonPath))
   ) {
     return false;
   }
-  const { scripts = {} } = (await readJson(packageJsonPath)) as {
-    scripts?: Record<string, string>;
+  const { scripts } = (await readJson(packageJsonPath)) as {
+    scripts?: Record<string, string> | null;
   };
-  return !Object.values(scripts).some((script) => /--(custom-)?webpack\b/.test(script));
+  return !Object.values(scripts ?? {}).some((script) => /--(custom-)?webpack\b/.test(script));
 }
 
 /**

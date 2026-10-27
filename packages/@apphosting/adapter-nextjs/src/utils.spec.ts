@@ -233,6 +233,21 @@ describe("loadConfig", () => {
     assert.deepStrictEqual(await loadConfig(tmpDir, tmpDir), { turbopack: undefined });
   });
 
+  it("should not set TURBOPACK when the Next version is not semver", async () => {
+    writeApp("custom-build", "next build");
+    const { loadConfig } = await importUtils;
+
+    assert.deepStrictEqual(await loadConfig(tmpDir, tmpDir), { turbopack: undefined });
+  });
+
+  it("should set TURBOPACK when package.json scripts is null", async () => {
+    writeApp("16.0.0", "next build");
+    fs.writeFileSync(path.join(tmpDir, "package.json"), JSON.stringify({ scripts: null }));
+    const { loadConfig } = await importUtils;
+
+    assert.deepStrictEqual(await loadConfig(tmpDir, tmpDir), { turbopack: "auto" });
+  });
+
   afterEach(() => {
     fs.rmSync(tmpDir, { recursive: true, force: true });
   });
