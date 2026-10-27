@@ -19,13 +19,14 @@ function isCrashlyticsUploadMappingEnabled(): boolean {
 }
 
 /**
- * Implements `NextAdapter.modifyConfig` per design spec.
+ * Implements `NextAdapter.modifyConfig`.
  *
  * - Runs only in `phase-production-build`; returns `config` untouched in all other phases.
  * - Enforces version gate `>=16.3.5 <17.0.0`; warns and returns `config` untouched outside range.
  * - Logs security advisory warnings for `16.3.5` and `<16.3.8` without blocking.
  * - Sets `output: 'standalone'` unless `config.output === 'export'` (preserves user `'standalone'` or `'export'`).
- * - Sets `experimental.turbopackFileSystemCacheForBuild = false` () and logs the change.
+ * - Sets `experimental.turbopackFileSystemCacheForBuild = false` (Cloud Run never restores
+ *   `.next/cache`) and logs the change.
  * - Enables `productionBrowserSourceMaps: true` only when `CRASHLYTICS_UPLOAD_MAPPING=true`.
  * - Never mutates the input `config` object in place, and never throws.
  */
@@ -34,6 +35,9 @@ export function modifyConfig<T extends NextConfig = NextConfig>(
   ctx: ModifyConfigContext,
 ): T {
   try {
+    if (!config || typeof config !== "object") {
+      return config;
+    }
     if (!ctx || ctx.phase !== PHASE_PRODUCTION_BUILD) {
       return config;
     }
@@ -74,8 +78,8 @@ export function modifyConfig<T extends NextConfig = NextConfig>(
       );
     }
 
-    //: Disable Turbopack filesystem build cache on production builds to avoid ~48 MiB
-    // of uncached .next/cache disk writes and image bloat in report-only/off modes.
+    // Disable Turbopack's filesystem build cache on production builds. Cloud Run never restores
+    // .next/cache, so the ~48 MiB it writes would only bloat unpruned (report-only/off) images.
     const currentTurboCache =
       config.experimental && typeof config.experimental === "object"
         ? (config.experimental as Record<string, unknown>).turbopackFileSystemCacheForBuild

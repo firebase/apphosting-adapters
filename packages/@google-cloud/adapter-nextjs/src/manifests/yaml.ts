@@ -5,8 +5,8 @@ function yamlQuote(value: string): string {
 }
 
 /**
- * Deterministic, zero-dependency YAML serializer for `BundleYamlV2` matching
- * the exact schema and field ordering of design spec and `pkg/webbundle`.
+ * Deterministic, zero-dependency YAML serializer for `BundleYamlV2`, emitting the
+ * schema and field order that the Cloud Run `webbundle` buildpack parses.
  */
 export function serializeBundleYamlV2(bundle: BundleYamlV2): string {
   const lines: string[] = [];

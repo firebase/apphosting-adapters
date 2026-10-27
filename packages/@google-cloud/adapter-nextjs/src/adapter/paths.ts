@@ -9,6 +9,33 @@ export function toPosixPath(inputPath: string): string {
 }
 
 /**
+ * Removes trailing `/` characters in linear time. (A `/\/+$/` regex is polynomial on inputs
+ * with long runs of `/`, and these paths come from the build.)
+ */
+function stripTrailingSlashes(input: string): string {
+  let end = input.length;
+  while (end > 0 && input.charCodeAt(end - 1) === 47 /* "/" */) {
+    end--;
+  }
+  return input.slice(0, end);
+}
+
+/**
+ * Returns true when a `path.relative()` result points outside its base directory: either a
+ * parent traversal or, on Windows, an absolute path on another drive (e.g. `D:\x`), which
+ * `path.posix.isAbsolute` alone would miss.
+ */
+function isOutsideBase(rawRelative: string): boolean {
+  const rel = toPosixPath(rawRelative);
+  return (
+    rel === ".." ||
+    rel.startsWith("../") ||
+    path.isAbsolute(rawRelative) ||
+    path.posix.isAbsolute(rel)
+  );
+}
+
+/**
  * Joins POSIX path segments and normalizes the result without leading `./`.
  */
 export function posixJoin(...segments: string[]): string {
@@ -16,7 +43,7 @@ export function posixJoin(...segments: string[]): string {
   if (joined === ".") {
     return ".";
   }
-  return joined.replace(/^\.\//, "").replace(/\/+$/, "");
+  return stripTrailingSlashes(joined.replace(/^\.\//, ""));
 }
 
 /**
@@ -74,11 +101,12 @@ export function validateRepoRelativePath(
     ? path.resolve(normalizedTargetInput)
     : path.resolve(normalizedRepoRoot, normalizedTargetInput);
 
-  const rel = toPosixPath(path.relative(normalizedRepoRoot, absTarget));
+  const rawRel = path.relative(normalizedRepoRoot, absTarget);
+  const rel = toPosixPath(rawRel);
   if (rel === "") {
     return ".";
   }
-  if (rel === ".." || rel.startsWith("../") || path.posix.isAbsolute(rel)) {
+  if (isOutsideBase(rawRel)) {
     throw new Error(
       `Invalid ${label} "${targetPath}": resolves outside repoRoot "${repoRoot}" (relative: "${rel}")`,
     );
@@ -90,8 +118,7 @@ export function validateRepoRelativePath(
     const existingTargetOrAncestor = findNearestExistingAncestor(absTarget);
     if (existingTargetOrAncestor) {
       const realExisting = fs.realpathSync(existingTargetOrAncestor);
-      const realRel = toPosixPath(path.relative(realRepoRoot, realExisting));
-      if (realRel === ".." || realRel.startsWith("../") || path.posix.isAbsolute(realRel)) {
+      if (isOutsideBase(path.relative(realRepoRoot, realExisting))) {
         throw new Error(
           `Invalid ${label} "${targetPath}": symlink target "${realExisting}" escapes repoRoot "${realRepoRoot}"`,
         );
@@ -99,7 +126,7 @@ export function validateRepoRelativePath(
     }
   }
 
-  const normalizedPosix = path.posix.normalize(rel).replace(/^\.\//, "").replace(/\/+$/, "");
+  const normalizedPosix = stripTrailingSlashes(path.posix.normalize(rel).replace(/^\.\//, ""));
   return normalizedPosix === "" ? "." : normalizedPosix;
 }
 
@@ -120,12 +147,13 @@ export function validateContainedSubpath(
   }
   const absBase = path.resolve(toPosixPath(baseDir));
   const absChild = path.resolve(toPosixPath(childDir));
-  const rel = toPosixPath(path.relative(absBase, absChild));
+  const rawRel = path.relative(absBase, absChild);
+  const rel = toPosixPath(rawRel);
   if (rel === "" || rel === ".") {
     return "";
   }
-  if (rel === ".." || rel.startsWith("../") || path.posix.isAbsolute(rel)) {
+  if (isOutsideBase(rawRel)) {
     throw new Error(`Invalid ${label}: "${childDir}" is outside "${baseDir}" (relative: "${rel}")`);
   }
-  return path.posix.normalize(rel).replace(/^\.\//, "").replace(/\/+$/, "");
+  return stripTrailingSlashes(path.posix.normalize(rel).replace(/^\.\//, ""));
 }

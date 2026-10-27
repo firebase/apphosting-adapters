@@ -30,7 +30,7 @@ export interface ComputedAdapterPaths {
 
 /**
  * Computes validated repo-relative paths and builds the `BundleYamlV2` structure
- * per design spec, §3.3.
+ * (`.cloudrun/bundle.yaml`) that the Cloud Run `webbundle` buildpack reads.
  */
 export function buildBundleManifest(input: BuildBundlePathsInput): ComputedAdapterPaths {
   const { repoRoot, projectDir, distDir, nextVersion, buildId, config } = input;

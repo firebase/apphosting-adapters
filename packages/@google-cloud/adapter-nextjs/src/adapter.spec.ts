@@ -12,6 +12,8 @@ import adapter, {
   isSupportedNextVersion,
   getSecurityAdvisoryWarnings,
   validateRepoRelativePath,
+  validateContainedSubpath,
+  stripMatcherConditions,
   type BundleYamlV2,
   type NextRoutingManifest,
   type OnBuildCompleteContext,
@@ -290,6 +292,15 @@ describe("@google-cloud/adapter-nextjs", () => {
       });
       assert.strictEqual(result, poisonConfig);
       assert.ok(warnLogs.some((w) => w.includes("modifyConfig encountered an unexpected error")));
+    });
+
+    it("returns a missing config untouched", () => {
+      const ctx = { phase: "phase-production-build", nextVersion: "16.4.3", projectDir: tempDir };
+      assert.strictEqual(modifyConfig(null as unknown as Record<string, unknown>, ctx), null);
+      assert.strictEqual(
+        modifyConfig(undefined as unknown as Record<string, unknown>, ctx),
+        undefined,
+      );
     });
   });
 
@@ -674,7 +685,7 @@ describe("@google-cloud/adapter-nextjs", () => {
       ]);
     });
 
-    it('emits export manifest per when config.output === "export"', async () => {
+    it('emits an export manifest when config.output === "export"', async () => {
       const ctx = createSyntheticContext(tempDir, {
         config: {
           output: "export",
@@ -731,12 +742,39 @@ describe("@google-cloud/adapter-nextjs", () => {
         fs.rmSync(outsideDir, { recursive: true, force: true });
       }
     });
+
+    it("normalizes trailing slashes and rejects paths outside the base", () => {
+      assert.strictEqual(validateRepoRelativePath(tempDir, "apps/web/"), "apps/web");
+      assert.strictEqual(
+        validateRepoRelativePath(tempDir, "apps/web" + "/".repeat(50000)),
+        "apps/web",
+      );
+      assert.strictEqual(validateContainedSubpath(tempDir, path.join(tempDir, "a", "b")), "a/b");
+      assert.strictEqual(validateContainedSubpath(tempDir, tempDir), "");
+      assert.throws(() => validateContainedSubpath(path.join(tempDir, "a"), tempDir), /is outside/);
+      assert.throws(() => validateRepoRelativePath(tempDir, "../x"), /escapes repoRoot/);
+    });
+
+    it("turns a malformed proxy matcher into a match-all matcher (fail closed)", () => {
+      assert.deepStrictEqual(stripMatcherConditions(null as never), { sourceRegex: "" });
+      assert.deepStrictEqual(
+        stripMatcherConditions({
+          sourceRegex: "^/dashboard$",
+          source: "/dashboard",
+          has: [{ type: "cookie", key: "session" }],
+        } as never),
+        { sourceRegex: "^/dashboard$", source: "/dashboard" },
+      );
+    });
   });
 
   const smokeIt = process.env.SMOKE_TEST === "1" ? it : it.skip;
   describe("real Next.js P-1 matrix smoke tests (SMOKE_TEST=1)", () => {
     const distIndexJs = path.resolve(__dirname, "..", "dist", "index.js");
-    const scratchBaseDir = path.join(process.env.SMOKE_FIXTURE_DIR || os.tmpdir(), "smoke-p1-matrix");
+    const scratchBaseDir = path.join(
+      process.env.SMOKE_FIXTURE_DIR || os.tmpdir(),
+      "smoke-p1-matrix",
+    );
 
     function breakConfigHardlinks(dir: string): void {
       for (const rel of [
@@ -886,7 +924,11 @@ describe("@google-cloud/adapter-nextjs", () => {
       },
       {
         version: "16.4.3",
-        sourceDir: path.join(process.env.SMOKE_FIXTURE_DIR || os.tmpdir(), "fixtures", "single-app"),
+        sourceDir: path.join(
+          process.env.SMOKE_FIXTURE_DIR || os.tmpdir(),
+          "fixtures",
+          "single-app",
+        ),
       },
     ];
 
@@ -931,7 +973,11 @@ describe("@google-cloud/adapter-nextjs", () => {
           // eslint-disable-next-line @typescript-eslint/no-var-requires
           const { execFileSync } = require("child_process") as typeof import("child_process");
           const repoRoot = prepareScratchCopy(
-            path.join(process.env.SMOKE_FIXTURE_DIR || os.tmpdir(), "fixtures", "monorepo-pnpm-turbo"),
+            path.join(
+              process.env.SMOKE_FIXTURE_DIR || os.tmpdir(),
+              "fixtures",
+              "monorepo-pnpm-turbo",
+            ),
             `monorepo-pnpm-turbo-${bundler}`,
           );
           const childEnv = { ...process.env };

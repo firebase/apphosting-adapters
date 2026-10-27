@@ -98,10 +98,14 @@ const SECRET_CONDITION_KEYS = new Set([
 ]);
 
 /**
- * Strips `has` and `missing` from a middleware matcher per design spec &.
- * Never mutates the input matcher object.
+ * Strips `has` and `missing` from a middleware matcher.
+ * Never mutates the input matcher object. A malformed matcher becomes a match-all matcher,
+ * which fails closed (every request counts as guarded).
  */
 export function stripMatcherConditions(matcher: RawMatcher): NextSanitizedMatcher {
+  if (!matcher || typeof matcher !== "object") {
+    return { sourceRegex: "" };
+  }
   const clean: NextSanitizedMatcher = {
     sourceRegex: String(matcher.sourceRegex ?? ""),
   };
@@ -288,13 +292,14 @@ function isNextStaticAssetPathname(pathname: string, basePath: string): boolean 
 }
 
 /**
- * Builds the `NextRoutingManifest` (`next-routing.json`) per design spec, §3.4.
+ * Builds the `NextRoutingManifest` (`next-routing.json`) that serve.js reads at runtime.
  *
  * - Never mutates any input object (`config`, `routing`, `outputs`).
  * - Strips all `has` and `missing` from `routing.middlewareMatchers` and `middleware.matchers`.
  * - Never copies `bypassToken`, preview props, or any `x-prerender-revalidate` condition value.
  * - Validates all filesystem paths relative to `repoRoot`.
- * - Omits per-route `assets`/`assetsHashes` and drops `.rsc` / `.segments/*` duplicates (P-9 /).
+ * - Omits per-route `assets`/`assetsHashes` and drops `.rsc` / `.segments/*` duplicates to keep
+ *   the manifest small.
  */
 export function buildNextRoutingManifest(input: BuildRoutingManifestInput): NextRoutingManifest {
   const {
@@ -323,7 +328,7 @@ export function buildNextRoutingManifest(input: BuildRoutingManifestInput): Next
 
   const strippedMiddlewareMatchers = rawMiddlewareMatchers.map(stripMatcherConditions);
 
-  // Collect pathnames for @next/routing resolveRoutes (excluding .segments/* and redundant .rsc duplicates per)
+  // Collect pathnames for @next/routing resolveRoutes (excluding .segments/* and redundant .rsc duplicates)
   const pathnameSet = new Set<string>();
   const outputLists: Array<RawAdapterOutput[] | undefined> = [
     outputs?.pages,
@@ -375,7 +380,7 @@ export function buildNextRoutingManifest(input: BuildRoutingManifestInput): Next
     }
   }
 
-  // Build routes list (design spec &: omit assets/assetsHashes and drop .rsc/.segments/* duplicates & /_next/static/* chunks)
+  // Build routes list (omit assets/assetsHashes; drop .rsc/.segments/* duplicates and /_next/static/* chunks)
   const routeEntries: NextRouteEntry[] = [];
   const seenRouteKeys = new Set<string>();
   const typedOutputGroups: Array<{

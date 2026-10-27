@@ -15,8 +15,8 @@
   },
   "scripts": {
     "build": "rm -rf dist && tsc -p tsconfig.json && esbuild src/serve/index.ts --bundle --platform=node --target=node20 --format=cjs --outfile=dist/serve.js",
-    "test": "NODE_OPTIONS='--no-experimental-strip-types' ts-mocha -p tsconfig.json 'src/**/*.{spec,test}.ts'",
-    "test:smoke": "npm run build && SMOKE_TEST=1 NODE_OPTIONS='--no-experimental-strip-types' ts-mocha --timeout 120000 -p tsconfig.json 'src/**/*.{spec,test}.ts'"
+    "test": "ts-mocha -p tsconfig.json 'src/**/*.{spec,test}.ts'",
+    "test:smoke": "npm run build && SMOKE_TEST=1 ts-mocha --timeout 120000 -p tsconfig.json 'src/**/*.{spec,test}.ts'"
   },
   "peerDependencies": {
     "next": ">=16.3.5"

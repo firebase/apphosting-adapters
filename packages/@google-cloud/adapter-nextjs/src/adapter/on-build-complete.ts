@@ -88,7 +88,7 @@ function cleanupBundleYamlIfPresent(repoRoot: string | undefined): void {
 }
 
 /**
- * Implements `NextAdapter.onBuildComplete` per design spec.
+ * Implements `NextAdapter.onBuildComplete`.
  *
  * - Never mutates `ctx.config`, `ctx.routing`, or `ctx.outputs`.
  * - Enforces version gate `>=16.3.5 <17.0.0`.

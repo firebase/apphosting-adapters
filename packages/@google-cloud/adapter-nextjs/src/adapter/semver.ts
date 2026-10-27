@@ -1,7 +1,7 @@
 /**
  * Zero-dependency semantic version parser and version gate for Next.js.
  *
- * Supported adapter version range (design spec): `>=16.3.5 <17.0.0`.
+ * Supported adapter version range: `>=16.3.5 <17.0.0`.
  * Security advisory warnings:
  * - `16.3.5` -> GHSA-vcvr-r3jv-pc5j (`next/og` dynamic import RCE)
  * - `<16.3.8` -> CVE-2026-94483 (`/_next/image` SSRF) & cache-poisoning CVEs
