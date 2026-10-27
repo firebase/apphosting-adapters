@@ -1,0 +1,40 @@
+{
+  "name": "@google-cloud/adapter-nextjs",
+  "version": "0.1.0",
+  "description": "Google Cloud Run deployment adapter for Next.js",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/firebase/apphosting-adapters.git"
+  },
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.json && esbuild src/serve/index.ts --bundle --platform=node --target=node20 --format=cjs --outfile=dist/serve.js",
+    "test": "NODE_OPTIONS='--no-experimental-strip-types' ts-mocha -p tsconfig.json 'src/**/*.{spec,test}.ts'",
+    "test:smoke": "npm run build && SMOKE_TEST=1 NODE_OPTIONS='--no-experimental-strip-types' ts-mocha --timeout 120000 -p tsconfig.json 'src/**/*.{spec,test}.ts'"
+  },
+  "peerDependencies": {
+    "next": ">=16.3.5"
+  },
+  "peerDependenciesMeta": {
+    "next": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@next/routing": "16.4.3",
+    "@types/mocha": "*",
+    "@types/node": "^22.0.0",
+    "esbuild": "^0.25.0",
+    "mocha": "^10.2.0",
+    "next": "16.4.3",
+    "ts-mocha": "^10.0.0",
+    "typescript": "~5.9.3",
+    "yaml": "^2.3.4"
+  }
+}
