@@ -245,15 +245,9 @@ export function rewriteHeadersObject(
 }
 
 function clearHeaderCaseInsensitive(res: http.ServerResponse, targetLower: string): void {
+  // Node stores outgoing headers by lowercased name, so removeHeader is case-insensitive.
   if (typeof res.removeHeader === "function") {
     res.removeHeader(targetLower);
-  }
-  if (typeof res.getHeaderNames === "function") {
-    for (const name of res.getHeaderNames()) {
-      if (name.toLowerCase() === targetLower) {
-        res.removeHeader(name);
-      }
-    }
   }
 }
 

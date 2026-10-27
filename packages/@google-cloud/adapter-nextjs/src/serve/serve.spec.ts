@@ -411,7 +411,7 @@ describe("serve.js — (a) isGuarded URL corpus", () => {
 });
 
 describe("serve.js — (b) Header-rewrite table & CDN header stripping", () => {
-  it("rewrites Cache-Control according to the design spec table", () => {
+  it("rewrites Cache-Control according to the header rules table", () => {
     // Guarded, no max-age (or no-store) -> private, no-cache, no-store, max-age=0, must-revalidate
     assert.strictEqual(rewriteCacheControl(undefined, true), NO_STORE_CACHE_CONTROL);
     assert.strictEqual(rewriteCacheControl("", true), NO_STORE_CACHE_CONTROL);
@@ -696,7 +696,8 @@ describe("serve.js — (c) Boot validation & real next@16.4.3 standalone + --pro
   });
 
   const fixtureDir =
-    process.env.FAB_E2E_FIXTURE_DIR || path.join(process.env.SMOKE_FIXTURE_DIR || os.tmpdir(), "serve-guard-fixture");
+    process.env.FAB_E2E_FIXTURE_DIR ||
+    path.join(process.env.SMOKE_FIXTURE_DIR || os.tmpdir(), "serve-guard-fixture");
   const shouldRunBootTest =
     process.env.SKIP_BOOT_TESTS !== "1" &&
     (process.env.RUN_BOOT_TESTS === "1" ||

@@ -15,9 +15,9 @@ export interface BootOptions {
 }
 
 function isSubpathOrSame(parentDir: string, candidatePath: string): boolean {
-  const absParent = path.resolve(parentDir);
-  const absCandidate = path.resolve(candidatePath);
-  return absCandidate === absParent || absCandidate.startsWith(absParent + path.sep);
+  // path.relative handles parentDir === "/" and, on Windows, paths on other drives.
+  const relative = path.relative(path.resolve(parentDir), path.resolve(candidatePath));
+  return relative !== ".." && !relative.startsWith(".." + path.sep) && !path.isAbsolute(relative);
 }
 
 export function validateRoutingManifest(raw: unknown, rootDir: string): NextRoutingManifest {
@@ -164,7 +164,12 @@ export async function boot(options: BootOptions = {}): Promise<void> {
       path.resolve(root, m.projectDir),
       path.resolve(root, m.distDir),
     );
-    if (!distDirRel || path.isAbsolute(distDirRel) || distDirRel.startsWith("..")) {
+    if (
+      !distDirRel ||
+      path.isAbsolute(distDirRel) ||
+      distDirRel === ".." ||
+      distDirRel.startsWith(".." + path.sep)
+    ) {
       throw new Error(
         `Invalid relative distDir "${distDirRel}" computed from projectDir="${m.projectDir}" and distDir="${m.distDir}".`,
       );

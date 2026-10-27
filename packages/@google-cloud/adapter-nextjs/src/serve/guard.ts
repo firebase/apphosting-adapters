@@ -15,6 +15,18 @@ function emptyBody(): ReadableStream<Uint8Array> {
   });
 }
 
+/**
+ * Removes trailing `/` characters in linear time. The input is the request path, so a
+ * `/\/+$/` regex (polynomial on long runs of `/`) would let a crafted URL burn CPU.
+ */
+function stripTrailingSlashes(input: string): string {
+  let end = input.length;
+  while (end > 0 && input.charCodeAt(end - 1) === 47 /* "/" */) {
+    end--;
+  }
+  return input.slice(0, end);
+}
+
 export function toHeaders(
   rawHeaders?: http.IncomingHttpHeaders | Record<string, string | string[] | undefined>,
 ): Headers {
@@ -206,7 +218,9 @@ export async function isGuarded(
     ): Promise<boolean> => {
       let ran = false;
       await resolveRoutes({
-        url: candidateUrl,
+        // Pass a copy so the original URL stays intact for the retry passes below, even if
+        // resolveRoutes rewrites the URL it receives.
+        url: new URL(candidateUrl.href),
         buildId: manifest.buildId,
         basePath: candidateBasePath,
         i18n: candidateI18n ?? undefined,
@@ -263,7 +277,7 @@ export async function isGuarded(
     );
     const trimmedTrailing =
       afterLocale.length > 1 && afterLocale.endsWith("/")
-        ? afterLocale.replace(/\/+$/, "") || "/"
+        ? stripTrailingSlashes(afterLocale) || "/"
         : afterLocale;
 
     const candidates = new Set<string>();
