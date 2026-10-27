@@ -185,3 +185,55 @@ describe("manifest utils", () => {
     fs.rmSync(tmpDir, { recursive: true, force: true });
   });
 });
+
+describe("loadConfig", () => {
+  let tmpDir: string;
+
+  beforeEach(() => {
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "test-load-config-"));
+  });
+
+  // Installs a stand-in for Next whose config loader reports the TURBOPACK value it ran with.
+  function writeApp(nextVersion: string, buildScript: string): void {
+    const nextDir = path.join(tmpDir, "node_modules", "next");
+    fs.mkdirSync(path.join(nextDir, "dist", "server"), { recursive: true });
+    fs.writeFileSync(
+      path.join(nextDir, "package.json"),
+      JSON.stringify({ name: "next", version: nextVersion }),
+    );
+    fs.writeFileSync(
+      path.join(nextDir, "dist", "server", "config.js"),
+      "exports.default = async () => ({ turbopack: process.env.TURBOPACK });",
+    );
+    fs.writeFileSync(
+      path.join(tmpDir, "package.json"),
+      JSON.stringify({ scripts: { build: buildScript } }),
+    );
+  }
+
+  it("should set TURBOPACK while loading the config of a Next 16 Turbopack build", async () => {
+    writeApp("16.0.0", "next build");
+    const { loadConfig } = await importUtils;
+
+    assert.deepStrictEqual(await loadConfig(tmpDir, tmpDir), { turbopack: "auto" });
+    assert.strictEqual(process.env.TURBOPACK, undefined);
+  });
+
+  it("should not set TURBOPACK for a webpack build", async () => {
+    writeApp("16.0.0", "next build --webpack");
+    const { loadConfig } = await importUtils;
+
+    assert.deepStrictEqual(await loadConfig(tmpDir, tmpDir), { turbopack: undefined });
+  });
+
+  it("should not set TURBOPACK before Next 16", async () => {
+    writeApp("15.5.0", "next build");
+    const { loadConfig } = await importUtils;
+
+    assert.deepStrictEqual(await loadConfig(tmpDir, tmpDir), { turbopack: undefined });
+  });
+
+  afterEach(() => {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  });
+});
