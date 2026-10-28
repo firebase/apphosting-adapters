@@ -12,13 +12,19 @@ const since = process.env.GITHUB_ACTION
 
 const lernaList = JSON.parse(execSync("lerna list --json --loglevel silent"));
 
+// Packages that CI builds and tests but that this repo doesn't release or publish yet. Keeping
+// them out of release-tag matching also stops a tag like adapter-nextjs-v1.2.3 from matching both
+// @apphosting/adapter-nextjs and @google-cloud/adapter-nextjs.
+const unreleasedPackages = ["@google-cloud/adapter-nextjs"];
+const ignoreUnreleased = unreleasedPackages.map((name) => `--ignore='${name}'`).join(" ");
+
 const ref = process.env.GITHUB_SHA ?? "HEAD";
 const shortSHA = execSync(`git rev-parse --short ${ref}`).toString().trim();
 
 const scopedLernaList = JSON.parse(
   execSync(
     `lerna list --json --no-private --toposort --loglevel silent --include-dependents ${
-      packagePatternFromRef ? `--scope='{,*/}${packagePatternFromRef}'` : since
+      packagePatternFromRef ? `--scope='{,*/}${packagePatternFromRef}' ${ignoreUnreleased}` : since
     }`,
   ),
 );
@@ -27,7 +33,7 @@ const packagesFromRef =
   packagePatternFromRef &&
   JSON.parse(
     execSync(
-      `lerna list --json --no-private --loglevel silent --scope='{,*/}${packagePatternFromRef}'`,
+      `lerna list --json --no-private --loglevel silent --scope='{,*/}${packagePatternFromRef}' ${ignoreUnreleased}`,
     ),
   );
 if (packagePatternFromRef && packagesFromRef.length !== 1) {
@@ -47,4 +53,5 @@ module.exports = {
   scopedLernaList,
   shortSHA,
   lernaScopes,
+  unreleasedPackages,
 };
