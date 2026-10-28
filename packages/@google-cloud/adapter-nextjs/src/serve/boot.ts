@@ -63,8 +63,11 @@ export function parseKeepAliveTimeout(raw: string | undefined): number | undefin
 }
 
 export function parsePort(raw: string | undefined): number {
-  const parsed = Number(raw);
-  if (!raw || Number.isNaN(parsed) || !Number.isFinite(parsed) || parsed <= 0) {
+  if (raw === undefined || raw === "") {
+    return 3000;
+  }
+  const parsed = parseInt(raw, 10);
+  if (Number.isNaN(parsed) || parsed <= 0 || parsed > 65535) {
     return 3000;
   }
   return parsed;
@@ -226,7 +229,13 @@ export async function boot(options: BootOptions = {}): Promise<void> {
     const port = parsePort(env.PORT);
     const keepAliveTimeout = parseKeepAliveTimeout(env.KEEP_ALIVE_TIMEOUT);
 
-    // 8 & 9. Wrap http.createServer ONLY around the synchronous startServer() call.
+    // 8 & 9. Wrap http.createServer ONLY around the synchronous startServer() invocation.
+    // The window is deliberately synchronous: only Next's own HTTP server can be created
+    // inside this turn, so the guard cannot attach to another server created later by
+    // user/application code. Next 16.3.5–16.4.x call http.createServer synchronously
+    // before startServer()'s first await; if a future Next.js version defers server
+    // creation past an await, attached !== 1 aborts boot below (fail closed) instead of
+    // serving requests unguarded.
     // Use CJS require("http") directly so we mutate Node's actual `http` module export
     // (not an ESM namespace wrapper created by TypeScript/esbuild).
     // eslint-disable-next-line @typescript-eslint/no-var-requires

@@ -77,8 +77,12 @@ export function isValidManifestShape(manifest: unknown): manifest is NextRouting
       if (!matcher || typeof matcher.sourceRegex !== "string") {
         return false;
       }
-      // Verify regex compiles cleanly; invalid regex throws and fails closed.
-      new RegExp(matcher.sourceRegex);
+      // Verify regex compiles cleanly; invalid regex returns false so callers fail closed.
+      try {
+        new RegExp(matcher.sourceRegex);
+      } catch {
+        return false;
+      }
     }
   }
   return true;

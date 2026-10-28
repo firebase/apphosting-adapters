@@ -15,8 +15,8 @@ Runs only during `phase-production-build`:
 - **Version gate**: Requires Next.js `>=16.3.5 <17.0.0`. Outside this range, logs a warning and returns `config` untouched.
 - **Security advisories**: Emits non-fatal warnings when building on Next.js versions with known security advisories (`16.3.5` GHSA-vcvr-r3jv-pc5j, `<16.3.8` CVE-2026-94483 / CVE-2026-94543 / CVE-2026-94484).
 - **Standalone output**: Sets `output: 'standalone'` when `config.output` is unset (preserves `output: 'export'` and explicit `output: 'standalone'`).
-- **Build cache**: Sets `experimental.turbopackFileSystemCacheForBuild = false` unless explicitly configured by the user. Cloud Run never restores `.next/cache`, so this avoids ~48 MiB of unused cache in container layers.
-- **Browser source maps**: Sets `productionBrowserSourceMaps: true` only when `CRASHLYTICS_UPLOAD_MAPPING=true` and `config.productionBrowserSourceMaps` is unset.
+- **Build cache**: Always sets `experimental.turbopackFileSystemCacheForBuild = false`. Cloud Run never restores `.next/cache`, so this avoids ~48 MiB of unused cache in container layers.
+- **Browser source maps**: Always sets `productionBrowserSourceMaps: true` when `CRASHLYTICS_UPLOAD_MAPPING=true` (or `"1"`), regardless of any user value in `next.config`.
 
 ### `onBuildComplete(ctx)`
 
@@ -83,6 +83,6 @@ outputFiles:
 | :------------------------------- | :------------------- | :------------------------------------------------------------------------------------------------------------------------------ |
 | `NEXT_ADAPTER_PATH`              | Build (`next build`) | Absolute path to `@google-cloud/adapter-nextjs` (`dist/index.js`) used by Next.js to load the adapter.                          |
 | `NEXT_PRIVATE_OUTPUT_TRACE_ROOT` | Build (`next build`) | Repository/workspace root (`/workspace` on Cloud Run). Used as `repoRoot` for relative paths and `.cloudrun/` output placement. |
-| `CRASHLYTICS_UPLOAD_MAPPING`     | Build (`next build`) | When set to `"true"`, enables `productionBrowserSourceMaps: true` if not already set in `next.config`.                          |
+| `CRASHLYTICS_UPLOAD_MAPPING`     | Build (`next build`) | When set to `"true"` (or `"1"`), sets `productionBrowserSourceMaps: true` in `next.config`.                                     |
 | `PORT`                           | Runtime (`serve.js`) | HTTP port for the server. Cloud Run always sets it; defaults to `3000` when unset.                                              |
 | `KEEP_ALIVE_TIMEOUT`             | Runtime (`serve.js`) | Optional HTTP server `keepAliveTimeout` in milliseconds.                                                                        |

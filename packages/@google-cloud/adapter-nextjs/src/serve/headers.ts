@@ -56,9 +56,9 @@ function parseDirectives(headerValue: string): ParsedDirective[] {
 
 /**
  * Rewrites a Cache-Control header value according to the Pillar 2 guard table:
- * - Guarded, no `max-age` (or has `no-store`):
+ * - Guarded, no positive `max-age` (including `max-age=0`) or has `no-store`:
  *   `private, no-cache, no-store, max-age=0, must-revalidate`
- * - Guarded, with `max-age` (and no `no-store`):
+ * - Guarded, with positive integer `max-age` (`> 0`) and no `no-store`:
  *   drop `public` and `s-maxage`; add `private`; keep the rest
  * - Unguarded, `s-maxage` without `max-age`:
  *   append `, max-age=0`
@@ -81,11 +81,15 @@ export function rewriteCacheControl(
     }
 
     const hasNoStore = directives.some((d) => d.name === "no-store");
-    const hasMaxAge = directives.some(
-      (d) => d.name === "max-age" && d.value !== undefined && /^\d+$/.test(d.value),
+    const hasPositiveMaxAge = directives.some(
+      (d) =>
+        d.name === "max-age" &&
+        d.value !== undefined &&
+        /^\d+$/.test(d.value) &&
+        Number(d.value) > 0,
     );
 
-    if (hasNoStore || !hasMaxAge) {
+    if (hasNoStore || !hasPositiveMaxAge) {
       return NO_STORE_CACHE_CONTROL;
     }
 
@@ -261,7 +265,10 @@ export function wrapResponseForGuard(
   res: http.ServerResponse,
   guarded: boolean,
 ): http.ServerResponse {
-  const origWriteHead = res.writeHead;
+  const origWriteHead = res.writeHead as (
+    this: http.ServerResponse,
+    ...args: unknown[]
+  ) => http.ServerResponse;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (res as any).writeHead = function (
@@ -281,12 +288,15 @@ export function wrapResponseForGuard(
       }
     }
 
+    let rewrittenHeaders = headersArg;
     if (Array.isArray(headersArg)) {
       clearHeaderCaseInsensitive(res, "cache-control");
-      rewriteHeadersArray(headersArg, guarded, existingCC);
+      const copy = headersArg.map((entry) => (Array.isArray(entry) ? [...entry] : entry));
+      rewrittenHeaders = rewriteHeadersArray(copy, guarded, existingCC);
     } else if (headersArg && typeof headersArg === "object") {
       clearHeaderCaseInsensitive(res, "cache-control");
-      rewriteHeadersObject(headersArg as Record<string, unknown>, guarded, existingCC);
+      const copy = { ...(headersArg as Record<string, unknown>) };
+      rewrittenHeaders = rewriteHeadersObject(copy, guarded, existingCC);
     } else {
       const rewritten = rewriteCacheControl(existingCC, guarded);
       if (rewritten !== undefined && typeof res.setHeader === "function") {
@@ -295,8 +305,16 @@ export function wrapResponseForGuard(
       }
     }
 
-    // eslint-disable-next-line prefer-rest-params
-    return origWriteHead.apply(this, arguments as unknown as Parameters<typeof origWriteHead>);
+    if (hasStatusMessage) {
+      if (rewrittenHeaders !== undefined) {
+        return origWriteHead.call(this, statusCode, statusMessageOrHeaders, rewrittenHeaders);
+      }
+      return origWriteHead.call(this, statusCode, statusMessageOrHeaders);
+    }
+    if (rewrittenHeaders !== undefined) {
+      return origWriteHead.call(this, statusCode, rewrittenHeaders);
+    }
+    return origWriteHead.call(this, statusCode);
   };
 
   return res;

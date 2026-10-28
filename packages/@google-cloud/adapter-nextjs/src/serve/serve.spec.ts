@@ -28,6 +28,7 @@ const {
   checkVulnerableNextVersion,
   createGuardedRequestListener,
   isGuarded,
+  isValidManifestShape,
   NO_STORE_CACHE_CONTROL,
   parseKeepAliveTimeout,
   parsePort,
@@ -132,6 +133,7 @@ function httpGet(
   headers: Record<string, string> = {},
 ): Promise<{
   statusCode: number;
+  statusMessage: string;
   headers: httpTypes.IncomingHttpHeaders;
   rawHeaders: string[];
   body: string;
@@ -151,6 +153,7 @@ function httpGet(
         res.on("end", () => {
           resolve({
             statusCode: res.statusCode ?? 0,
+            statusMessage: res.statusMessage ?? "",
             headers: res.headers,
             rawHeaders: res.rawHeaders,
             body: Buffer.concat(chunks).toString("utf8"),
@@ -406,13 +409,14 @@ describe("serve.js — (a) isGuarded URL corpus", () => {
         middlewareMatchers: [{ sourceRegex: "[unclosed-group" }],
       },
     });
+    assert.strictEqual(isValidManifestShape(badRegexManifest), false);
     assert.strictEqual(await isGuarded({ url: "/about" }, badRegexManifest), true);
   });
 });
 
 describe("serve.js — (b) Header-rewrite table & CDN header stripping", () => {
   it("rewrites Cache-Control according to the header rules table", () => {
-    // Guarded, no max-age (or no-store) -> private, no-cache, no-store, max-age=0, must-revalidate
+    // Guarded, no positive max-age (or max-age=0, or no-store) -> private, no-cache, no-store, max-age=0, must-revalidate
     assert.strictEqual(rewriteCacheControl(undefined, true), NO_STORE_CACHE_CONTROL);
     assert.strictEqual(rewriteCacheControl("", true), NO_STORE_CACHE_CONTROL);
     assert.strictEqual(rewriteCacheControl("s-maxage=31536000", true), NO_STORE_CACHE_CONTROL);
@@ -424,8 +428,16 @@ describe("serve.js — (b) Header-rewrite table & CDN header stripping", () => {
       rewriteCacheControl("public, max-age=3600, no-store", true),
       NO_STORE_CACHE_CONTROL,
     );
+    assert.strictEqual(
+      rewriteCacheControl("public, max-age=0, s-maxage=3600", true),
+      NO_STORE_CACHE_CONTROL,
+    );
 
-    // Guarded, with max-age -> drop public and s-maxage; add private; keep the rest
+    // Guarded, with positive max-age -> drop public and s-maxage; add private; keep the rest
+    assert.strictEqual(
+      rewriteCacheControl("public, max-age=60, s-maxage=3600", true),
+      "private, max-age=60",
+    );
     assert.strictEqual(
       rewriteCacheControl("public, max-age=3600, s-maxage=86400", true),
       "private, max-age=3600",
@@ -507,24 +519,31 @@ describe("serve.js — (b) Header-rewrite table & CDN header stripping", () => {
     ]);
   });
 
-  it("hooks res.writeHead across object form, flat-array form, and setHeader + implicit flush over real HTTP", async () => {
+  it("hooks res.writeHead across object form, flat-array form, and setHeader + implicit flush over real HTTP without mutating caller inputs", async () => {
     const manifest = createBaseManifest();
+    let callerObjRef: Record<string, string> | undefined;
+    let callerFlatArrRef: string[] | undefined;
+    let callerTupleInnerPairRef: [string, string] | undefined;
+    let callerTupleArrRef: [string, string][] | undefined;
+
     const nextListener: httpTypes.RequestListener = (req, res) => {
       if (req.url === "/dashboard/object") {
-        res.writeHead(200, {
+        const callerHeaders: Record<string, string> = {
           "Cache-Control": "public, max-age=300, s-maxage=600",
           "CDN-Cache-Control": "public, max-age=86400",
           "Cloudflare-CDN-Cache-Control": "public, max-age=86400",
           "Vercel-CDN-Cache-Control": "public, max-age=86400",
           "Surrogate-Control": "max-age=86400",
           "X-Mode": "object",
-        });
+        };
+        callerObjRef = callerHeaders;
+        res.writeHead(200, "Custom Object OK", callerHeaders);
         res.end("guarded-object");
         return;
       }
       if (req.url === "/dashboard/array") {
         // Next.js api-utils redirect style: flat array passed to writeHead
-        res.writeHead(307, [
+        const callerFlatArr = [
           "Location",
           "/login",
           "Cache-Control",
@@ -533,8 +552,24 @@ describe("serve.js — (b) Header-rewrite table & CDN header stripping", () => {
           "public, max-age=3600",
           "Surrogate-Control",
           "max-age=3600",
-        ]);
+        ];
+        callerFlatArrRef = callerFlatArr;
+        res.writeHead(307, callerFlatArr);
         res.end();
+        return;
+      }
+      if (req.url === "/dashboard/tuple-status-msg") {
+        const ccPair: [string, string] = ["Cache-Control", "public, max-age=60, s-maxage=3600"];
+        const callerTupleArr: [string, string][] = [
+          ccPair,
+          ["CDN-Cache-Control", "public, max-age=3600"],
+          ["X-Tuple", "1"],
+        ];
+        callerTupleInnerPairRef = ccPair;
+        callerTupleArrRef = callerTupleArr;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        res.writeHead(201, "Tuple Created", callerTupleArr as any);
+        res.end("guarded-tuple");
         return;
       }
       if (req.url === "/dashboard/implicit") {
@@ -561,16 +596,25 @@ describe("serve.js — (b) Header-rewrite table & CDN header stripping", () => {
     await new Promise<void>((resolve) => server.listen(port, "127.0.0.1", resolve));
 
     try {
-      // 1. Object form on guarded route
+      // 1. Object form (+ statusMessage) on guarded route; caller object is untouched
       const resObj = await httpGet(port, "/dashboard/object");
       assert.strictEqual(resObj.statusCode, 200);
+      assert.strictEqual(resObj.statusMessage, "Custom Object OK");
       assert.strictEqual(resObj.headers["cache-control"], "private, max-age=300");
       for (const h of CDN_CACHE_CONTROL_HEADERS) {
         assert.strictEqual(resObj.headers[h], undefined, `Expected ${h} to be stripped`);
       }
       assert.strictEqual(resObj.headers["x-mode"], "object");
+      assert.deepStrictEqual(callerObjRef, {
+        "Cache-Control": "public, max-age=300, s-maxage=600",
+        "CDN-Cache-Control": "public, max-age=86400",
+        "Cloudflare-CDN-Cache-Control": "public, max-age=86400",
+        "Vercel-CDN-Cache-Control": "public, max-age=86400",
+        "Surrogate-Control": "max-age=86400",
+        "X-Mode": "object",
+      });
 
-      // 2. Flat-array form on guarded route
+      // 2. Flat-array form on guarded route; caller array is untouched
       const resArr = await httpGet(port, "/dashboard/array");
       assert.strictEqual(resArr.statusCode, 307);
       assert.strictEqual(resArr.headers["location"], "/login");
@@ -578,8 +622,35 @@ describe("serve.js — (b) Header-rewrite table & CDN header stripping", () => {
       for (const h of CDN_CACHE_CONTROL_HEADERS) {
         assert.strictEqual(resArr.headers[h], undefined, `Expected ${h} to be stripped`);
       }
+      assert.deepStrictEqual(callerFlatArrRef, [
+        "Location",
+        "/login",
+        "Cache-Control",
+        "s-maxage=31536000",
+        "CDN-Cache-Control",
+        "public, max-age=3600",
+        "Surrogate-Control",
+        "max-age=3600",
+      ]);
 
-      // 3. Implicit header flush after setHeader on guarded route
+      // 3. Tuple-array form + statusMessage on guarded route; outer & inner arrays are untouched
+      const resTuple = await httpGet(port, "/dashboard/tuple-status-msg");
+      assert.strictEqual(resTuple.statusCode, 201);
+      assert.strictEqual(resTuple.statusMessage, "Tuple Created");
+      assert.strictEqual(resTuple.headers["cache-control"], "private, max-age=60");
+      assert.strictEqual(resTuple.headers["cdn-cache-control"], undefined);
+      assert.strictEqual(resTuple.headers["x-tuple"], "1");
+      assert.deepStrictEqual(callerTupleInnerPairRef, [
+        "Cache-Control",
+        "public, max-age=60, s-maxage=3600",
+      ]);
+      assert.deepStrictEqual(callerTupleArrRef, [
+        ["Cache-Control", "public, max-age=60, s-maxage=3600"],
+        ["CDN-Cache-Control", "public, max-age=3600"],
+        ["X-Tuple", "1"],
+      ]);
+
+      // 4. Implicit header flush after setHeader on guarded route
       const resImp = await httpGet(port, "/dashboard/implicit");
       assert.strictEqual(resImp.statusCode, 200);
       assert.strictEqual(resImp.headers["cache-control"], NO_STORE_CACHE_CONTROL);
@@ -587,7 +658,7 @@ describe("serve.js — (b) Header-rewrite table & CDN header stripping", () => {
         assert.strictEqual(resImp.headers[h], undefined, `Expected ${h} to be stripped`);
       }
 
-      // 4. Unguarded route with s-maxage without max-age -> appends max-age=0 and keeps CDN headers
+      // 5. Unguarded route with s-maxage without max-age -> appends max-age=0 and keeps CDN headers
       const resUnguarded = await httpGet(port, "/about");
       assert.strictEqual(resUnguarded.statusCode, 200);
       assert.strictEqual(resUnguarded.headers["cache-control"], "s-maxage=31536000, max-age=0");
@@ -611,10 +682,29 @@ describe("serve.js — (c) Boot validation & real next@16.4.3 standalone + --pro
     assert.throws(() =>
       validateRoutingManifest({ ...manifest, outputMode: "export" as "standalone" }, "/app"),
     );
+    assert.throws(
+      () =>
+        validateRoutingManifest(
+          createBaseManifest({
+            routing: {
+              ...manifest.routing,
+              middlewareMatchers: [{ sourceRegex: "[unclosed-group" }],
+            },
+          }),
+          "/app",
+        ),
+      /Invalid next-routing\.json schema/,
+    );
 
-    assert.strictEqual(parsePort(undefined), 3000);
     assert.strictEqual(parsePort("8080"), 8080);
-    assert.strictEqual(parsePort("invalid"), 3000);
+    assert.strictEqual(parsePort(""), 3000);
+    assert.strictEqual(parsePort(undefined), 3000);
+    assert.strictEqual(parsePort("abc"), 3000);
+    assert.strictEqual(parsePort("0"), 3000);
+    assert.strictEqual(parsePort("-1"), 3000);
+    assert.strictEqual(parsePort("65536"), 3000);
+    assert.strictEqual(parsePort("70000"), 3000);
+    assert.strictEqual(parsePort("3000.5"), 3000);
 
     assert.strictEqual(parseKeepAliveTimeout(undefined), undefined);
     assert.strictEqual(parseKeepAliveTimeout("-5"), undefined);
