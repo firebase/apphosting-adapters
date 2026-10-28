@@ -193,59 +193,53 @@ describe("loadConfig", () => {
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "test-load-config-"));
   });
 
+  const TURBOPACK_ONLY =
+    'throw new Error("experimental.turbopackRustReactCompiler is only supported with Turbopack.")';
+
   // Installs a stand-in for Next whose config loader reports the TURBOPACK value it ran with.
-  function writeApp(nextVersion: string, buildScript: string): void {
+  function writeNext(onLoad = ""): void {
     const nextDir = path.join(tmpDir, "node_modules", "next");
     fs.mkdirSync(path.join(nextDir, "dist", "server"), { recursive: true });
-    fs.writeFileSync(
-      path.join(nextDir, "package.json"),
-      JSON.stringify({ name: "next", version: nextVersion }),
-    );
+    fs.writeFileSync(path.join(nextDir, "package.json"), JSON.stringify({ name: "next" }));
     fs.writeFileSync(
       path.join(nextDir, "dist", "server", "config.js"),
-      "exports.default = async () => ({ turbopack: process.env.TURBOPACK });",
-    );
-    fs.writeFileSync(
-      path.join(tmpDir, "package.json"),
-      JSON.stringify({ scripts: { build: buildScript } }),
+      `exports.default = async () => { ${onLoad}; return { turbopack: process.env.TURBOPACK }; };`,
     );
   }
 
-  it("should set TURBOPACK while loading the config of a Next 16 Turbopack build", async () => {
-    writeApp("16.0.0", "next build");
+  it("should load the config without TURBOPACK when Next accepts it", async () => {
+    writeNext();
+    const { loadConfig } = await importUtils;
+
+    assert.deepStrictEqual(await loadConfig(tmpDir, tmpDir), { turbopack: undefined });
+  });
+
+  it("should retry with TURBOPACK when Next rejects a Turbopack-only option", async () => {
+    writeNext(`if (!process.env.TURBOPACK) ${TURBOPACK_ONLY}`);
     const { loadConfig } = await importUtils;
 
     assert.deepStrictEqual(await loadConfig(tmpDir, tmpDir), { turbopack: "auto" });
     assert.strictEqual(process.env.TURBOPACK, undefined);
   });
 
-  it("should not set TURBOPACK for a webpack build", async () => {
-    writeApp("16.0.0", "next build --webpack");
+  it("should rethrow other config errors without retrying", async () => {
+    writeNext(`throw new Error("Invalid next.config.js")`);
     const { loadConfig } = await importUtils;
 
-    assert.deepStrictEqual(await loadConfig(tmpDir, tmpDir), { turbopack: undefined });
+    await assert.rejects(loadConfig(tmpDir, tmpDir), /Invalid next\.config\.js/);
   });
 
-  it("should not set TURBOPACK before Next 16", async () => {
-    writeApp("15.5.0", "next build");
+  it("should rethrow a Turbopack-only error when TURBOPACK was already set", async () => {
+    writeNext(TURBOPACK_ONLY);
+    process.env.TURBOPACK = "1";
     const { loadConfig } = await importUtils;
 
-    assert.deepStrictEqual(await loadConfig(tmpDir, tmpDir), { turbopack: undefined });
-  });
-
-  it("should not set TURBOPACK when the Next version is not semver", async () => {
-    writeApp("custom-build", "next build");
-    const { loadConfig } = await importUtils;
-
-    assert.deepStrictEqual(await loadConfig(tmpDir, tmpDir), { turbopack: undefined });
-  });
-
-  it("should set TURBOPACK when package.json scripts is null", async () => {
-    writeApp("16.0.0", "next build");
-    fs.writeFileSync(path.join(tmpDir, "package.json"), JSON.stringify({ scripts: null }));
-    const { loadConfig } = await importUtils;
-
-    assert.deepStrictEqual(await loadConfig(tmpDir, tmpDir), { turbopack: "auto" });
+    try {
+      await assert.rejects(loadConfig(tmpDir, tmpDir), /is only supported with Turbopack/);
+      assert.strictEqual(process.env.TURBOPACK, "1");
+    } finally {
+      delete process.env.TURBOPACK;
+    }
   });
 
   afterEach(() => {

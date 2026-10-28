@@ -59,38 +59,25 @@ export async function loadConfig(root: string, projectRoot: string): Promise<Nex
     await import(configPath);
 
   const loadConfig = nextServerConfig.default;
-  const { version } = (await readJson(
-    require.resolve("next/package.json", { paths: [projectRoot] }),
-  )) as { version: string };
-  const turbopackWasUnset = process.env.TURBOPACK === undefined;
-  if (turbopackWasUnset && (await buildsWithTurbopack(root, version))) {
-    process.env.TURBOPACK = "auto";
-  }
   try {
     return await loadConfig(PHASE_PRODUCTION_BUILD, root);
-  } finally {
-    // `next build --webpack` exits with "Multiple bundler flags set" if TURBOPACK reaches it.
-    if (turbopackWasUnset) delete process.env.TURBOPACK;
+  } catch (err) {
+    // Next 16+ rejects Turbopack-only options when TURBOPACK is unset, but `next build`
+    // sets TURBOPACK=auto itself when no bundler flag is passed. Retry the way it would.
+    if (
+      process.env.TURBOPACK !== undefined ||
+      !(err instanceof Error && err.message.includes("is only supported with Turbopack"))
+    ) {
+      throw err;
+    }
+    process.env.TURBOPACK = "auto";
+    try {
+      return await loadConfig(PHASE_PRODUCTION_BUILD, root);
+    } finally {
+      // `next build --webpack` exits with "Multiple bundler flags set" if TURBOPACK reaches it.
+      delete process.env.TURBOPACK;
+    }
   }
-}
-
-// Next 16 builds with Turbopack unless told otherwise, setting TURBOPACK=auto before it loads the
-// config, and its config validation rejects Turbopack-only options when TURBOPACK is unset.
-// Any script passing a webpack flag keeps the previous behaviour, since `npm run build` may reach
-// `next build` through another script.
-async function buildsWithTurbopack(root: string, nextVersion: string): Promise<boolean> {
-  const packageJsonPath = join(root, "package.json");
-  if (
-    (semVer.coerce(nextVersion)?.major ?? 0) < 16 ||
-    process.env.NEXT_RSPACK ||
-    !(await exists(packageJsonPath))
-  ) {
-    return false;
-  }
-  const { scripts } = (await readJson(packageJsonPath)) as {
-    scripts?: Record<string, string> | null;
-  };
-  return !Object.values(scripts ?? {}).some((script) => /--(custom-)?webpack\b/.test(script));
 }
 
 /**
