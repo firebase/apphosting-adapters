@@ -46,6 +46,7 @@ jobs:
             packages/*/dist/
             packages/@apphosting/*/dist/
             packages/@apphosting/experimental/*/dist/
+            packages/@google-cloud/*/dist/
           retention-days: 1
           if-no-files-found: ignore
 

@@ -8,6 +8,7 @@ const {
   versionFromRef,
   shortSHA,
   taggedRelease,
+  unreleasedPackages,
 } = require("./github.js");
 
 const wombatDressingRoomTokens = new Map([
@@ -24,26 +25,29 @@ wombatDressingRoomTokens.forEach((token, pkg) => {
   });
 });
 
-const packagesToPublish = scopedLernaList.map((lerna) => {
-  const isTaggedRelease = lerna.name === taggedRelease?.name;
-  if (isTaggedRelease && taggedRelease.version.split("-")[0] !== lerna.version) {
-    throw new Error(
-      `Cowardly refusing to publish ${lerna.name}@${versionFromRef} from ${lerna.version}, version needs to be bumped in source.`,
-    );
-  }
-  const newVersion = isTaggedRelease
-    ? taggedRelease.version
-    : `${lerna.version}-canary.${shortSHA}`;
-  const registry = wombatDressingRoomTokens.get(lerna.name)
-    ? `https://wombat-dressing-room.appspot.com/${lerna.name}/_ns`
-    : "https://registry.npmjs.org";
-  const tag = isTaggedRelease ? taggedRelease.tag : "canary";
-  const packageJsonPath = join(lerna.location, "package.json");
-  const packageJson = JSON.parse(readFileSync(packageJsonPath).toString());
-  packageJson.version = newVersion;
-  packageJson.publishConfig = { tag, registry, provenance: true, access: "public" };
-  return packageJson;
-});
+// CI builds and tests unreleased packages, but they don't get canary or tagged releases yet.
+const packagesToPublish = scopedLernaList
+  .filter((lerna) => !unreleasedPackages.includes(lerna.name))
+  .map((lerna) => {
+    const isTaggedRelease = lerna.name === taggedRelease?.name;
+    if (isTaggedRelease && taggedRelease.version.split("-")[0] !== lerna.version) {
+      throw new Error(
+        `Cowardly refusing to publish ${lerna.name}@${versionFromRef} from ${lerna.version}, version needs to be bumped in source.`,
+      );
+    }
+    const newVersion = isTaggedRelease
+      ? taggedRelease.version
+      : `${lerna.version}-canary.${shortSHA}`;
+    const registry = wombatDressingRoomTokens.get(lerna.name)
+      ? `https://wombat-dressing-room.appspot.com/${lerna.name}/_ns`
+      : "https://registry.npmjs.org";
+    const tag = isTaggedRelease ? taggedRelease.tag : "canary";
+    const packageJsonPath = join(lerna.location, "package.json");
+    const packageJson = JSON.parse(readFileSync(packageJsonPath).toString());
+    packageJson.version = newVersion;
+    packageJson.publishConfig = { tag, registry, provenance: true, access: "public" };
+    return packageJson;
+  });
 
 for (const package of packagesToPublish) {
   for (const dependencyName in package.dependencies) {

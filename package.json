@@ -13,6 +13,7 @@
   "workspaces": [
     "packages/@apphosting/*",
     "packages/@apphosting/experimental/*",
+    "packages/@google-cloud/*",
     "packages/create-next-on-firebase",
     "packages/firebase-frameworks"
   ],
