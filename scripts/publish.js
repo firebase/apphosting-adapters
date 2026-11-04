@@ -210,8 +210,9 @@ if (useOssGate) {
   const releaseTag = taggedRelease ? taggedRelease.tag : "canary";
   const manifest = buildExitGateManifest(dryRun ? packagesToPublish : stagedPackages, releaseTag);
   const serializedManifest = `${JSON.stringify(manifest, undefined, 2)}\n`;
-  writeFileSync(manifestPath, serializedManifest);
   if (dryRun) {
     process.stdout.write(serializedManifest);
+  } else {
+    writeFileSync(manifestPath, serializedManifest);
   }
 }
