@@ -3,6 +3,7 @@ import {
   loadRouteManifest,
   writeRouteManifest,
   loadMiddlewareManifest,
+  loadFunctionsConfigManifest,
   exists,
   writeFile,
   loadConfig,
@@ -211,10 +212,12 @@ export async function addRouteOverrides(
   // Add the middleware header to all routes for which middleware is enabled
   const middlewareManifest = loadMiddlewareManifest(appPath, distDir);
   const rootMiddleware = middlewareManifest.middleware["/"];
-  if (rootMiddleware?.matchers) {
+  const nodeMiddleware = loadFunctionsConfigManifest(appPath, distDir)?.functions["/_middleware"];
+  const matchers = [...(rootMiddleware?.matchers ?? []), ...(nodeMiddleware?.matchers ?? [])];
+  if (matchers.length > 0) {
     console.log("Middleware detected, adding middleware headers to matching routes");
 
-    rootMiddleware.matchers.forEach((matcher) => {
+    matchers.forEach((matcher) => {
       routeManifest.headers.push({
         source: matcher.originalSource,
         headers: [
