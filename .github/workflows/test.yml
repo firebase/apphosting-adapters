@@ -154,7 +154,9 @@ jobs:
         if: ${{ vars.NPM_PUBLISH_VIA == 'exit-gate' }}
         run: |
           node ./scripts/publish.js --setup-npmrc
-          npx google-artifactregistry-auth --repo-config=.npmrc --credential-config=.npmrc
+          # .npmrc now points the default registry at Artifact Registry, so fetch the auth helper from npm.
+          npx --yes --registry=https://registry.npmjs.org/ google-artifactregistry-auth@3.5.0 \
+            --repo-config=.npmrc --credential-config=.npmrc
           npm run publish -- --use-oss-gate
           MANIFEST_NAME="manifest-$(date -u +%Y%m%dT%H%M%SZ)-${GITHUB_RUN_ID}.json"
           cp manifest.json "${MANIFEST_NAME}"

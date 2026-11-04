@@ -44,6 +44,32 @@ const useOssGate =
 const dryRun = args.includes("--dry-run") || process.env.PUBLISH_DRY_RUN === "true";
 const manifestPath = process.env.EXIT_GATE_MANIFEST_PATH || "manifest.json";
 
+const NPMJS_REGISTRY = "https://registry.npmjs.org/";
+
+// A registry never accepts the same version twice, and manual runs can repeat on one commit, so
+// their canary versions get a per-run suffix (e.g. 0.0.9-canary.abc1234.12345678.1).
+const canaryRunSuffix =
+  useOssGate && process.env.GITHUB_EVENT_NAME === "workflow_dispatch" && process.env.GITHUB_RUN_ID
+    ? `.${process.env.GITHUB_RUN_ID}.${process.env.GITHUB_RUN_ATTEMPT || "1"}`
+    : "";
+
+// Whether name@version is already in a registry. With no registry given, npm uses the registries
+// in .npmrc, which point at Exit Gate's Artifact Registry repository in Exit Gate mode.
+function isPublished(name, version, registry) {
+  const scope = name.startsWith("@") ? name.split("/")[0] : "";
+  const registryFlags = registry
+    ? ` --registry=${registry}${scope ? ` --${scope}:registry=${registry}` : ""}`
+    : "";
+  try {
+    const found = execSync(`npm view ${name}@${version} version${registryFlags}`, {
+      stdio: ["ignore", "pipe", "ignore"],
+    });
+    return found.toString().trim() === version;
+  } catch {
+    return false;
+  }
+}
+
 const wombatDressingRoomTokens = new Map([
   // ['firebase-frameworks', process.env.FIREBASE_FRAMEWORKS_NPM_TOKEN],
   ["@apphosting/adapter-nextjs", process.env.ADAPTER_NEXTJS_NPM_TOKEN],
@@ -123,7 +149,7 @@ const packagesToPublish = scopedLernaList
     }
     const newVersion = isTaggedRelease
       ? taggedRelease.version
-      : `${lerna.version}-canary.${shortSHA}`;
+      : `${lerna.version}-canary.${shortSHA}${canaryRunSuffix}`;
     const registry = wombatDressingRoomTokens.get(lerna.name)
       ? `https://wombat-dressing-room.appspot.com/${lerna.name}/_ns`
       : "https://registry.npmjs.org";
@@ -139,6 +165,7 @@ const packagesToPublish = scopedLernaList
     return packageJson;
   });
 
+const stagedPackages = [];
 for (const package of packagesToPublish) {
   for (const dependencyName in package.dependencies) {
     // for/in needs an if to make lint happy
@@ -154,17 +181,34 @@ for (const package of packagesToPublish) {
       }
     }
   }
-  if (!dryRun) {
-    const { location } = lernaList.find((it) => it.name === package.name);
-    const packageJsonPath = join(location, "package.json");
-    writeFileSync(packageJsonPath, JSON.stringify(package, undefined, 2));
+  if (dryRun) {
+    continue;
+  }
+  const { location } = lernaList.find((it) => it.name === package.name);
+  const packageJsonPath = join(location, "package.json");
+  writeFileSync(packageJsonPath, JSON.stringify(package, undefined, 2));
+  if (!useOssGate) {
+    execSync(`npm publish`, { cwd: location });
+    continue;
+  }
+  // Exit Gate mode. A re-run must not fail on a version that an earlier attempt already handled.
+  if (isPublished(package.name, package.version, NPMJS_REGISTRY)) {
+    console.log(
+      `${package.name}@${package.version} is already on npm; leaving it out of the manifest.`,
+    );
+    continue;
+  }
+  if (isPublished(package.name, package.version)) {
+    console.log(`${package.name}@${package.version} is already staged; reusing it.`);
+  } else {
     execSync(`npm publish`, { cwd: location });
   }
+  stagedPackages.push(package);
 }
 
 if (useOssGate) {
   const releaseTag = taggedRelease ? taggedRelease.tag : "canary";
-  const manifest = buildExitGateManifest(packagesToPublish, releaseTag);
+  const manifest = buildExitGateManifest(dryRun ? packagesToPublish : stagedPackages, releaseTag);
   const serializedManifest = `${JSON.stringify(manifest, undefined, 2)}\n`;
   writeFileSync(manifestPath, serializedManifest);
   if (dryRun) {
