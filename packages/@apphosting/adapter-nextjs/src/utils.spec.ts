@@ -181,6 +181,38 @@ describe("manifest utils", () => {
     });
   });
 
+  it("should load functions config manifest", async () => {
+    const mockFunctionsConfig = {
+      version: 1,
+      functions: {
+        "/_middleware": {
+          runtime: "nodejs",
+          matchers: [
+            {
+              regexp: "^/hello$",
+              originalSource: "/hello",
+            },
+          ],
+        },
+      },
+    };
+
+    const manifestPath = path.join(tmpDir, distDir, "server/functions-config-manifest.json");
+    fs.mkdirSync(path.dirname(manifestPath), { recursive: true });
+    fs.writeFileSync(manifestPath, JSON.stringify(mockFunctionsConfig));
+
+    const { loadFunctionsConfigManifest } = await importUtils;
+    const result = loadFunctionsConfigManifest(tmpDir, distDir);
+
+    assert.deepStrictEqual(result, mockFunctionsConfig);
+  });
+
+  it("should return undefined when loading non-existent functions config manifest", async () => {
+    const { loadFunctionsConfigManifest } = await importUtils;
+
+    assert.strictEqual(loadFunctionsConfigManifest(tmpDir, distDir), undefined);
+  });
+
   afterEach(() => {
     fs.rmSync(tmpDir, { recursive: true, force: true });
   });
