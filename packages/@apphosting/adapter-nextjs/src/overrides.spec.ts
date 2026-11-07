@@ -314,7 +314,7 @@ describe("next config overrides", () => {
 
       ${nextConfigOverrideBody}
 
-      module.exports = config;
+      export default config;
       `),
     );
   });

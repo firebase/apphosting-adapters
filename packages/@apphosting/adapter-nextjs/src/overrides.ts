@@ -79,7 +79,7 @@ export async function overrideNextConfig(projectRoot: string, nextConfigFileName
  * @return The custom Next.js config.
  */
 function getCustomNextConfig(importStatement: string, fileExtension: string) {
-  const isEsm = [".mjs", ".mts"].includes(fileExtension);
+  const isEsm = [".mjs", ".mts", ".ts"].includes(fileExtension);
   return `
   // @ts-nocheck
   ${importStatement}
