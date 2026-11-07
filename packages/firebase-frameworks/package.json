@@ -27,7 +27,8 @@
   ],
   "sideEffects": false,
   "scripts": {
-    "build": "rm -rf dist && tsc"
+    "build": "rm -rf dist && tsc",
+    "test": "ts-mocha -p tsconfig.json 'src/*.spec.ts'"
   },
   "exports": {
     ".": {
