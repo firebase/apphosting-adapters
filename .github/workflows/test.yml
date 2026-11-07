@@ -133,6 +133,7 @@ jobs:
       - name: Rsync Artifacts
         run: rsync -a artifact/ packages
       - name: Publish
+        if: ${{ vars.NPM_PUBLISH_VIA != 'exit-gate' }}
         run: npm run publish
         env:
           ADAPTER_NEXTJS_NPM_TOKEN: ${{ secrets.ADAPTER_NEXTJS_NPM_TOKEN }}
@@ -141,3 +142,36 @@ jobs:
           ADAPTER_ASTRO_NPM_TOKEN: ${{ secrets.ADAPTER_ASTRO_NPM_TOKEN }}
           # FIREBASE_FRAMEWORKS_NPM_TOKEN: ${{ secrets.FIREBASE_FRAMEWORKS_NPM_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.PERSONAL_NPM_TOKEN }}
+      - name: Authenticate with OSS Exit Gate GCP Project (WIF)
+        if: ${{ vars.NPM_PUBLISH_VIA == 'exit-gate' }}
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          workload_identity_provider: "projects/305452601764/locations/global/workloadIdentityPools/builders/providers/github"
+      - name: Setup gcloud tool
+        if: ${{ vars.NPM_PUBLISH_VIA == 'exit-gate' }}
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
+      - name: Publish via OSS Exit Gate
+        if: ${{ vars.NPM_PUBLISH_VIA == 'exit-gate' }}
+        run: |
+          node ./scripts/publish.js --setup-npmrc
+          # .npmrc now points the default registry at Artifact Registry, so fetch the auth helper from npm.
+          npx --yes --registry=https://registry.npmjs.org/ google-artifactregistry-auth@3.5.0 \
+            --repo-config=.npmrc --credential-config=.npmrc
+          npm run publish -- --use-oss-gate
+          MANIFEST_NAME="manifest-$(date -u +%Y%m%dT%H%M%SZ)-${GITHUB_RUN_ID}.json"
+          cp manifest.json "${MANIFEST_NAME}"
+          echo "MANIFEST_NAME=${MANIFEST_NAME}" >> "${GITHUB_ENV}"
+          if jq -e '.publishing_groups | length > 0' "${MANIFEST_NAME}" >/dev/null; then
+            gcloud storage cp "${MANIFEST_NAME}" \
+              "gs://oss-exit-gate-prod-projects-bucket/firebase-framework-tools/npm/manifests/${MANIFEST_NAME}"
+          else
+            echo "No packages staged in this run; skipping GCS manifest upload."
+          fi
+      - name: Upload timestamped manifest artifact
+        if: ${{ vars.NPM_PUBLISH_VIA == 'exit-gate' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ${{ env.MANIFEST_NAME }}
+          path: ${{ env.MANIFEST_NAME }}
+          retention-days: 30
+          if-no-files-found: error

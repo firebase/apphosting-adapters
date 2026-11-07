@@ -1,0 +1,77 @@
+name: Publish (OSS Exit Gate)
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "stage-only stages packages to Artifact Registry and writes the manifest artifact without publishing to npm; publish also uploads the manifest to GCS to trigger OSS Exit Gate"
+        required: true
+        default: "stage-only"
+        type: choice
+        options:
+          - stage-only
+          - publish
+      package:
+        description: "Optional package filter (e.g. @apphosting/common or firebase-frameworks). Leave empty for all releasable packages."
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  publish-exit-gate:
+    environment: release
+    runs-on: ubuntu-latest
+    name: Publish via OSS Exit Gate (${{ inputs.mode }})
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      PACKAGE_FILTER: ${{ inputs.package }}
+      PUBLISH_MODE: ${{ inputs.mode }}
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Setup node
+        uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610 # v3.9.1
+        with:
+          node-version: 20
+          check-latest: false
+      - name: Install deps
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Authenticate with OSS Exit Gate GCP Project (WIF)
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          workload_identity_provider: "projects/305452601764/locations/global/workloadIdentityPools/builders/providers/github"
+      - name: Setup gcloud tool
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
+      - name: Authenticate with Artifact Registry and stage packages
+        run: |
+          node ./scripts/publish.js --setup-npmrc
+          # .npmrc now points the default registry at Artifact Registry, so fetch the auth helper from npm.
+          npx --yes --registry=https://registry.npmjs.org/ google-artifactregistry-auth@3.5.0 \
+            --repo-config=.npmrc --credential-config=.npmrc
+          npm run publish -- --use-oss-gate
+          MANIFEST_NAME="manifest-$(date -u +%Y%m%dT%H%M%SZ)-${GITHUB_RUN_ID}.json"
+          cp manifest.json "${MANIFEST_NAME}"
+          echo "MANIFEST_NAME=${MANIFEST_NAME}" >> "${GITHUB_ENV}"
+      - name: Upload timestamped manifest artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ${{ env.MANIFEST_NAME }}
+          path: ${{ env.MANIFEST_NAME }}
+          retention-days: 30
+          if-no-files-found: error
+      - name: Upload manifest to GCS to trigger OSS Exit Gate
+        if: ${{ inputs.mode == 'publish' }}
+        run: |
+          test -s "${MANIFEST_NAME}"
+          jq -e '.publishing_groups | length > 0' "${MANIFEST_NAME}" >/dev/null
+          gcloud storage cp "${MANIFEST_NAME}" \
+            "gs://oss-exit-gate-prod-projects-bucket/firebase-framework-tools/npm/manifests/${MANIFEST_NAME}"
