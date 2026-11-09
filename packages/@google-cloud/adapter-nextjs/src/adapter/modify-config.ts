@@ -8,9 +8,11 @@ export interface ModifyConfigContext {
 }
 
 const PHASE_PRODUCTION_BUILD = "phase-production-build";
+const IMAGE_OPTIMIZATION_ENV = "GOOGLE_NEXTJS_IMAGE_OPTIMIZATION";
 
-function isCrashlyticsUploadMappingEnabled(): boolean {
-  const raw = process.env.CRASHLYTICS_UPLOAD_MAPPING;
+/** Returns true when the environment variable is set to "true" or "1" (case-insensitive). */
+function isEnvFlagEnabled(name: string): boolean {
+  const raw = process.env[name];
   if (typeof raw !== "string") {
     return false;
   }
@@ -27,6 +29,9 @@ function isCrashlyticsUploadMappingEnabled(): boolean {
  * - Sets `output: 'standalone'` unless `config.output === 'export'` (preserves user `'standalone'` or `'export'`).
  * - Sets `experimental.turbopackFileSystemCacheForBuild = false` (Cloud Run never restores
  *   `.next/cache`) and logs the change.
+ * - Sets `images.unoptimized: true` (image optimization off by default) unless the config uses a
+ *   custom image loader (`images.loader` / `images.loaderFile`) or
+ *   `GOOGLE_NEXTJS_IMAGE_OPTIMIZATION=true`, and logs which case applied.
  * - Enables `productionBrowserSourceMaps: true` only when `CRASHLYTICS_UPLOAD_MAPPING=true`.
  * - Never mutates the input `config` object in place, and never throws.
  */
@@ -101,7 +106,38 @@ export function modifyConfig<T extends NextConfig = NextConfig>(
       );
     }
 
-    if (isCrashlyticsUploadMappingEnabled()) {
+    // TODO(b/583959150): Turning Next.js image optimization back on for Cloud Run customers is
+    // being investigated (e.g. a concurrency limit on /_next/image in serve.js and a disk-cache
+    // size based on instance memory). Until then it is off by default, as on App Hosting.
+    // `config` already has Next's defaults filled in (`unoptimized: false`), so an explicit
+    // `unoptimized: false` can't be detected; GOOGLE_NEXTJS_IMAGE_OPTIMIZATION=true opts back in.
+    // A custom loader is never overridden, because `unoptimized: true` would bypass it.
+    const images = config.images ?? {};
+    const hasCustomLoader =
+      (images.loader !== undefined && images.loader !== "default") || !!images.loaderFile;
+    if (images.unoptimized === true) {
+      console.log("[adapter-nextjs] NextConfig images.unoptimized is already true; preserving.");
+    } else if (hasCustomLoader) {
+      console.log(
+        `[adapter-nextjs] NextConfig uses a custom image loader (images.loader=${JSON.stringify(
+          images.loader,
+        )}, images.loaderFile=${JSON.stringify(
+          images.loaderFile,
+        )}); leaving images.unoptimized unchanged so the loader keeps working.`,
+      );
+    } else if (isEnvFlagEnabled(IMAGE_OPTIMIZATION_ENV)) {
+      console.log(
+        `[adapter-nextjs] Leaving Next.js image optimization on because ${IMAGE_OPTIMIZATION_ENV}=true.`,
+      );
+    } else {
+      const target = ensureCopy();
+      target.images = { ...images, unoptimized: true };
+      console.log(
+        `[adapter-nextjs] Setting NextConfig images.unoptimized=true (Next.js image optimization is off by default on Cloud Run; set ${IMAGE_OPTIMIZATION_ENV}=true to turn it on).`,
+      );
+    }
+
+    if (isEnvFlagEnabled("CRASHLYTICS_UPLOAD_MAPPING")) {
       if (config.productionBrowserSourceMaps !== true) {
         const target = ensureCopy();
         target.productionBrowserSourceMaps = true;
