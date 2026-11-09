@@ -15,8 +15,9 @@ const since =
 
 const lernaList = JSON.parse(execSync("lerna list --json --loglevel silent"));
 
-// Packages that CI builds and tests but that this repo doesn't release or publish yet.
-const unreleasedPackages = ["@google-cloud/adapter-nextjs"];
+// Packages that CI builds and tests but that this repo doesn't publish: packages that aren't
+// released yet, and create-next-on-firebase, which is retired.
+const unreleasedPackages = ["@google-cloud/adapter-nextjs", "create-next-on-firebase"];
 const ignoreUnreleased = unreleasedPackages.map((pkgName) => `--ignore='${pkgName}'`).join(" ");
 
 // Unscoped release tags (e.g. adapter-nextjs-v14.0.22, firebase-frameworks-v0.11.9) match only
