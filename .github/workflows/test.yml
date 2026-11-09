@@ -47,7 +47,8 @@ jobs:
             packages/@apphosting/*/dist/
             packages/@apphosting/experimental/*/dist/
             packages/@google-cloud/*/dist/
-          retention-days: 1
+          # The publish job reuses this artifact after a human approves the release environment.
+          retention-days: 7
           if-no-files-found: ignore
 
   test:
@@ -128,6 +129,10 @@ jobs:
           node-version: 20
           check-latest: false
           registry-url: "https://registry.npmjs.org"
+      # scripts/publish.js runs lerna. ubuntu-26.04 runners no longer ship a global lerna, so install
+      # the repo's own copy, before the build artifacts are copied in.
+      - name: Install deps
+        run: npm ci
       - name: "Download Artifacts"
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
       - name: Rsync Artifacts
