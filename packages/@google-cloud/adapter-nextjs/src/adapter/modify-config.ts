@@ -32,7 +32,8 @@ function isEnvFlagEnabled(name: string): boolean {
  * - Sets `images.unoptimized: true` (image optimization off by default) unless the config uses a
  *   custom image loader (`images.loader` / `images.loaderFile`) or
  *   `GOOGLE_NEXTJS_IMAGE_OPTIMIZATION=true`, and logs which case applied.
- * - Enables `productionBrowserSourceMaps: true` only when `CRASHLYTICS_UPLOAD_MAPPING=true`.
+ * - Never changes `productionBrowserSourceMaps`. `CRASHLYTICS_UPLOAD_MAPPING=true` is ignored with a
+ *   warning until Crashlytics source-map upload is available on Cloud Run.
  * - Never mutates the input `config` object in place, and never throws.
  */
 export function modifyConfig<T extends NextConfig = NextConfig>(
@@ -137,18 +138,14 @@ export function modifyConfig<T extends NextConfig = NextConfig>(
       );
     }
 
+    // TODO(b/578288818): Turn productionBrowserSourceMaps back on for CRASHLYTICS_UPLOAD_MAPPING once
+    // the Cloud Run source-map buildpack uploads and strips the maps (e.g. only when a build signal
+    // says the uploader will run). Until then, enabling them would serve the app's source publicly
+    // from /_next/static, so the env var is ignored and a user's own setting is left as is.
     if (isEnvFlagEnabled("CRASHLYTICS_UPLOAD_MAPPING")) {
-      if (config.productionBrowserSourceMaps !== true) {
-        const target = ensureCopy();
-        target.productionBrowserSourceMaps = true;
-        console.log(
-          "[adapter-nextjs] Enabling NextConfig productionBrowserSourceMaps=true because CRASHLYTICS_UPLOAD_MAPPING=true.",
-        );
-      } else {
-        console.log(
-          "[adapter-nextjs] NextConfig productionBrowserSourceMaps is already true (CRASHLYTICS_UPLOAD_MAPPING=true).",
-        );
-      }
+      console.warn(
+        "[adapter-nextjs] Warning: Ignoring CRASHLYTICS_UPLOAD_MAPPING=true: Crashlytics source-map upload isn't available on Cloud Run yet, and enabling browser source maps would serve the app's source publicly. NextConfig productionBrowserSourceMaps is left unchanged.",
+      );
     }
 
     return modified ?? config;
