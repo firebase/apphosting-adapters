@@ -256,18 +256,42 @@ describe("@google-cloud/adapter-nextjs", () => {
       assert.ok(infoLogs.some((l) => l.includes('already has output: "standalone"; preserving')));
     });
 
-    it("enables productionBrowserSourceMaps only when CRASHLYTICS_UPLOAD_MAPPING=true", () => {
-      process.env.CRASHLYTICS_UPLOAD_MAPPING = "true";
-      const inputConfig = deepFreeze({});
-      const result = modifyConfig(inputConfig, {
+    it("ignores CRASHLYTICS_UPLOAD_MAPPING and never changes productionBrowserSourceMaps", () => {
+      const ctx: ModifyConfigContext = {
         phase: "phase-production-build",
         nextVersion: "16.4.3",
         projectDir: tempDir,
-      });
-      assert.strictEqual(result.productionBrowserSourceMaps, true);
-      assert.ok(
-        infoLogs.some((l) => l.includes("Enabling NextConfig productionBrowserSourceMaps=true")),
-      );
+      };
+      const ignoredLogs = (): string[] =>
+        warnLogs.filter((w) => w.includes("Ignoring CRASHLYTICS_UPLOAD_MAPPING=true"));
+
+      for (const value of ["true", "1"]) {
+        process.env.CRASHLYTICS_UPLOAD_MAPPING = value;
+        warnLogs = [];
+        const result = modifyConfig<NextConfig>(deepFreeze({}), ctx);
+        assert.strictEqual(result.productionBrowserSourceMaps, undefined);
+        assert.strictEqual(ignoredLogs().length, 1);
+        assert.ok(ignoredLogs()[0].includes("would serve the app's source publicly"));
+      }
+
+      // A user's own setting is left as is, whether or not the env var is set.
+      for (const userValue of [true, false]) {
+        for (const envValue of ["true", undefined]) {
+          if (envValue === undefined) {
+            delete process.env.CRASHLYTICS_UPLOAD_MAPPING;
+          } else {
+            process.env.CRASHLYTICS_UPLOAD_MAPPING = envValue;
+          }
+          const result = modifyConfig(deepFreeze({ productionBrowserSourceMaps: userValue }), ctx);
+          assert.strictEqual(result.productionBrowserSourceMaps, userValue);
+        }
+      }
+
+      warnLogs = [];
+      delete process.env.CRASHLYTICS_UPLOAD_MAPPING;
+      modifyConfig(deepFreeze({}), ctx);
+      assert.strictEqual(ignoredLogs().length, 0);
+      assert.ok(!infoLogs.some((l) => l.includes("productionBrowserSourceMaps")));
     });
 
     it("logs security warnings for 16.3.5 and 16.3.7 without blocking", () => {

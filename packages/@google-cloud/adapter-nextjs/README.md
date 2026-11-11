@@ -17,7 +17,7 @@ Runs only during `phase-production-build`:
 - **Standalone output**: Sets `output: 'standalone'` when `config.output` is unset (preserves `output: 'export'` and explicit `output: 'standalone'`).
 - **Build cache**: Always sets `experimental.turbopackFileSystemCacheForBuild = false`. Cloud Run never restores `.next/cache`, so this avoids ~48 MiB of unused cache in container layers.
 - **Image optimization**: Sets `images.unoptimized: true`, so Next.js image optimization is off by default. Apps with a custom image loader, and builds that set `GOOGLE_NEXTJS_IMAGE_OPTIMIZATION=true`, keep it on. See [Image Optimization](#image-optimization).
-- **Browser source maps**: Always sets `productionBrowserSourceMaps: true` when `CRASHLYTICS_UPLOAD_MAPPING=true` (or `"1"`), regardless of any user value in `next.config`.
+- **Browser source maps**: Never changes `productionBrowserSourceMaps`. `CRASHLYTICS_UPLOAD_MAPPING=true` (or `"1"`) is ignored for now and logs a warning: Crashlytics source-map upload isn't available on Cloud Run yet, and turning on browser source maps would serve the app's source publicly from `/_next/static`.
 
 ### `onBuildComplete(ctx)`
 
@@ -102,7 +102,7 @@ outputFiles:
 | :--------------------------------- | :------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `NEXT_ADAPTER_PATH`                | Build (`next build`) | Absolute path to `@google-cloud/adapter-nextjs` (`dist/index.js`) used by Next.js to load the adapter.                                                             |
 | `NEXT_PRIVATE_OUTPUT_TRACE_ROOT`   | Build (`next build`) | Repository/workspace root (`/workspace` on Cloud Run). Used as `repoRoot` for relative paths and `.cloudrun/` output placement.                                    |
-| `CRASHLYTICS_UPLOAD_MAPPING`       | Build (`next build`) | When set to `"true"` (or `"1"`), sets `productionBrowserSourceMaps: true` in `next.config`.                                                                        |
+| `CRASHLYTICS_UPLOAD_MAPPING`       | Build (`next build`) | Ignored for now (logs a warning). It doesn't turn on `productionBrowserSourceMaps`; see **Browser source maps** above.                                             |
 | `GOOGLE_NEXTJS_IMAGE_OPTIMIZATION` | Build (`next build`) | When set to `"true"` (or `"1"`), keeps Next.js image optimization on instead of setting `images.unoptimized: true`. See [Image Optimization](#image-optimization). |
 | `PORT`                             | Runtime (`serve.js`) | HTTP port for the server. Cloud Run always sets it; defaults to `3000` when unset.                                                                                 |
 | `KEEP_ALIVE_TIMEOUT`               | Runtime (`serve.js`) | Optional HTTP server `keepAliveTimeout` in milliseconds.                                                                                                           |
