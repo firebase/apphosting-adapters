@@ -3,6 +3,7 @@ import {
   loadRouteManifest,
   writeRouteManifest,
   loadMiddlewareManifest,
+  processCustomHeaders,
   exists,
   writeFile,
   loadConfig,
@@ -180,11 +181,13 @@ export async function restoreNextConfig(projectRoot: string, nextConfigFileName:
  * @param appPath The path to the app directory.
  * @param distDir The path to the dist directory.
  * @param adapterMetadata The adapter metadata.
+ * @param projectRoot The path to the project root, where Next.js is installed.
  */
 export async function addRouteOverrides(
   appPath: string,
   distDir: string,
   adapterMetadata: AdapterMetadata,
+  projectRoot: string,
 ) {
   const routeManifest = loadRouteManifest(appPath, distDir);
 
@@ -214,17 +217,24 @@ export async function addRouteOverrides(
   if (rootMiddleware?.matchers) {
     console.log("Middleware detected, adding middleware headers to matching routes");
 
-    rootMiddleware.matchers.forEach((matcher) => {
-      routeManifest.headers.push({
+    const { matchers } = rootMiddleware;
+    const headers = await processCustomHeaders(
+      projectRoot,
+      routeManifest,
+      matchers.map((matcher) => ({
         source: matcher.originalSource,
+        locale: matcher.locale,
         headers: [
           {
             key: "x-fah-middleware",
             value: "true",
           },
         ],
-        regex: matcher.regexp,
-      });
+      })),
+    );
+
+    headers.forEach((header, index) => {
+      routeManifest.headers.push({ ...header, regex: matchers[index].regexp });
     });
   }
 

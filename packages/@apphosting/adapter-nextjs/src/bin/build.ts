@@ -64,6 +64,7 @@ try {
     outputBundleOptions.outputDirectoryAppPath,
     nextConfig.distDir,
     adapterMetadata,
+    opts.projectDirectory,
   );
 
   const nextjsVersion = process.env.FRAMEWORK_VERSION || "unspecified";

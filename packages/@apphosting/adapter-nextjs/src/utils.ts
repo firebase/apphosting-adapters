@@ -12,7 +12,8 @@ import {
   AdapterMetadata,
   MiddlewareManifest,
 } from "./interfaces.js";
-import { NextConfigComplete } from "next/dist/server/config-shared.js";
+import { NextConfig, NextConfigComplete } from "next/dist/server/config-shared.js";
+import type { Header } from "next/dist/lib/load-custom-routes.js";
 import { OutputBundleConfig, updateOrCreateGitignore } from "@apphosting/common";
 
 // fs-extra is CJS, readJson can't be imported using shorthand
@@ -60,6 +61,36 @@ export async function loadConfig(root: string, projectRoot: string): Promise<Nex
 
   const loadConfig = nextServerConfig.default;
   return await loadConfig(PHASE_PRODUCTION_BUILD, root);
+}
+
+// Processes header routes the way Next.js processes the headers in next.config, which adds the
+// basePath and locale prefixes Next.js matches headers against. trailingSlash is left out: it
+// would add a trailing slash to the root source, so /en would no longer match.
+export async function processCustomHeaders(
+  projectRoot: string,
+  nextConfig: Pick<NextConfig, "basePath" | "i18n">,
+  headers: Header[],
+): Promise<Header[]> {
+  // Load the app's Next.js, the version that built it, not the adapter's own
+  const require = createRequire(import.meta.url);
+  const customRoutesPath = require.resolve("next/dist/lib/load-custom-routes.js", {
+    paths: [projectRoot],
+  });
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const {
+    default: customRoutes,
+  }: { default: typeof import("next/dist/lib/load-custom-routes.js") } = await import(
+    customRoutesPath
+  );
+
+  const loadCustomRoutes = customRoutes.default;
+  const { basePath, i18n } = nextConfig;
+  const routes = await loadCustomRoutes({
+    basePath,
+    i18n,
+    headers: () => Promise.resolve(headers),
+  });
+  return routes.headers;
 }
 
 /**
