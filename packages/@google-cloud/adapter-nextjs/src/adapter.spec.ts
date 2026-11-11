@@ -3,6 +3,7 @@ import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
 import * as yaml from "yaml";
+import type { NextConfig } from "next";
 import adapter, {
   ADAPTER_PACKAGE_NAME,
   ADAPTER_VERSION,
@@ -16,9 +17,12 @@ import adapter, {
   stripMatcherConditions,
   buildNextRoutingManifest,
   type BundleYamlV2,
+  type ModifyConfigContext,
   type NextRoutingManifest,
   type OnBuildCompleteContext,
 } from "./index";
+
+type ImageConfig = NonNullable<NextConfig["images"]>;
 
 function deepFreeze<T>(obj: T): T {
   if (obj && typeof obj === "object") {
@@ -84,6 +88,7 @@ function createSyntheticContext(
 describe("@google-cloud/adapter-nextjs", () => {
   let tempDir: string;
   let origCrashlyticsEnv: string | undefined;
+  let origImageOptimizationEnv: string | undefined;
   let warnLogs: string[];
   let infoLogs: string[];
   let origWarn: typeof console.warn;
@@ -93,6 +98,8 @@ describe("@google-cloud/adapter-nextjs", () => {
     tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "adapter-nextjs-test-"));
     origCrashlyticsEnv = process.env.CRASHLYTICS_UPLOAD_MAPPING;
     delete process.env.CRASHLYTICS_UPLOAD_MAPPING;
+    origImageOptimizationEnv = process.env.GOOGLE_NEXTJS_IMAGE_OPTIMIZATION;
+    delete process.env.GOOGLE_NEXTJS_IMAGE_OPTIMIZATION;
     warnLogs = [];
     infoLogs = [];
     origWarn = console.warn;
@@ -112,6 +119,11 @@ describe("@google-cloud/adapter-nextjs", () => {
       delete process.env.CRASHLYTICS_UPLOAD_MAPPING;
     } else {
       process.env.CRASHLYTICS_UPLOAD_MAPPING = origCrashlyticsEnv;
+    }
+    if (origImageOptimizationEnv === undefined) {
+      delete process.env.GOOGLE_NEXTJS_IMAGE_OPTIMIZATION;
+    } else {
+      process.env.GOOGLE_NEXTJS_IMAGE_OPTIMIZATION = origImageOptimizationEnv;
     }
     fs.rmSync(tempDir, { recursive: true, force: true });
   });
@@ -302,6 +314,117 @@ describe("@google-cloud/adapter-nextjs", () => {
         modifyConfig(undefined as unknown as Record<string, unknown>, ctx),
         undefined,
       );
+    });
+
+    describe("image optimization", () => {
+      const buildCtx = (): ModifyConfigContext => ({
+        phase: "phase-production-build",
+        nextVersion: "16.4.3",
+        projectDir: tempDir,
+      });
+      // The images config as modifyConfig receives it: Next.js has already filled in its
+      // defaults (`loader: "default"`, `loaderFile: ""`, `unoptimized: false`).
+      const nextImages = (overrides: ImageConfig = {}): ImageConfig => ({
+        deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+        imageSizes: [32, 48, 64, 96, 128, 256, 384],
+        path: "/_next/image",
+        loader: "default",
+        loaderFile: "",
+        formats: ["image/webp"],
+        minimumCacheTTL: 14400,
+        remotePatterns: [{ protocol: "https", hostname: "images.example.com" }],
+        unoptimized: false,
+        ...overrides,
+      });
+      const imageLogs = (): string[] => infoLogs.filter((l) => /image/i.test(l));
+
+      it("turns image optimization off by default and keeps the other images fields", () => {
+        const inputConfig = deepFreeze({ images: nextImages() });
+        const result = modifyConfig(inputConfig, buildCtx());
+        assert.notStrictEqual(result, inputConfig);
+        assert.deepStrictEqual(result.images, nextImages({ unoptimized: true }));
+        assert.strictEqual(inputConfig.images.unoptimized, false);
+        assert.deepStrictEqual(imageLogs(), [
+          "[adapter-nextjs] Setting NextConfig images.unoptimized=true (Next.js image optimization is off by default on Cloud Run; set GOOGLE_NEXTJS_IMAGE_OPTIMIZATION=true to turn it on).",
+        ]);
+      });
+
+      it("sets images.unoptimized=true when the config has no images field", () => {
+        const result = modifyConfig<NextConfig>(deepFreeze({}), buildCtx());
+        assert.deepStrictEqual(result.images, { unoptimized: true });
+      });
+
+      it("leaves images untouched when images.loader is a custom loader", () => {
+        for (const loader of ["custom", "cloudinary"] as const) {
+          infoLogs = [];
+          const inputConfig = deepFreeze({
+            images: nextImages({ loader, path: "https://res.example.com/" }),
+          });
+          const result = modifyConfig(inputConfig, buildCtx());
+          assert.strictEqual(result.images, inputConfig.images);
+          assert.strictEqual(result.images.unoptimized, false);
+          assert.strictEqual(imageLogs().length, 1);
+          assert.ok(
+            imageLogs()[0].includes(`uses a custom image loader (images.loader="${loader}"`),
+          );
+        }
+      });
+
+      it("leaves images untouched when images.loaderFile is set", () => {
+        const inputConfig = deepFreeze({
+          images: nextImages({ loaderFile: path.join(tempDir, "image-loader.js") }),
+        });
+        const result = modifyConfig(inputConfig, buildCtx());
+        assert.strictEqual(result.images, inputConfig.images);
+        assert.strictEqual(result.images.unoptimized, false);
+        assert.strictEqual(imageLogs().length, 1);
+        assert.ok(imageLogs()[0].includes("uses a custom image loader"));
+        assert.ok(imageLogs()[0].includes("image-loader.js"));
+      });
+
+      it("keeps image optimization on when GOOGLE_NEXTJS_IMAGE_OPTIMIZATION is true or 1", () => {
+        for (const value of ["true", "TRUE", " 1 "]) {
+          infoLogs = [];
+          process.env.GOOGLE_NEXTJS_IMAGE_OPTIMIZATION = value;
+          const inputConfig = deepFreeze({ images: nextImages() });
+          const result = modifyConfig(inputConfig, buildCtx());
+          assert.strictEqual(result.images, inputConfig.images);
+          assert.strictEqual(result.images.unoptimized, false);
+          assert.deepStrictEqual(imageLogs(), [
+            "[adapter-nextjs] Leaving Next.js image optimization on because GOOGLE_NEXTJS_IMAGE_OPTIMIZATION=true.",
+          ]);
+        }
+      });
+
+      it("turns image optimization off when GOOGLE_NEXTJS_IMAGE_OPTIMIZATION is not true", () => {
+        for (const value of ["false", "0", "", "yes"]) {
+          process.env.GOOGLE_NEXTJS_IMAGE_OPTIMIZATION = value;
+          const result = modifyConfig(deepFreeze({ images: nextImages() }), buildCtx());
+          assert.strictEqual(result.images.unoptimized, true, `value ${JSON.stringify(value)}`);
+        }
+      });
+
+      it("preserves images.unoptimized=true, with or without the opt-in", () => {
+        for (const optIn of [undefined, "true"]) {
+          infoLogs = [];
+          if (optIn === undefined) {
+            delete process.env.GOOGLE_NEXTJS_IMAGE_OPTIMIZATION;
+          } else {
+            process.env.GOOGLE_NEXTJS_IMAGE_OPTIMIZATION = optIn;
+          }
+          const inputConfig = deepFreeze({
+            output: "standalone" as const,
+            experimental: { turbopackFileSystemCacheForBuild: false },
+            images: nextImages({ unoptimized: true }),
+          });
+          const result = modifyConfig(inputConfig, buildCtx());
+          // Nothing else needed changing either, so the input object comes back as is.
+          assert.strictEqual(result, inputConfig);
+          assert.deepStrictEqual(imageLogs(), [
+            "[adapter-nextjs] NextConfig images.unoptimized is already true; preserving.",
+          ]);
+        }
+      });
     });
   });
 
