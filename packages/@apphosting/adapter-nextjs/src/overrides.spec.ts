@@ -163,6 +163,77 @@ describe("route overrides", () => {
     assert.deepStrictEqual(updatedManifest, expectedManifest);
   });
 
+  it("should add middleware header to routes matched by Node.js middleware (proxy)", async () => {
+    const { addRouteOverrides } = await importOverrides;
+    const initialManifest: RoutesManifest = {
+      version: 3,
+      basePath: "",
+      pages404: true,
+      staticRoutes: [],
+      dynamicRoutes: [],
+      dataRoutes: [],
+      headers: [],
+      rewrites: [],
+      redirects: [],
+    };
+
+    const middlewareManifest: MiddlewareManifest = {
+      version: 3,
+      sortedMiddleware: [],
+      middleware: {},
+      functions: {},
+    };
+
+    const functionsConfigManifest = {
+      version: 1,
+      functions: {
+        "/_middleware": {
+          runtime: "nodejs",
+          matchers: [
+            {
+              regexp: "^/hello$",
+              originalSource: "/hello",
+            },
+          ],
+        },
+      },
+    };
+
+    fs.writeFileSync(routesManifestPath, JSON.stringify(initialManifest));
+    fs.writeFileSync(middlewareManifestPath, JSON.stringify(middlewareManifest));
+    fs.writeFileSync(
+      path.join(path.dirname(middlewareManifestPath), "functions-config-manifest.json"),
+      JSON.stringify(functionsConfigManifest),
+    );
+
+    await addRouteOverrides(tmpDir, ".next", {
+      adapterPackageName: "@apphosting/adapter-nextjs",
+      adapterVersion: "1.0.0",
+    });
+
+    const updatedManifest: RoutesManifest = JSON.parse(
+      fs.readFileSync(routesManifestPath, "utf-8"),
+    );
+
+    assert.deepStrictEqual(updatedManifest.headers, [
+      {
+        source: "/:path*",
+        regex: "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))?(?:/)?$",
+        headers: [
+          {
+            key: "x-fah-adapter",
+            value: "nextjs-1.0.0",
+          },
+        ],
+      },
+      {
+        source: "/hello",
+        regex: "^/hello$",
+        headers: [{ key: "x-fah-middleware", value: "true" }],
+      },
+    ]);
+  });
+
   afterEach(() => {
     fs.rmSync(tmpDir, { recursive: true, force: true });
   });

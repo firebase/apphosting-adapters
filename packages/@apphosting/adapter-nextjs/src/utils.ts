@@ -5,7 +5,12 @@ import { join, dirname, relative, normalize } from "path";
 import { fileURLToPath } from "url";
 import { stringify as yamlStringify } from "yaml";
 
-import { PHASE_PRODUCTION_BUILD, ROUTES_MANIFEST, MIDDLEWARE_MANIFEST } from "./constants.js";
+import {
+  PHASE_PRODUCTION_BUILD,
+  ROUTES_MANIFEST,
+  MIDDLEWARE_MANIFEST,
+  FUNCTIONS_CONFIG_MANIFEST,
+} from "./constants.js";
 import {
   OutputBundleOptions,
   RoutesManifest,
@@ -13,6 +18,7 @@ import {
   MiddlewareManifest,
 } from "./interfaces.js";
 import { NextConfigComplete } from "next/dist/server/config-shared.js";
+import type { FunctionsConfigManifest } from "next/dist/build/index.js";
 import { OutputBundleConfig, updateOrCreateGitignore } from "@apphosting/common";
 
 // fs-extra is CJS, readJson can't be imported using shorthand
@@ -87,6 +93,23 @@ export function loadMiddlewareManifest(
   const manifestPath = join(standalonePath, distDir, `server/${MIDDLEWARE_MANIFEST}`);
   const json = readFileSync(manifestPath, "utf-8");
   return JSON.parse(json) as MiddlewareManifest;
+}
+
+/**
+ * Loads the functions config manifest from the standalone directory. Node.js middleware, including
+ * Next.js 16's proxy, is listed here instead of in the middleware manifest.
+ * @param standalonePath The path to the standalone directory.
+ * @param distDir The path to the dist directory.
+ * @return The functions config manifest, or undefined if the build did not emit one.
+ */
+export function loadFunctionsConfigManifest(
+  standalonePath: string,
+  distDir: string,
+): FunctionsConfigManifest | undefined {
+  const manifestPath = join(standalonePath, distDir, `server/${FUNCTIONS_CONFIG_MANIFEST}`);
+  if (!existsSync(manifestPath)) return undefined;
+  const manifest: FunctionsConfigManifest = JSON.parse(readFileSync(manifestPath, "utf-8"));
+  return manifest;
 }
 
 /**
