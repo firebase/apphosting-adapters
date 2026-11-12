@@ -5,10 +5,16 @@ import { fileURLToPath } from "url";
 import { execSync } from "child_process";
 import { resolve, normalize, relative, dirname, join } from "path";
 import { stringify as yamlStringify } from "yaml";
-import { OutputBundleOptions, OutputPaths, buildManifestSchema } from "./interface.js";
+import {
+  OutputBundleOptions,
+  OutputPaths,
+  ValidManifest,
+  buildManifestSchema,
+} from "./interface.js";
 import { createRequire } from "node:module";
 import { parse as parseYaml } from "yaml";
 import stripAnsi from "strip-ansi";
+import type { ZodError } from "zod";
 import {
   BuildOptions,
   OutputBundleConfig,
@@ -146,15 +152,7 @@ export function populateOutputBundleOptions(outputPaths: OutputPaths): OutputBun
 }
 
 export function parseOutputBundleOptions(buildOutput: string): OutputBundleOptions {
-  const strippedManifest = extractManifestOutput(buildOutput);
-  // TODO: add functional tests that test this flow
-  let parsedManifest;
-  try {
-    parsedManifest = JSON.parse(strippedManifest.replace(/[\r\n]+/g, "")) as string;
-  } catch (error) {
-    throw new Error(`Failed to parse build output manifest: ${error}`);
-  }
-  const manifest = buildManifestSchema.parse(parsedManifest);
+  const manifest = extractManifest(buildOutput);
   if (manifest["errors"].length > 0) {
     // errors when extracting manifest
     manifest.errors.forEach((error) => {
@@ -172,22 +170,50 @@ export function parseOutputBundleOptions(buildOutput: string): OutputBundleOptio
 
 /**
  * Extracts the build manifest from the build command's console output.
- * N.B. Unfortunately, there is currently no consistent way to suppress extraneous default output from the task
- * runners of monorepo tools such as Nx (i.e. using the --silent flag for npm scripts). As a result, we must
- * temporarily resort to "cleaning" the output of executing the Angular application builder in a monorepo's tooling
- * context, in order to extract the build manifest. This method is a potentially flaky stopgap until we can find a
- * more consistent and resilient strategy for reading the output.
+ * N.B. The output also has everything else the build prints (npm's script echo, app logs while prerendering,
+ * monorepo task runner prefixes), and there is no consistent way to suppress it (i.e. the --silent flag for npm
+ * scripts), so the manifest is found by its shape and validated against its schema.
  */
-function extractManifestOutput(output: string): string {
-  const start = output.indexOf("{");
-  const end = output.lastIndexOf("}");
-  if (start === -1 || end === -1 || start > end) {
-    throw new Error(`Failed to find valid JSON object from build output: ${output}`);
+function extractManifest(output: string): ValidManifest {
+  // Clean the raw output by removing the "<package>:build: " prefixes for a Turbo build
+  const prefixRegex = /^[^\s:]+:build: ?/gm;
+  const lines = stripAnsi(output)
+    .replace(prefixRegex, "")
+    .split(/\r\n?|\n/)
+    .map((line) => line.trimEnd());
+  let schemaError: ZodError | undefined;
+  // Logs can contain braces and JSON too (an npm-echoed `${VAR}` script, prerender logs), so try
+  // each candidate, last first, until one is a valid manifest.
+  for (let end = lines.length - 1; end >= 0; end--) {
+    // The manifest ends with an unindented "}"
+    // See: https://github.com/angular/angular-cli/blob/afa3814ab9bf938006e2b144af8bd3112e38cc96/packages/angular/build/src/tools/esbuild/utils.ts#L271
+    if (/^\s/.test(lines[end]) || !lines[end].endsWith("}")) continue;
+    let start = end;
+    // A single-line manifest starts on its own line, a pretty-printed one on the closest
+    // unindented line ending with "{"
+    if (!lines[end].includes("{")) {
+      start = end - 1;
+      while (start >= 0 && (/^\s/.test(lines[start]) || !lines[start].endsWith("{"))) start--;
+      if (start < 0) continue;
+    }
+    // Text before the "{" is a line the build printed without a trailing newline
+    const head = lines[start].slice(lines[start].indexOf("{"));
+    let candidate: unknown;
+    try {
+      // Joined without newlines, as before, so a string wrapped across lines still parses
+      candidate = JSON.parse([head, ...lines.slice(start + 1, end + 1)].join(""));
+    } catch (e) {
+      continue;
+    }
+    const manifest = buildManifestSchema.safeParse(candidate);
+    if (manifest.success) return manifest.data;
+    // Report the closest candidate, which is the manifest when Angular changed its shape
+    if (!schemaError || manifest.error.issues.length < schemaError.issues.length) {
+      schemaError = manifest.error;
+    }
   }
-  // Clean the raw json string by removing the "web:build:" prefixes for a Turbo build
-  const prefixRegex = /\n?web:build:/g;
-  const cleanedOutput = output.substring(start, end + 1).replace(prefixRegex, "");
-  return stripAnsi(cleanedOutput);
+  if (schemaError) throw schemaError;
+  throw new Error(`Failed to find valid JSON object from build output: ${output}`);
 }
 
 /**
