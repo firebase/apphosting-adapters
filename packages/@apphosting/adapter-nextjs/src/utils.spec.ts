@@ -185,3 +185,64 @@ describe("manifest utils", () => {
     fs.rmSync(tmpDir, { recursive: true, force: true });
   });
 });
+
+describe("loadConfig", () => {
+  let tmpDir: string;
+
+  beforeEach(() => {
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "test-load-config-"));
+  });
+
+  const TURBOPACK_ONLY =
+    'throw new Error("experimental.turbopackRustReactCompiler is only supported with Turbopack.")';
+
+  // Installs a stand-in for Next whose config loader reports the TURBOPACK value it ran with.
+  function writeNext(onLoad = ""): void {
+    const nextDir = path.join(tmpDir, "node_modules", "next");
+    fs.mkdirSync(path.join(nextDir, "dist", "server"), { recursive: true });
+    fs.writeFileSync(path.join(nextDir, "package.json"), JSON.stringify({ name: "next" }));
+    fs.writeFileSync(
+      path.join(nextDir, "dist", "server", "config.js"),
+      `exports.default = async () => { ${onLoad}; return { turbopack: process.env.TURBOPACK }; };`,
+    );
+  }
+
+  it("should load the config without TURBOPACK when Next accepts it", async () => {
+    writeNext();
+    const { loadConfig } = await importUtils;
+
+    assert.deepStrictEqual(await loadConfig(tmpDir, tmpDir), { turbopack: undefined });
+  });
+
+  it("should retry with TURBOPACK when Next rejects a Turbopack-only option", async () => {
+    writeNext(`if (!process.env.TURBOPACK) ${TURBOPACK_ONLY}`);
+    const { loadConfig } = await importUtils;
+
+    assert.deepStrictEqual(await loadConfig(tmpDir, tmpDir), { turbopack: "auto" });
+    assert.strictEqual(process.env.TURBOPACK, undefined);
+  });
+
+  it("should rethrow other config errors without retrying", async () => {
+    writeNext(`throw new Error("Invalid next.config.js")`);
+    const { loadConfig } = await importUtils;
+
+    await assert.rejects(loadConfig(tmpDir, tmpDir), /Invalid next\.config\.js/);
+  });
+
+  it("should rethrow a Turbopack-only error when TURBOPACK was already set", async () => {
+    writeNext(TURBOPACK_ONLY);
+    process.env.TURBOPACK = "1";
+    const { loadConfig } = await importUtils;
+
+    try {
+      await assert.rejects(loadConfig(tmpDir, tmpDir), /is only supported with Turbopack/);
+      assert.strictEqual(process.env.TURBOPACK, "1");
+    } finally {
+      delete process.env.TURBOPACK;
+    }
+  });
+
+  afterEach(() => {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  });
+});

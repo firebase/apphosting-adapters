@@ -59,7 +59,25 @@ export async function loadConfig(root: string, projectRoot: string): Promise<Nex
     await import(configPath);
 
   const loadConfig = nextServerConfig.default;
-  return await loadConfig(PHASE_PRODUCTION_BUILD, root);
+  try {
+    return await loadConfig(PHASE_PRODUCTION_BUILD, root);
+  } catch (err) {
+    // Next 16+ rejects Turbopack-only options when TURBOPACK is unset, but `next build`
+    // sets TURBOPACK=auto itself when no bundler flag is passed. Retry the way it would.
+    if (
+      process.env.TURBOPACK !== undefined ||
+      !(err instanceof Error && err.message.includes("is only supported with Turbopack"))
+    ) {
+      throw err;
+    }
+    process.env.TURBOPACK = "auto";
+    try {
+      return await loadConfig(PHASE_PRODUCTION_BUILD, root);
+    } finally {
+      // `next build --webpack` exits with "Multiple bundler flags set" if TURBOPACK reaches it.
+      delete process.env.TURBOPACK;
+    }
+  }
 }
 
 /**
