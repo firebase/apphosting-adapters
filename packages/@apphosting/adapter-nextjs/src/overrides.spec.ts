@@ -2,6 +2,7 @@ import assert from "assert";
 import fs from "fs";
 import path from "path";
 import os from "os";
+import type { MiddlewareMatcher } from "next/dist/build/analysis/get-page-static-info.js";
 import { RoutesManifest, MiddlewareManifest } from "./interfaces.js";
 const importOverrides = import("@apphosting/adapter-nextjs/dist/overrides.js");
 
@@ -45,10 +46,15 @@ describe("route overrides", () => {
       JSON.stringify({ version: 1, sortedMiddleware: [], middleware: {}, functions: {} }),
     );
 
-    await addRouteOverrides(tmpDir, ".next", {
-      adapterPackageName: "@apphosting/adapter-nextjs",
-      adapterVersion: "1.0.0",
-    });
+    await addRouteOverrides(
+      tmpDir,
+      ".next",
+      {
+        adapterPackageName: "@apphosting/adapter-nextjs",
+        adapterVersion: "1.0.0",
+      },
+      process.cwd(),
+    );
 
     const updatedManifest = JSON.parse(
       fs.readFileSync(routesManifestPath, "utf-8"),
@@ -121,10 +127,15 @@ describe("route overrides", () => {
     fs.writeFileSync(routesManifestPath, JSON.stringify(initialManifest));
     fs.writeFileSync(middlewareManifestPath, JSON.stringify(middlewareManifest));
 
-    await addRouteOverrides(tmpDir, ".next", {
-      adapterPackageName: "@apphosting/adapter-nextjs",
-      adapterVersion: "1.0.0",
-    });
+    await addRouteOverrides(
+      tmpDir,
+      ".next",
+      {
+        adapterPackageName: "@apphosting/adapter-nextjs",
+        adapterVersion: "1.0.0",
+      },
+      process.cwd(),
+    );
 
     const updatedManifest = JSON.parse(
       fs.readFileSync(routesManifestPath, "utf-8"),
@@ -161,6 +172,102 @@ describe("route overrides", () => {
     };
 
     assert.deepStrictEqual(updatedManifest, expectedManifest);
+  });
+
+  const i18n = { locales: ["en-US", "fr"], defaultLocale: "en-US" };
+  const prefixedSourceCases: Array<{
+    name: string;
+    basePath: string;
+    i18n?: RoutesManifest["i18n"];
+    expected: string[];
+  }> = [
+    {
+      name: "basePath",
+      basePath: "/base",
+      expected: ["/base", "/base/hello", "/base/api/:path*", "/base/fr/hello"],
+    },
+    {
+      name: "i18n",
+      basePath: "",
+      i18n,
+      expected: [
+        "/:nextInternalLocale(en\\-US|fr)",
+        "/:nextInternalLocale(en\\-US|fr)/hello",
+        "/:nextInternalLocale(en\\-US|fr)/api/:path*",
+        "/fr/hello",
+      ],
+    },
+    {
+      name: "basePath and i18n",
+      basePath: "/base",
+      i18n,
+      expected: [
+        "/base/:nextInternalLocale(en\\-US|fr)",
+        "/base/:nextInternalLocale(en\\-US|fr)/hello",
+        "/base/:nextInternalLocale(en\\-US|fr)/api/:path*",
+        "/base/fr/hello",
+      ],
+    },
+  ];
+
+  prefixedSourceCases.forEach(({ name, basePath, i18n, expected }) => {
+    it(`should prefix middleware header sources with ${name}`, async () => {
+      const { addRouteOverrides } = await importOverrides;
+      const initialManifest: RoutesManifest = {
+        version: 3,
+        basePath,
+        i18n,
+        pages404: true,
+        staticRoutes: [],
+        dynamicRoutes: [],
+        dataRoutes: [],
+        headers: [],
+        rewrites: [],
+        redirects: [],
+      };
+
+      const matchers: MiddlewareMatcher[] = [
+        { regexp: "^/root$", originalSource: "/" },
+        { regexp: "^/hello$", originalSource: "/hello" },
+        { regexp: "^/api$", originalSource: "/api/:path*" },
+        { regexp: "^/fr/hello$", originalSource: "/fr/hello", locale: false },
+      ];
+      const middlewareManifest: MiddlewareManifest = {
+        version: 3,
+        sortedMiddleware: ["/"],
+        middleware: {
+          "/": { files: ["middleware.ts"], name: "middleware", page: "/", matchers },
+        },
+        functions: {},
+      };
+
+      fs.writeFileSync(routesManifestPath, JSON.stringify(initialManifest));
+      fs.writeFileSync(middlewareManifestPath, JSON.stringify(middlewareManifest));
+
+      await addRouteOverrides(
+        tmpDir,
+        ".next",
+        {
+          adapterPackageName: "@apphosting/adapter-nextjs",
+          adapterVersion: "1.0.0",
+        },
+        process.cwd(),
+      );
+
+      const updatedManifest: RoutesManifest = JSON.parse(
+        fs.readFileSync(routesManifestPath, "utf-8"),
+      );
+      const middlewareHeaders = updatedManifest.headers.slice(1);
+
+      assert.deepStrictEqual(
+        middlewareHeaders.map(({ source }) => source),
+        expected,
+      );
+      assert.deepStrictEqual(
+        middlewareHeaders.map(({ regex }) => regex),
+        matchers.map(({ regexp }) => regexp),
+      );
+    });
   });
 
   afterEach(() => {
