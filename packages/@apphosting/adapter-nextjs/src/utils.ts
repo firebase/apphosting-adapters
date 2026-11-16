@@ -82,7 +82,7 @@ export async function processCustomHeaders(
     customRoutesPath
   );
 
-  const loadCustomRoutes = customRoutes.default;
+  const loadCustomRoutes = typeof customRoutes === "function" ? customRoutes : customRoutes.default;
   const { basePath, i18n } = nextConfig;
   const routes = await loadCustomRoutes({
     basePath,
