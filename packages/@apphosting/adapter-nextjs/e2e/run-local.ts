@@ -69,6 +69,17 @@ const scenarios: Scenario[] = [
       `;
 
       await fsExtra.writeFile(join(cwd, "src", "middleware.ts"), middlewareContent);
+
+      const files = await fsExtra.readdir(cwd);
+      const configFiles = files
+        .filter((file) => file.startsWith("next.config."))
+        .map((file) => join(cwd, file));
+
+      for (const file of configFiles) {
+        await fsExtra.remove(file);
+        console.log(`Removed existing config file: ${file}`);
+      }
+
       await fsExtra.writeFile(
         join(cwd, "next.config.mjs"),
         `export default { basePath: "/base", i18n: { locales: ["en", "fr"], defaultLocale: "en" } };`,
