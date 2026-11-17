@@ -1,9 +1,11 @@
+import type { MiddlewareMatcher } from "next/dist/build/analysis/get-page-static-info.js";
 import { AdapterMetadata } from "./interfaces.js";
 import {
   loadRouteManifest,
   writeRouteManifest,
   loadMiddlewareManifest,
   loadFunctionsConfigManifest,
+  processCustomHeaders,
   exists,
   writeFile,
   loadConfig,
@@ -181,11 +183,13 @@ export async function restoreNextConfig(projectRoot: string, nextConfigFileName:
  * @param appPath The path to the app directory.
  * @param distDir The path to the dist directory.
  * @param adapterMetadata The adapter metadata.
+ * @param projectRoot The path to the project root, where Next.js is installed.
  */
 export async function addRouteOverrides(
   appPath: string,
   distDir: string,
   adapterMetadata: AdapterMetadata,
+  projectRoot: string,
 ) {
   const routeManifest = loadRouteManifest(appPath, distDir);
 
@@ -214,21 +218,30 @@ export async function addRouteOverrides(
   const rootMiddleware = middlewareManifest.middleware["/"];
   const functionsConfigManifest = loadFunctionsConfigManifest(appPath, distDir);
   const nodeMiddleware = functionsConfigManifest?.functions["/_middleware"];
-  const matchers = [...(rootMiddleware?.matchers ?? []), ...(nodeMiddleware?.matchers ?? [])];
+  const matchers: MiddlewareMatcher[] = [
+    ...(rootMiddleware?.matchers ?? []),
+    ...(nodeMiddleware?.matchers ?? []),
+  ];
   if (matchers.length > 0) {
     console.log("Middleware detected, adding middleware headers to matching routes");
 
-    matchers.forEach((matcher) => {
-      routeManifest.headers.push({
+    const headers = await processCustomHeaders(
+      projectRoot,
+      routeManifest,
+      matchers.map((matcher) => ({
         source: matcher.originalSource,
+        locale: matcher.locale,
         headers: [
           {
             key: "x-fah-middleware",
             value: "true",
           },
         ],
-        regex: matcher.regexp,
-      });
+      })),
+    );
+
+    headers.forEach((header, index) => {
+      routeManifest.headers.push({ ...header, regex: matchers[index].regexp });
     });
   }
 
