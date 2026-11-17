@@ -54,6 +54,28 @@ const scenarios: Scenario[] = [
     tests: ["middleware.spec.ts"], // Only run middleware-specific tests
   },
   {
+    name: "with-nodejs-middleware",
+    setup: async (cwd: string) => {
+      // Node.js middleware (like Next.js 16's proxy.ts) is listed in functions-config-manifest.json
+      const middlewareContent = `
+        import type { NextRequest } from "next/server";
+
+        export function middleware(request: NextRequest) {
+          console.log("Middleware executed", request.nextUrl.pathname);
+        }
+
+        export const config = {
+          runtime: "nodejs",
+          matcher: ["/ssg", "/ssr"],
+        };
+      `;
+
+      await fsExtra.writeFile(join(cwd, "src", "middleware.ts"), middlewareContent);
+      console.log(`Created middleware.ts file`);
+    },
+    tests: ["middleware.spec.ts"],
+  },
+  {
     name: "with-middleware-basepath-i18n",
     setup: async (cwd: string) => {
       const middlewareContent = `

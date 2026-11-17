@@ -1,8 +1,10 @@
+import type { MiddlewareMatcher } from "next/dist/build/analysis/get-page-static-info.js";
 import { AdapterMetadata } from "./interfaces.js";
 import {
   loadRouteManifest,
   writeRouteManifest,
   loadMiddlewareManifest,
+  loadFunctionsConfigManifest,
   processCustomHeaders,
   exists,
   writeFile,
@@ -214,10 +216,15 @@ export async function addRouteOverrides(
   // Add the middleware header to all routes for which middleware is enabled
   const middlewareManifest = loadMiddlewareManifest(appPath, distDir);
   const rootMiddleware = middlewareManifest.middleware["/"];
-  if (rootMiddleware?.matchers) {
+  const functionsConfigManifest = loadFunctionsConfigManifest(appPath, distDir);
+  const nodeMiddleware = functionsConfigManifest?.functions["/_middleware"];
+  const matchers: MiddlewareMatcher[] = [
+    ...(rootMiddleware?.matchers ?? []),
+    ...(nodeMiddleware?.matchers ?? []),
+  ];
+  if (matchers.length > 0) {
     console.log("Middleware detected, adding middleware headers to matching routes");
 
-    const { matchers } = rootMiddleware;
     const headers = await processCustomHeaders(
       projectRoot,
       routeManifest,
