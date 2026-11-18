@@ -23,9 +23,12 @@ const angularApp = new AngularNodeAppEngine();
 
 app.use(express.json());
 
+
 // Assign your Google AI API key as an environment variable
 const genAI = new GoogleGenerativeAI(process.env['API_KEY'] || '');
 const ctx = new Map();
+
+const GEMINI_MODEL = 'gemini-2.5-flash';
 
 // Used for converting MD => HTML.
 const converter = new Converter();
@@ -42,7 +45,7 @@ function printRequestData(req: express.Request) {
 app.post('/api/gemini', async (req, res) => {
   let model = ctx.get(req.path);
   if (!model) {
-    model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
     ctx.set(req.path, model);
   }
 
@@ -62,7 +65,7 @@ app.post('/api/gemini', async (req, res) => {
 app.post('/api/gemini-chat', async (req, res) => {
   let chat = ctx.get(req.path);
   if (!chat) {
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
     chat = model.startChat({
       history: [
         {
