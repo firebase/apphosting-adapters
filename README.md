@@ -1,4 +1,4 @@
-# App Hosting adapters
+## App Hosting adapters
 
 ## Overview
 
