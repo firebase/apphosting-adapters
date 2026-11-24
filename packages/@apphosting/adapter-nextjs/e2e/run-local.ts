@@ -93,6 +93,41 @@ const scenarios: Scenario[] = [
     },
     tests: ["middleware.spec.ts"],
   },
+  {
+    name: "with-i18n-locale-detection",
+    setup: async (cwd: string) => {
+      const files = await fsExtra.readdir(cwd);
+      const configFiles = files
+        .filter((file) => file.startsWith("next.config."))
+        .map((file) => join(cwd, file));
+
+      for (const file of configFiles) {
+        await fsExtra.remove(file);
+        console.log(`Removed existing config file: ${file}`);
+      }
+
+      await fsExtra.writeFile(
+        join(cwd, "next.config.mjs"),
+        `export default {
+          i18n: { locales: ["en", "fr"], defaultLocale: "en" },
+          async headers() {
+            return [
+              { source: "/:path*", headers: [{ key: "x-custom-header", value: "mjs-config-value" }] },
+            ];
+          },
+        };`,
+      );
+      // i18n only applies to the Pages Router
+      await fsExtra.remove(join(cwd, "src", "app", "page.tsx"));
+      await fsExtra.outputFile(
+        join(cwd, "src", "pages", "index.tsx"),
+        `export const getStaticProps = ({ locale }: { locale: string }) => ({ props: { locale } });
+        export default function Home({ locale }: { locale: string }) { return <p>{locale}</p>; }`,
+      );
+      console.log(`Created next.config.mjs and src/pages/index.tsx files`);
+    },
+    tests: ["config-override.spec.ts"],
+  },
   ...configOverrideTestScenarios.map(
     (scenario: { name: string; config: string; file: string }) => ({
       name: scenario.name,

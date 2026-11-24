@@ -75,6 +75,8 @@ export async function overrideNextConfig(projectRoot: string, nextConfigFileName
  * Current overrides include:
  * - images.unoptimized = true, unless user explicitly sets images.unoptimized to false or
  * is using a custom image loader.
+ * - Vary: Accept-Language, Cookie on the root when i18n locale detection is on, so the CDN
+ * doesn't serve one locale's cached root to every visitor.
  * @param importStatement The import statement for the original config.
  * @param fileExtension The file extension of the original config. Use ".js", ".mjs", ".ts", or ".mts"
  * @return The custom Next.js config.
@@ -94,6 +96,22 @@ function getCustomNextConfig(importStatement: string, fileExtension: string) {
           ? { unoptimized: true }
           : {}),
     },
+    // Next.js picks the root's locale from Accept-Language and the NEXT_LOCALE cookie.
+    // See: https://github.com/vercel/next.js/blob/54b876b6b161b0ecda19562eb264bec637e60d6d/packages/next/src/shared/lib/i18n/get-locale-redirect.ts#L70-L81
+    // Header rules then see the root as its default locale, e.g. "/" as "/en".
+    // See: https://github.com/vercel/next.js/blob/54b876b6b161b0ecda19562eb264bec637e60d6d/packages/next/src/server/lib/router-utils/resolve-routes.ts#L249-L262
+    ...(config.i18n && config.i18n.localeDetection !== false
+      ? {
+          headers: async () => [
+            ...((await config.headers?.()) ?? []),
+            {
+              source: "/" + config.i18n.defaultLocale,
+              locale: false,
+              headers: [{ key: "Vary", value: "Accept-Language, Cookie" }],
+            },
+          ],
+        }
+      : {}),
   });
 
   const config = typeof originalConfig === 'function'
