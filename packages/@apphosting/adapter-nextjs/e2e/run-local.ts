@@ -53,6 +53,46 @@ const scenarios: Scenario[] = [
     },
     tests: ["middleware.spec.ts"], // Only run middleware-specific tests
   },
+  {
+    name: "with-middleware-basepath-i18n",
+    setup: async (cwd: string) => {
+      const middlewareContent = `
+        import type { NextRequest } from "next/server";
+
+        export function middleware(request: NextRequest) {
+          console.log("Middleware executed", request.nextUrl.pathname);
+        }
+
+        export const config = {
+          matcher: ["/", "/ssg", "/hello"],
+        };
+      `;
+
+      await fsExtra.writeFile(join(cwd, "src", "middleware.ts"), middlewareContent);
+
+      const files = await fsExtra.readdir(cwd);
+      const configFiles = files
+        .filter((file) => file.startsWith("next.config."))
+        .map((file) => join(cwd, file));
+
+      for (const file of configFiles) {
+        await fsExtra.remove(file);
+        console.log(`Removed existing config file: ${file}`);
+      }
+
+      await fsExtra.writeFile(
+        join(cwd, "next.config.mjs"),
+        `export default { basePath: "/base", i18n: { locales: ["en", "fr"], defaultLocale: "en" } };`,
+      );
+      // i18n only applies to the Pages Router
+      await fsExtra.outputFile(
+        join(cwd, "src", "pages", "hello.tsx"),
+        `export default function Hello() { return <p>hello</p>; }`,
+      );
+      console.log(`Created middleware.ts, next.config.mjs and pages/hello.tsx files`);
+    },
+    tests: ["middleware.spec.ts"],
+  },
   ...configOverrideTestScenarios.map(
     (scenario: { name: string; config: string; file: string }) => ({
       name: scenario.name,
