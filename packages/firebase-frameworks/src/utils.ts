@@ -18,6 +18,8 @@ export function incomingMessageFromExpress(req: Request): IncomingMessage {
 
   incomingMessage.push(req.rawBody);
   incomingMessage.push(null);
+  // The whole body is pushed above. Left false, Node emits "aborted" once the body is read.
+  incomingMessage.complete = true;
 
   incomingMessage.headers = req.headers;
   incomingMessage.headersDistinct = req.headersDistinct;
