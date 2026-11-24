@@ -135,8 +135,9 @@ describe("next.config override", () => {
 
     const response = await fetch(host, { headers: { "accept-language": "en" } });
     assert.ok(response.ok);
+    const vary = response.headers.get("vary")?.toLowerCase() ?? "";
     assert.ok(
-      response.headers.get("vary")?.includes("Accept-Language, Cookie"),
+      vary.includes("accept-language") && vary.includes("cookie"),
       `Root vary header is ${response.headers.get("vary")}`,
     );
   });
@@ -164,7 +165,7 @@ describe("next.config override", () => {
     const response = await fetch(posix.join(host, "fr"), { headers: { "accept-language": "fr" } });
     assert.ok(response.ok);
     assert.ok(
-      !response.headers.get("vary")?.includes("Accept-Language"),
+      !response.headers.get("vary")?.toLowerCase().includes("accept-language"),
       `/fr vary header is ${response.headers.get("vary")}`,
     );
   });
