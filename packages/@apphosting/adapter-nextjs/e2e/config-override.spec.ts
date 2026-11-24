@@ -127,6 +127,49 @@ describe("next.config override", () => {
     }
   });
 
+  it("should vary the root on Accept-Language and Cookie with i18n", async function () {
+    if (!scenario.includes("with-i18n-locale-detection")) {
+      // eslint-disable-next-line @typescript-eslint/no-invalid-this
+      this.skip();
+    }
+
+    const response = await fetch(host, { headers: { "accept-language": "en" } });
+    assert.ok(response.ok);
+    const vary = response.headers.get("vary")?.toLowerCase() ?? "";
+    assert.ok(
+      vary.includes("accept-language") && vary.includes("cookie"),
+      `Root vary header is ${response.headers.get("vary")}`,
+    );
+  });
+
+  it("should still redirect the root to the detected locale with i18n", async function () {
+    if (!scenario.includes("with-i18n-locale-detection")) {
+      // eslint-disable-next-line @typescript-eslint/no-invalid-this
+      this.skip();
+    }
+
+    const response = await fetch(host, {
+      headers: { "accept-language": "fr" },
+      redirect: "manual",
+    });
+    assert.equal(response.status, 307);
+    assert.equal(response.headers.get("location"), "/fr");
+  });
+
+  it("should not vary other locales on Accept-Language with i18n", async function () {
+    if (!scenario.includes("with-i18n-locale-detection")) {
+      // eslint-disable-next-line @typescript-eslint/no-invalid-this
+      this.skip();
+    }
+
+    const response = await fetch(posix.join(host, "fr"), { headers: { "accept-language": "fr" } });
+    assert.ok(response.ok);
+    assert.ok(
+      !response.headers.get("vary")?.toLowerCase().includes("accept-language"),
+      `/fr vary header is ${response.headers.get("vary")}`,
+    );
+  });
+
   it("should not override images.unoptimized if user explicitly defines configs", async function () {
     if (
       !scenario.includes("with-images-unoptimized-false") &&

@@ -2,6 +2,8 @@ import assert from "assert";
 import fs from "fs";
 import path from "path";
 import os from "os";
+import { pathToFileURL } from "url";
+import type { NextConfig } from "next";
 import type { MiddlewareMatcher } from "next/dist/build/analysis/get-page-static-info.js";
 import { RoutesManifest, MiddlewareManifest } from "./interfaces.js";
 const importOverrides = import("@apphosting/adapter-nextjs/dist/overrides.js");
@@ -287,6 +289,22 @@ describe("next config overrides", () => {
           ? { unoptimized: true }
           : {}),
     },
+    // Next.js picks the root's locale from Accept-Language and the NEXT_LOCALE cookie.
+    // See: https://github.com/vercel/next.js/blob/54b876b6b161b0ecda19562eb264bec637e60d6d/packages/next/src/shared/lib/i18n/get-locale-redirect.ts#L70-L81
+    // Header rules then see the root as its default locale, e.g. "/" as "/en".
+    // See: https://github.com/vercel/next.js/blob/54b876b6b161b0ecda19562eb264bec637e60d6d/packages/next/src/server/lib/router-utils/resolve-routes.ts#L249-L262
+    ...(config.i18n && config.i18n.localeDetection !== false
+      ? {
+          headers: async () => [
+            ...((await config.headers?.()) ?? []),
+            {
+              source: "/" + config.i18n.defaultLocale,
+              locale: false,
+              headers: [{ key: "Vary", value: "Accept-Language, Cookie" }],
+            },
+          ],
+        }
+      : {}),
   });
 
   const config = typeof originalConfig === 'function'
@@ -485,6 +503,49 @@ describe("next config overrides", () => {
     const nextConfigFiles = files.filter((file) => file.startsWith("next.config"));
     assert.strictEqual(nextConfigFiles.length, 0, "No next.config files should exist");
   });
+
+  const varyHeaders = [{ key: "Vary", value: "Accept-Language, Cookie" }];
+
+  it("should add Vary to the root when i18n locale detection is on", async () => {
+    const { overrideNextConfig } = await importOverrides;
+    fs.writeFileSync(
+      path.join(tmpDir, "next.config.mjs"),
+      `export default {
+        i18n: { locales: ["en", "fr"], defaultLocale: "en" },
+        async headers() {
+          return [{ source: "/:path*", headers: [{ key: "x-custom-header", value: "kept" }] }];
+        },
+      };`,
+    );
+    await overrideNextConfig(tmpDir, "next.config.mjs");
+
+    assert.deepStrictEqual(await loadGeneratedHeaders(path.join(tmpDir, "next.config.mjs")), [
+      { source: "/:path*", headers: [{ key: "x-custom-header", value: "kept" }] },
+      { source: "/en", locale: false, headers: varyHeaders },
+    ]);
+  });
+
+  it("should not add Vary without i18n locale detection", async () => {
+    const { overrideNextConfig } = await importOverrides;
+    const configs = {
+      "no-i18n": "export default {};",
+      "detection-off": `export default {
+        i18n: { locales: ["en", "fr"], defaultLocale: "en", localeDetection: false },
+      };`,
+    };
+    for (const [name, config] of Object.entries(configs)) {
+      const dir = path.join(tmpDir, name);
+      fs.mkdirSync(dir);
+      fs.writeFileSync(path.join(dir, "next.config.mjs"), config);
+      await overrideNextConfig(dir, "next.config.mjs");
+
+      assert.strictEqual(
+        await loadGeneratedHeaders(path.join(dir, "next.config.mjs")),
+        undefined,
+        `${name} should have no headers`,
+      );
+    }
+  });
 });
 
 describe("validateNextConfigOverride", () => {
@@ -595,6 +656,12 @@ describe("next config restore", () => {
     assert.equal(restoredConfig, nextConfigOriginalBody);
   });
 });
+
+async function loadGeneratedHeaders(configPath: string) {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const { default: config }: { default: NextConfig } = await import(pathToFileURL(configPath).href);
+  return config.headers?.();
+}
 
 // Normalize whitespace for comparison
 function normalizeWhitespace(str: string) {
