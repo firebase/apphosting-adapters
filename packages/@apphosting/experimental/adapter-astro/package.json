@@ -31,8 +31,6 @@
     ],
     "dependencies": {
       "fs-extra": "^11.2.0",
-      "send": "^0.18.0",
-      "server-destroy": "^1.0.1",
       "yaml": "^2.6.1",
       "@apphosting/common": "*"
     },
@@ -52,8 +50,6 @@
       "@types/fs-extra": "^11.0.4",
       "@types/mocha": "*",
       "@types/node": "^18.17.8",
-      "@types/send": "^0.17.4",
-      "@types/server-destroy": "^1.0.3",
       "astro": "^7.0.0",
       "cheerio": "1.0.0-rc.12",
       "express": "^4.19.2",
