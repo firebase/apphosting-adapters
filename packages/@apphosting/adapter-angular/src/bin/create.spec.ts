@@ -9,6 +9,7 @@ const importCreateJs = import("@apphosting/adapter-angular/dist/bin/create.js");
 
 describe("peer dependencies", () => {
   let expectedAngularRange: string;
+  let expectedDevKitCoreRange: string;
   let exepctedDevKitArchitectRange: string;
 
   before(async () => {
@@ -16,7 +17,8 @@ describe("peer dependencies", () => {
     const version = parse(packageJson.version);
     if (!version) throw new Error("couldn't parse package.json version");
     expectedAngularRange = `~${version.major}.${version.minor}.0`;
-    exepctedDevKitArchitectRange = `~0.${version.major}${version.minor < 10 ? "0" : ""}${
+    expectedDevKitCoreRange = `>=${version.major}.${version.minor}.0`;
+    exepctedDevKitArchitectRange = `>=0.${version.major}${version.minor < 10 ? "0" : ""}${
       version.minor
     }.0`;
   });
@@ -35,6 +37,6 @@ describe("peer dependencies", () => {
   it("expected @angular-devkit/core version requirement to match", async () => {
     const packageJson = await readPackageJson;
     const devKitCoreRange = packageJson.peerDependencies["@angular-devkit/core"];
-    assert.equal(expectedAngularRange, devKitCoreRange);
+    assert.equal(expectedDevKitCoreRange, devKitCoreRange);
   });
 });

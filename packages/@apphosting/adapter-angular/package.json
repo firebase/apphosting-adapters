@@ -52,8 +52,8 @@
     "zod": "^3.22.4"
   },
   "peerDependencies": {
-    "@angular-devkit/architect": "~0.1702.0",
-    "@angular-devkit/core": "~17.2.0"
+    "@angular-devkit/architect": ">=0.1702.0",
+    "@angular-devkit/core": ">=17.2.0"
   },
   "peerDependenciesMeta": {
     "@angular-devkit/architect": {
