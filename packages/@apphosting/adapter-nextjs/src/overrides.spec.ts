@@ -2,6 +2,7 @@ import assert from "assert";
 import fs from "fs";
 import path from "path";
 import os from "os";
+import { pathToFileURL } from "url";
 import type { MiddlewareMatcher } from "next/dist/build/analysis/get-page-static-info.js";
 import { RoutesManifest, MiddlewareManifest } from "./interfaces.js";
 const importOverrides = import("@apphosting/adapter-nextjs/dist/overrides.js");
@@ -289,12 +290,12 @@ describe("next config overrides", () => {
     },
   });
 
+  const fahOptimize = (value) =>
+    typeof value?.then === 'function' ? value.then(fahOptimizedConfig) : fahOptimizedConfig(value);
+
   const config = typeof originalConfig === 'function'
-    ? async (...args) => {
-        const resolvedConfig = await originalConfig(...args);
-        return fahOptimizedConfig(resolvedConfig);
-      }
-    : fahOptimizedConfig(originalConfig);
+    ? (...args) => fahOptimize(originalConfig(...args))
+    : fahOptimize(originalConfig);
   `;
 
   beforeEach(() => {
@@ -421,7 +422,7 @@ describe("next config overrides", () => {
 
       ${nextConfigOverrideBody}
 
-      export default config;
+      export default config as typeof originalConfig;
       `),
     );
   });
@@ -451,10 +452,52 @@ describe("next config overrides", () => {
 
       ${nextConfigOverrideBody}
 
-      export default config;
+      export default config as typeof originalConfig;
       `),
     );
   });
+
+  const shapes = [
+    {
+      shape: "object",
+      original: `export default { distDir: "out" };`,
+      isFunction: false,
+      isPromise: false,
+    },
+    {
+      shape: "promise",
+      original: `export default Promise.resolve({ distDir: "out" });`,
+      isFunction: false,
+      isPromise: true,
+    },
+    {
+      shape: "sync function",
+      original: `export default (phase) => ({ distDir: phase });`,
+      isFunction: true,
+      isPromise: false,
+    },
+    {
+      shape: "async function",
+      original: `export default async (phase) => ({ distDir: phase });`,
+      isFunction: true,
+      isPromise: true,
+    },
+  ];
+  for (const { shape, original, isFunction, isPromise } of shapes) {
+    it(`should keep the shape of the config - ${shape}`, async () => {
+      const { overrideNextConfig } = await importOverrides;
+      fs.writeFileSync(path.join(tmpDir, "next.config.mjs"), original);
+      await overrideNextConfig(tmpDir, "next.config.mjs");
+
+      const { default: config } = await import(
+        pathToFileURL(path.join(tmpDir, "next.config.mjs")).href
+      );
+      assert.equal(typeof config === "function", isFunction);
+      const result = isFunction ? config("out") : config;
+      assert.equal(typeof result?.then === "function", isPromise);
+      assert.deepEqual(await result, { distDir: "out", images: { unoptimized: true } });
+    });
+  }
 
   it("should restore the original config when the override fails", async () => {
     const { overrideNextConfig } = await importOverrides;
@@ -559,12 +602,12 @@ describe("next config restore", () => {
     },
   });
 
+  const fahOptimize = (value) =>
+    typeof value?.then === 'function' ? value.then(fahOptimizedConfig) : fahOptimizedConfig(value);
+
   const config = typeof originalConfig === 'function'
-    ? async (...args) => {
-        const resolvedConfig = await originalConfig(...args);
-        return fahOptimizedConfig(resolvedConfig);
-      }
-    : fahOptimizedConfig(originalConfig);
+    ? (...args) => fahOptimize(originalConfig(...args))
+    : fahOptimize(originalConfig);
   `;
 
   beforeEach(() => {
