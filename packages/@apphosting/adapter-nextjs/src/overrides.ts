@@ -80,7 +80,20 @@ export async function overrideNextConfig(projectRoot: string, nextConfigFileName
  * @return The custom Next.js config.
  */
 function getCustomNextConfig(importStatement: string, fileExtension: string) {
-  const isEsm = [".mjs", ".mts", ".ts"].includes(fileExtension);
+  let exportStatement;
+  switch (fileExtension) {
+    case ".js":
+      exportStatement = "module.exports = config;";
+      break;
+    case ".mjs":
+      exportStatement = "export default config;";
+      break;
+    default:
+      // .ts and .mts. The wrapper keeps the original's shape (object, promise,
+      // function, and a function's sync or async result), so importers of
+      // next.config see the same type they see without the adapter.
+      exportStatement = "export default config as typeof originalConfig;";
+  }
   return `
   // @ts-nocheck
   ${importStatement}
@@ -96,14 +109,14 @@ function getCustomNextConfig(importStatement: string, fileExtension: string) {
     },
   });
 
-  const config = typeof originalConfig === 'function'
-    ? async (...args) => {
-        const resolvedConfig = await originalConfig(...args);
-        return fahOptimizedConfig(resolvedConfig);
-      }
-    : fahOptimizedConfig(originalConfig);
+  const fahOptimize = (value) =>
+    typeof value?.then === 'function' ? value.then(fahOptimizedConfig) : fahOptimizedConfig(value);
 
-  ${isEsm ? "export default config;" : "module.exports = config;"}
+  const config = typeof originalConfig === 'function'
+    ? (...args) => fahOptimize(originalConfig(...args))
+    : fahOptimize(originalConfig);
+
+  ${exportStatement}
   `;
 }
 
