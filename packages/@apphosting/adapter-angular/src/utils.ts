@@ -298,3 +298,20 @@ export const metaFrameworkOutputBundleExists = () => {
   }
   return false;
 };
+
+/**
+ * Validates the required environment variables for the build.
+ */
+export function validateEnvironment(): void {
+  const allowedHosts = process.env.NG_ALLOWED_HOSTS;
+  if (!allowedHosts || allowedHosts.trim() === "") {
+    throw new Error("NG_ALLOWED_HOSTS environment variable must be set and not empty.");
+  }
+
+  const trustProxyHeaders = process.env.NG_TRUST_PROXY_HEADERS;
+  if (!trustProxyHeaders || trustProxyHeaders !== "X-Forwarded-Host") {
+    throw new Error(
+      "NG_TRUST_PROXY_HEADERS environment variable must be set to 'X-Forwarded-Host'.",
+    );
+  }
+}
